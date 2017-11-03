@@ -1,0 +1,267 @@
+
+-----------------XML简介-----------------
+1 eXtensible Markup Language：可扩展标记型语言
+	标记型：跟html一样，用"标签"
+	可扩展：html标签是固定的。xml的标签可以自己定义，可以写中文标签：<狗></狗>
+
+2 用途：
+	html用于显示数据，xml也可以显示数据（但不是主要功能）
+  	xml的主要功能：存储数据
+
+3 xml有两个版本：1.0 1.1
+	现在使用的都是1.0版本，因为1.1版本不能向下兼容
+
+-----------------XML应用-----------------
+1 不同系统之间传输数据
+	例子：qq之间数据的传输（最开始用str，用:分隔，可读性差）
+
+2 用来表示有逻辑关系的数据
+	<中国>
+		<北京>
+			<海淀></海淀>
+		</北京>
+		<天津>
+			<南开></南开>
+		</天津>
+	</中国>
+
+3 经常用在配置文件中
+	例子：需要修改数据库的登录名和密码，不用修改源代码，只修改配置文件就可以了
+
+-----------------XML语法-----------------
+1 xml的文档声明
+	后缀名：.xml
+	文档声明：<?xml version="1.0" encoding="utf-8"?> 
+		必须放在第一行第一列（前面有空格也不行）
+	文档声明属性：
+		version：1.0  1.1
+		encoding：gbk  utf-8  iso8859-1(不支持中文)
+			保存在磁盘上的文件编码，要与声明的编码一致（否则会乱码）
+		standalone（不常用）：说明文档是否独立，即是不是依赖其他文档
+			standalone="yes"  standalone="no"
+
+2 定义标签
+	1 一定要有结束标签：
+		有内容：<person>小明</person>
+		无内容：</person>
+	2 一个xml文档必须有且仅有1个根标签
+	3 标签中的所有空格、换行，都会被当作标签内容来处理。所以，要改变"用换行、缩进来让原文件可读性强"的书写习惯。
+	4 标签的命名规则：
+		1 区分大小写
+		2 不能以数字或下划线开头
+		3 不能以xml、Xml、XMl等开头
+		4 不能包含空格和冒号
+		5 可以是中文
+
+3 定义属性
+	html是标记型文档，可以有属性；xml也是标记型文档，可以有属性。
+	属性定义要求：
+		1 一个标签可以有多个属性，但属性名称不能重名
+		2 属性值用引号包起来，单引号、双引号都可以
+		3 属性命名规则和标签的命名规则一致
+
+4 注释
+	<!-- 注释 -->
+	注释不能放在文档声明之前
+
+5 特殊字符
+	如果想显示 a<b ，要写成a&lt;b
+	& &&aml;
+	> &lt;
+	< &gt;
+	" &quot;
+	' &apos;
+
+6 CDATA区（了解即可）
+	可以解决多个字符都需要转义的操作，把这些内容放到CDATA区中，就不需要转义了。
+	CDATA区中的内容都当作文本内容来处理
+	写法：	<![CDATA[内容]]>
+
+	PCDATA：parsed character data（会被解析的文本）
+	CDATA：character data（不会被解析的文本）
+
+7 PI指令（了解即可）
+	用PI指令来指示XML文档所使用的css样式文件（对中文标签名不起作用）
+
+-----------------XML的约束-----------------
+1 为什么需要约束？
+	<人>
+		<爪子></爪子>
+	</人>
+	这样写符合语法规范，但是不合逻辑
+
+2 xml约束的技术：
+	dtd约束：
+	schema约束：
+
+-----------------XML的约束 dtd（看懂就行）-----------------
+1 dtd语法 - 定义元素：
+	简单元素：没有子元素
+		<!ELEMENT 元素名称 (#PCDATA)>
+		(#PCDATA)	
+		EMPTY		空元素
+		ANY			任意
+
+	复杂元素	
+		<!ELEMENT 元素名称 (子元素1,子元素2)>
+		(子元素1)			只出现一次
+		(子元素1+)			>=1次
+		(子元素1?)			=0,1次
+		(子元素1*)			任意次(0次也可以)
+		多个子元素用逗号分隔：按顺序出现
+		多个子元素用 |  分隔：只能出现一个
+
+  dtd语法 - 定义属性：
+  	<!ATTLIST 元素名 属性名称 属性类型 属性约束>
+  	约束：  		
+  		值				属性的默认值
+  		#REQUIRED		属性值是必需的
+  		#IMPLIED		属性不是必需的
+  		#FIXED value	属性值是固定的
+
+  dtd语法 - 定义实体：
+  		<!ENTITY 实体名称 "实体的值">
+  		在xml中使用：&实体名称;
+
+2 注意：
+	如果用浏览器打开xml文件，浏览器只负责校验语法，不校验约束
+	如果想要检验xml的约束，需要使用工具
+
+3 使用dtd的方式:
+	1 引入外部(本地)
+		<!DOCTYPE 根元素名称 SYSTEM "dtd文件的路径">
+	2 引入内部
+		<!DOCTYPE 根元素名称[
+			....
+		]>
+	3 引入网络上的DTD文件
+		<!DOCTYPE 根元素名称 PUBLIC "dtd文件名称" "dtd文件路径">
+
+-----------------XML的解析-----------------
+1 xml是标记型文档
+2 xml的解析方式（技术）：dom和sax	
+	dom方式：根据xml的层级结构，在内存中分配一个树形结构，把xml的标签、属性、文本都封装成对象
+		优：增删改很方便
+		缺：如果文件过大，会造成内存溢出
+	sax：采用事件驱动，边读边解析
+		从上到下，一行一行的解析，解析到某一个对象，把对象名称返回
+		优：不会造成内存溢出；查询方便
+		缺：不能实现增删改操作
+3 想要解析xml，首先需要解析器
+  不同的公司和组织，针对dom和sax方式，提供了不同的解析器，通过api方式提供
+  sun公司：	jaxp
+  dom4j组织：dom4j（最常用）
+
+
+-----------------XML的解析器：jaxp-----------------
+1 jaxp是javase的一部分
+2 jaxp解析器在jdk的javax.xml.parsers包里面
+	四个类：分别是针对dom和sax解析使用的类
+	dom：
+		DocumentBuilder	定义 API， 使其从 XML 文档获取 DOM 文档实例。
+			这个类是一个抽象类，不能new			
+			此类的实例可以从DocumentBuilderFactory.newDocumentBuilder() 方法获取
+
+			一个方法，可以解析xml parse("xml路径") 返回的是Document整个文档
+			返回的document是一个接口，父节点是Node。若果在document中找不到想要的方法，去Node中找
+
+		DocumentBuilderFactory	定义工厂 API，使应用程序能够从 XML 文档获取生成 DOM 对象树的解析器。
+	sax：
+		SAXParser	定义包装 XMLReader 实现类的 API。
+		SAXParserFactory	定义工厂 API，使应用程序能够配置和获取基于 SAX 的解析器以解析 XML 文档。
+
+
+
+-----------------例子：使用jaxp来得到所有name元素的值-----------------
+// src/family.xml：
+	<?xml version="1.0" encoding="UTF-8"?>
+	<family>
+		<person>
+			<name>emily</name>
+			<age>22</age>
+		</person>
+		<person>
+			<name>Phil</name>
+			<age>31</age>
+		</person>
+	</family>
+
+// XmlTest.java:
+	package emily;
+
+	import javax.xml.parsers.DocumentBuilder;
+	import javax.xml.parsers.DocumentBuilderFactory;
+
+	import org.w3c.dom.Document;
+	import org.w3c.dom.Node;
+	import org.w3c.dom.NodeList;
+
+	public class XmlTest {
+		public static void main(String[] args) throws Exception {
+			// 创建解析工厂
+			DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+			// 创建解析器
+			DocumentBuilder builder=factory.newDocumentBuilder();
+			// 解析xml，返回Document
+			Document document=builder.parse("src/family.xml");
+			// 得到所有name元素，是一个NodeList
+			NodeList list=document.getElementsByTagName("name");
+			// 遍历集合
+			for(int i=0;i<list.getLength();i++) {
+				// 得到每一个name元素
+				Node node=list.item(i);
+				// 得到元素里面的值
+				String name=node.getTextContent();
+				System.out.println(name);
+			}		
+		}
+	}
+
+
+
+
+-----------------例子：使用jaxp来添加gender元素-----------------
+// XmlTest.java:
+
+	public static void addGender() throws Exception {
+		DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder=factory.newDocumentBuilder();
+		Document document=builder.parse("src/family.xml");
+		//	取第一个person元素
+		Node parentNode=document.getElementsByTagName("person").item(0);
+		//	创建gender元素
+		Element node=document.createElement("gender");
+		//	创建文本
+		Text text=document.createTextNode("Female");
+		//	gender元素中添加文本
+		node.appendChild(text);
+		//	person元素中添加gender元素
+		parentNode.appendChild(node);
+		//	回写xml（操作的xml是内存中的，不是磁盘中的）
+		TransformerFactory factory2=TransformerFactory.newInstance();
+		Transformer transformer=factory2.newTransformer();
+		transformer.transform(new DOMSource(document), new StreamResult("src/family.xml"));	
+	}
+
+	
+
+-----------------例子：使用jaxp来遍历所有元素-----------------
+// XmlTest.java:
+
+	public static void main(String[] args) throws Exception {
+			DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder=factory.newDocumentBuilder();
+			Document document=builder.parse("src/family.xml");
+			traversal(document);
+		}
+		public static void traversal(Node node) {
+			// 判断：是元素才打印
+			if(node.getNodeType()==Node.ELEMENT_NODE){
+				System.out.println(node.getNodeName());
+			}
+			NodeList list=node.getChildNodes();
+			for(int i=0;i<list.getLength();i++) {
+				Node son_node=list.item(i);
+				traversal(list.item(i));
+			}
+		}
