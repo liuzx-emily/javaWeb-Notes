@@ -1,4 +1,4 @@
---------------------------------
+﻿--------------------------------
 	小tip
 1 强转String：
 	(String)
@@ -14,6 +14,7 @@
 	快捷键：
 		代码补全 	Content Assist 	alt+w（改）
 		getter		alt+shit+s打开source，选getter
+		快速导包	ctrl+shift+o
 		
 	WEB-INF > lib中的所有jar包，右键 > build path > add to ..
 
