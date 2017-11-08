@@ -325,7 +325,7 @@
 	Element也是一个接口，父接口是Node
 		Element和Node中的方法：
 			getParent()
-			addElement(qname)	直接添加名为qname元素（不用先创建）
+			addElement(qname)	在末尾添加名为qname的元素（不用先创建）
 			element(qname)	获取第一个qname子标签（不包括孙标签）
 			elements(qname)	获取所有qname子标签（不包括孙标签）
 			elements()		获取所有子标签（不包括孙标签）

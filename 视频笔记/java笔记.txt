@@ -1,0 +1,48 @@
+-----------------JRE和JDK-----------------
+JRE： Java Runtime Environment
+	包含了java虚拟机，java基础类库
+JDK：Java Development Kit
+	包含了JRE，同时还包含了编译java源码的编译器javac，还包含了很多java程序调试和分析的工具：jconsole，jvisualvm等工具软件，还包含了java程序编写所需的文档和demo例子程序。
+
+需要运行java程序，只需安装JRE就可以了。如果要编写java程序，需要安装JDK。
+
+
+-----------------eclipse和myeclipse-----------------
+1 eclipse：免费 开发工具
+2 myeclipse：收费 插件
+
+
+-----------------myeclipse快捷键-----------------
+代码提示 		Content Assist 		alt+w（改）
+快速导包		Organize Imports 	ctrl+shift+o
+快速修复		Quick Fix			ctrl+1
+单行注释		Toggle Comment 		ctrl+/
+多行注释		Add Block Comment	ctrl+shift+/
+取消多行注释						ctrl+shift+\
+删除行			Delete Line			ctrl+d
+代码格式化		Format				ctrl+shift+f
+
+getter		alt+shit+s打开source，选getter
+
+
+-----------------单元测试junit-----------------
+1 测试内容：类中的方法
+2 junit不是javase的一部分，想要使用需要导入jar包。但是，myeclipse中自带了junit的jar包。
+  junit有不同的版本：3.x 4.x
+3 单元测试写法：
+	在项目下新建source folder，和src同级，起名为junittt（随便起）
+	在junittt中新建一个包，包名需要和"待测试的方法所在类"的包名一致
+
+	@Test：进行单元测试
+	@Ignore：不进行单元测试
+	@Before：在每个方法之前运行
+	@After：在每个方法之后运行
+	
+	public class 类名随便起 {
+		@Test
+		public void 方法名随便起(){
+			// 测试内容
+		}
+	}
+
+4 运行：Run As JUnit Test
