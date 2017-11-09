@@ -46,3 +46,216 @@ getter		alt+shit+s打开source，选getter
 	}
 
 4 运行：Run As JUnit Test
+
+
+-----------------list集合-----------------
+list：
+	1 ArrayList：最有用的List集合实现。由一个整形数字或数组存储了集合的大小（数组中第一个没有使用的元素）。像所有的List集合一样，ArrayList可以在必要的时候扩展它的大小。ArrayList访问元素的时间开销固定。在尾部添加元素成本低（为常数复杂度），而在头部添加元素成本很高（线性复杂度）。这是由ArrayList的实现原理——所有的元素的从角标为0开始一个接着一个排列造成的。也就是说，从要插入的元素位置往后，每个元素都要向后移动一个位置。
+	2 linkedList：每一个节点都保存着上一个节点和下一个节点的指针。这就意味着数据的存取和更新具有线性复杂度（这也是一个最佳化的实现，每次操作都不会遍历数组一半以上，操作成本最高的元素就是数组中间的那个）。
+	3 Vector：一个带有线程同步方法的ArrayList版本，现在已经被ArrayList代替了
+
+例子：
+	List<String> list = new ArrayList<String>();
+	// 添加：add()
+	list.add("aaa");
+	list.add("bbb");
+	// 取：get(index)
+	System.out.println(list.get(1));
+
+
+遍历方法：
+	1 普通for
+		for(int i=0;i<list.size();i++){
+			 String txt=list.get(i);
+			 System.out.println(txt);
+		}
+	2 增强for
+		for (String txt : list) {
+			System.out.println(txt);
+		}
+	3 迭代器
+		Iterator<String> it=list.iterator();
+		while(it.hasNext()){
+			String txt=it.next();
+			System.out.println(txt);
+		}
+
+
+-----------------set集合-----------------
+取出顺序和添加顺序无关；不能有重复
+	Set<String> set =new HashSet<String>();
+	set.add("aaa");
+	set.add("bbb");
+	set.add("ccc");
+	set.add("ddd");
+	set.add("bbb");
+	for (String string : set) {
+		System.out.print(string+'\t');
+	}
+	输出结果:
+		aaa	ddd	ccc	bbb
+遍历方法：
+	1 增强for
+	2 迭代器
+		Iterator<String> it=set.iterator();
+		while(it.hasNext()){
+			String txt=it.next();
+			System.out.print(txt+"\t");
+		}
+
+
+-----------------map集合-----------------
+HashMap：最常用的Map实现。只是将一个键和值相对应，并没有其他的功能。
+
+	Map<String,Integer> map = new HashMap<String,Integer>();
+	map.put("a",1);
+	map.put("b",2);
+	map.put("c",3);
+	System.out.println(map.get("a"));
+
+遍历方法：
+	1 获取所有的key，通过key得到value
+		Set<String> keySet=map.keySet();
+		for(String key:keySet){
+			Integer value=map.get(key);
+			System.out.println(value);			
+		}
+		输出结果：2	3 1	
+	2 Entry是Map中用来保存一个键值对的，而Map实际上就是多个Entry的集合。
+		Set<Entry<String,Integer>> entrySet=map.entrySet();
+		for (Entry<String, Integer> entry : entrySet) {
+			String key=entry.getKey();
+			Integer value=entry.getValue();
+			System.out.println(key+": "+value);
+		}
+		输出结果：
+			b: 2
+			c: 3
+			a: 1
+
+-----------------jdk-----------------
+jdk版本：1.1 1.2 1.3 1.4 5.0
+jdk5.0新特性：
+	泛型
+	枚举
+	静态导入
+	自动拆装箱
+	增强for
+	可变参数
+
+
+-----------------jdk5.0新特性：泛型-----------------
+泛型里面不能写基本数据类型，要写对应的包装类
+	byte		Byte
+	short		Short
+	int 		Integer
+	long 		Long
+	folat 		Float
+	double 		Double
+	char 		Character
+	boolean 	Boolean
+
+1 泛型一般使用在集合上，常用集合：list set map
+	为什么要使用泛型？
+		新元素放入集合后，失去本身的类型，变成Object类型。
+		想取出的时候要进行类型转换，很容易出错。
+	
+
+2 在方法中使用泛型
+	方法逻辑相同，只是数据类型不同
+	<T>写在返回值之前，表示任意类型（可以不是T，随便起）
+
+	public static void main(String[] args) {
+		// 泛型里不能是基本类型int，必须是包装类Integer	
+		Integer[] arr={10,11,12,13,14,15};
+		String[] arr2={"a","b","c","d"};
+		swap(arr,1,3);
+		swap(arr2,1,3);
+		System.out.println(Arrays.toString(arr));
+		System.out.println(Arrays.toString(arr2));
+		
+	}
+	private static <T> void swap(T[] arr,int i,int j){
+		T temp;
+		temp=arr[i];
+		arr[i]=arr[j];
+		arr[j]=temp;
+	}
+
+3 在类中使用泛型（不常用，了解即可）
+	public class Test<T>{
+		T num;
+
+		void func(T sum){}
+
+		// static的不能用泛型，下面两行都会报错
+		// static T num2;
+		// static void func2(T sum){}
+
+		// 下面的不报错：
+		static <T2> void fun3(T2 sum){}
+
+	}
+
+
+-----------------jdk5.0新特性：枚举-----------------
+需要在一定的范围内取值（红绿灯）
+
+枚举是一种特殊的类。
+枚举类中声明的每一个枚举值，都是枚举类的一个实例对象。
+与java中的普通类一样，在声明枚举类时，也可以声明属性、方法和构造函数，但构造函数必须是private的。
+枚举类可以实现接口、继承抽象类。
+jdk5中扩展了switch语句，它除了可以接受int byte char short之外，还可以接收一个枚举类型。
+
+	public class MeiJu {
+		public static void main(String[] args) {		
+			Color color=Color.GREEN;
+		}
+	}
+	enum Color{
+		RED,GREEN,YELLOW;
+	}
+	class Color2{
+		public static final Color2 RED=new Color2();
+		public static final Color2 GREEN=new Color2();
+		public static final Color2 YELLOW=new Color2();
+	}
+	(枚举类Color是Color2的简写形式)	
+	------------------------------
+	public class MeiJu {
+		public static void main(String[] args) {		
+			Color color=Color.GREEN;
+			color.show();
+		}
+	}
+	enum Color{
+		RED("red",1),GREEN("green",2),YELLOW("yellow",3);
+		private String name;
+		private Integer level;
+		private Color(String name,Integer level){
+			this.name=name;
+			this.level=level;
+		}
+		public void show(){
+			System.out.println("颜色："+this.name+"；重要级别："+this.level);
+		}
+	}
+
+常用方法：
+	color.name()：返回枚举的名称
+	color.ordinal()：返回枚举的下标（从0开始）
+	Color.valueOf(Class<T> enumType,String name)：返回枚举的对象
+
+还有两个方法不在API里面，但是编译的时候会生成：
+	Color.valueof(String name)：返回枚举对象
+	Color.values()：返回所有枚举对象数组
+
+练习：枚举对象、枚举对象下标、枚举对象名称之间的转换
+
+
+
+-----------------jdk5.0新特性：-----------------
+
+-----------------jdk5.0新特性：-----------------
+
+-----------------jdk5.0新特性：-----------------

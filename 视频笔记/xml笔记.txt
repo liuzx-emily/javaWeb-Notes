@@ -41,7 +41,7 @@
 			standalone="yes"  standalone="no"
 
 2 定义标签
-	1 一定要有结束标签：
+	1 一定要闭合：
 		有内容：<person>小明</person>
 		无内容：<person/>
 	2 一个xml文档必须有且仅有1个根标签
@@ -66,7 +66,7 @@
 
 5 特殊字符
 	如果想显示 a<b ，要写成a&lt;b
-	& &&aml;
+	& &amp;
 	> &lt;
 	< &gt;
 	" &quot;
@@ -145,10 +145,10 @@
 
 -----------------XML的约束 schema['skimə]-----------------
 1 schema概述
-	1 一个xml中可以有多个schema，多个schema用名称空间来区分
-	2 dtd里面有PCDATA类型，在schema里面可以支持更多的数据类型
-	3 语法比dtd复杂，目前还不能替代dtd
-	4 xml schema文件本身就是一个xml文件，但它的扩展名是.xsd
+	xml schema文件本身就是一个xml文件，但它的扩展名是.xsd
+	一个xml中可以有多个schema，多个schema用名称空间来区分
+	dtd里面有PCDATA类型，在schema里面可以支持更多的数据类型
+	语法比dtd复杂，目前还不能替代dtd
 
 2 根节点schema，属性：
 	xmlns="http://www.w3.org/2001/XMLSchema" 表示当前文件是一个schema约束文件
