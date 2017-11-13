@@ -1,3 +1,67 @@
+--------------------------------
+数据类型：
+	1）基本数据类型：byte、short、int、long、float、double、char、boolean 
+	2）引用数据类型: 数组、类、接口。
+
+在 java程序中所有的数据都需要当做对象来处理，针对8种基本数据类型提供了包装类，如下：
+	int --> Integer
+	byte --> Byte
+	short --> Short
+	long --> Long
+	char --> Character
+	double --> Double
+	float --> Float
+	boolean --> Boolean
+包装类是对象，可以是null，可以有属性和方法
+
+
+
+--------------------------------
+java三大特征：继承 + 封装 + 多态
+
+继承：OOP最显著的特性。好处：
+	1：提高了代码的复用性。
+	2：让类与类之间产生了关系，提供了另一个特征多态的前提。
+
+封装：隐藏内部实现(private)，对外提供借口
+
+多态：OOP特征之一，函数本身就具备多态性，某一种事物有不同的具体的体现。 
+	体现：父类引用或者接口的引用指向了自己的子类对象。//Animal a = new Cat();
+	好处：提高了程序的扩展性。
+	弊端：当父类引用指向子类对象时，虽然提高了扩展性，但是只能访问父类中具备的方法，不可以访问子类中特有的方法。(前期不能使用后期产生的功能，即访问的局限性)
+	前提：
+	    1：必须要有关系，比如继承、或者实现。
+	    2：通常会有覆盖操作。
+
+
+--------------------------------
+数组：用于存储同一类型数据的一个容器。好处：可以对该容器中的数据进行编号，从0开始。数组用于封装数据，就是一个具体的实体。
+如何在java中表现一个数组呢？两种表现形式。
+	1） 元素类型[] 变量名 = new 元素类型[元素的个数]；
+	2） 元素类型[] 变量名 = {元素1，元素2...}；
+		元素类型[] 变量名 = new 元素类型[]{元素1，元素2...}；
+
+集合框架：★★★★★，用于存储数据的容器。
+特点：
+1：对象封装数据，对象多了也需要存储。集合用于存储对象。
+2：对象的个数确定可以使用数组，但是不确定怎么办？可以用集合。因为集合是可变长度的。
+ 
+集合和数组的区别：
+1：数组是固定长度的；集合可变长度的。
+2：数组可以存储基本数据类型，也可以存储引用数据类型；集合只能存储引用数据类型。
+3：数组存储的元素必须是同一个数据类型；集合存储的对象可以是不同数据类型。
+
+
+Iteraotr
+	|--Collection：	
+		|--Set：无序，不可重复。
+	    |--List：有序，可重复
+		    |--ArrayList：底层的数据结构是数组,线程不同步，ArrayList替代了Vector，查询元素的速度非常快。
+	|--Map：
+		|--HashMap：底层是哈希表数据结构，是线程不同步的。可以存储null键，null值。替代了Hashtable.
+
+
+
 -----------------JRE和JDK-----------------
 JRE： Java Runtime Environment
 	包含了java虚拟机，java基础类库
@@ -7,9 +71,11 @@ JDK：Java Development Kit
 需要运行java程序，只需安装JRE就可以了。如果要编写java程序，需要安装JDK。
 
 
+
 -----------------eclipse和myeclipse-----------------
 1 eclipse：免费 开发工具
 2 myeclipse：收费 插件
+
 
 
 -----------------myeclipse快捷键-----------------
@@ -23,6 +89,7 @@ JDK：Java Development Kit
 代码格式化		Format				ctrl+shift+f
 
 getter		alt+shit+s打开source，选getter
+
 
 
 -----------------单元测试junit-----------------
@@ -46,6 +113,7 @@ getter		alt+shit+s打开source，选getter
 	}
 
 4 运行：Run As JUnit Test
+
 
 
 -----------------list集合-----------------
@@ -81,6 +149,7 @@ list：
 		}
 
 
+
 -----------------set集合-----------------
 取出顺序和添加顺序无关；不能有重复
 	Set<String> set =new HashSet<String>();
@@ -102,6 +171,7 @@ list：
 			String txt=it.next();
 			System.out.print(txt+"\t");
 		}
+
 
 
 -----------------map集合-----------------
@@ -133,6 +203,8 @@ HashMap：最常用的Map实现。只是将一个键和值相对应，并没有�
 			c: 3
 			a: 1
 
+
+
 -----------------jdk-----------------
 jdk版本：1.1 1.2 1.3 1.4 5.0
 jdk5.0新特性：
@@ -142,6 +214,7 @@ jdk5.0新特性：
 	自动拆装箱
 	增强for
 	可变参数
+
 
 
 -----------------jdk5.0新特性：泛型-----------------
@@ -197,6 +270,8 @@ jdk5.0新特性：
 
 	}
 
+4 泛型擦除
+	泛型只存在于源代码中，编译后就不存在了
 
 -----------------jdk5.0新特性：枚举-----------------
 需要在一定的范围内取值（红绿灯）
@@ -254,8 +329,109 @@ jdk5中扩展了switch语句，它除了可以接受int byte char short之外，
 
 
 
------------------jdk5.0新特性：-----------------
+-----------------jdk5.0新特性：静态导入-----------------
+了解即可，不常用。容易出错
 
------------------jdk5.0新特性：-----------------
+可以在代码里面，直接导入静态方法或常量
 
------------------jdk5.0新特性：-----------------
+	import static java.lang.System.out;
+	import static java.lang.Math.abs;
+
+	public class staticImport {
+		public static void main(String[] args) {
+			double num=abs(-2.9);
+			out.println(num);			
+		}
+	}
+
+
+
+-----------------jdk5.0新特性：自动拆装箱-----------------
+基本类型 <----> 包装类 自动转换
+
+	Integer i=10;	// 自动装箱
+	int j=i;		// 自动拆箱
+
+jdk1.4-中不能自动转换，上面的写法会报错，需要：
+	Integer i=new Integer(10);
+	int j=i.intValue();
+jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行	
+
+	public static void main(String[] args) {
+		doo(1);		
+	}
+	private static void doo(double d){
+		System.out.println("double");
+	}
+
+	private static void doo(Integer i){
+		System.out.println("Integer");
+	}
+	输出结果：double【易错】
+	分析：jdk1.4-中肯定是double。jdk1.5+虽然有自动拆装箱，但是为了保证向下兼容，所以还是会double
+
+
+
+-----------------jdk5.0新特性：增强for循环-----------------
+为什么要引入增强for？
+	为了替代Iterator。如果实现了Iterator接口，就可以使用增强for循环。增强for的底层实现就是使用Iterator
+
+谁能使用增强for？
+	数组；实现了Iterator接口的集合
+
+在集合中使用增强for遍历：
+	list set实现了Iterator接口，所以可以使用增强for
+	map没有实现Iterator接口，不可以使用增强for
+
+
+
+-----------------jdk5.0新特性：可变参数-----------------
+	
+	public static void main(String[] args) {
+		add(1,2);
+		add(2,3,4);		
+	}
+	public static void add(int...nums){
+		int sum=0;
+		for (int i : nums) {
+			sum+=i;
+		}
+		return sum;
+	}
+
+可变参数必须放在最后；只能有一个可变参数
+
+
+
+
+-----------------反射（理解就行）-----------------
+应用在一些通用性比较高的代码中
+后面学到的框架，大多数都是使用反射来实现的
+
+在框架开发中，都是基于配置文件开发
+	在配置文件中配置了类，可以通过反射的到类中的所有内容
+
+类中的所有内容：属性、构造方法、普通方法
+
+反射的原理：
+	首先需要把java文件保存到本地硬盘 .java
+	编译：.java -> .class文件
+	使用jvm，把class文件通过类加载到内存中
+	class文件在内存中使用Class类表示
+
+	当使用反射的时候，首先需要获取到Class类，得到了这个类之后，就可以得到class文件里面的所有内容：属性、构造方法、普通方法
+	属性通过一个类Field来表示
+	构造方法通过一个类Constructor来表示
+	普通方法通过一个类Method来表示
+
+获取Class类的三种方法：
+	Class c1=Person.class;
+	Class c2=new Person("emily").getClass();
+	Class c3=Class.forName("emily.Person");	//最常用
+
+[插播：不用new，创建实例对象的方法：]
+	Class c1=Class.forName("emily.Person");
+	Person p1=(Person)c1.newInstance();
+
+
+使用反射来操作类里面的方法：

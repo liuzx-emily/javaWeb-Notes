@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/public.js"></script>
+	<script src="js/login.js"></script>
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/login.css">
+	<title>登录页</title>
+</head>
+<body>
+	<form action="servlet/UserServlet" method="post" id="formLogin">
+		<span class="txt">用户名：</span>
+		<input type="text" value="" name="username" id="username" class="input">
+		<br>
+		<span class="txt">密码：</span>
+		<input type="password" value="" name="password" id="password" class="input">
+		<br>
+		<input type="button" value="登录" id="loginBtn" class="btn">
+		<input type="button" value="注册" id="registerBtn" class="btn">
+		<input type="hidden" value="login" name="action">
+		<input type="hidden" value="form" name="method">
+	</form>
+</body>
+</html>

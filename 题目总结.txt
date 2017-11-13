@@ -1,0 +1,19 @@
+--------------------- Q ---------------------
+1 	输出结果?
+	public static void main(String[] args) {
+		doo(1);		
+	}
+	private static void doo(double d){
+		System.out.println("double");
+	}
+
+	private static void doo(Integer i){
+		System.out.println("Integer");
+	}
+
+
+
+
+--------------------- A ---------------------
+1 	输出结果：double
+	分析：jdk1.4-中是double，jdk1.5+虽然有自动拆装箱，但是为了保证向下兼容，所以还是会double

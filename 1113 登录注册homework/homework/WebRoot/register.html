@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/register.js"></script>
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/register.css">
+	<title>注册页</title>
+</head>
+<body>
+	<form action="servlet/UserServlet" method="post" id="formRegister">
+		<span class="txt">用户名：</span>
+		<input type="text" value="" name="username" id="username" class="input">
+		<span id="nameCheckInfo"></span>
+		<br>
+		<span class="txt">密码：</span>
+		<input type="password" value="" name="password" id="password" class="input">
+		<br>
+		<span class="txt">昵称：</span>
+		<input type="text" value="" name="nickname" id="nickname" class="input">
+		<br>
+		<span class="txt">用户类型：</span>
+		<input type="radio" name="userType" value="1" id="userType1" checked>
+		<label for="userType1" class="radio_txt">程序员</label>
+		<input type="radio" name="userType" value="2" id="userType2">
+		<label for="userType2" class="radio_txt">超级管理员</label>
+		<input type="radio" name="userType" value="3" id="userType3">
+		<label for="userType3" class="radio_txt">普通用户</label>		
+		<br>
+		<span class="txt">性别：</span>
+		<input type="radio" name="sex" value="1" id="sex1" checked>
+		<label for="sex1" class="radio_txt">男</label>
+		<input type="radio" name="sex" value="2" id="sex2">
+		<label for="sex2" class="radio_txt">女</label>
+		<br>
+		<span class="txt">电话：</span>
+		<input type="text" value="" name="phone" id="phone" class="input">
+		<br>
+		<input type="button" value="注册" id="registerBtn" class="btn">
+		<!-- 使用form表单提交数据时，需要的参数 -->
+		<input type="hidden" value="register" name="action">
+		<input type="hidden" value="form" name="method">
+	</form>
+</body>
+</html>

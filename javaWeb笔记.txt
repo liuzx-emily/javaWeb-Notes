@@ -1,0 +1,55 @@
+--------------------------------
+	小tip
+1 强转String：
+	(String)
+	.toString()：可以把时间戳转成时间
+
+2 判断String是否相同，不能用==，用S1.equals(S2)
+
+3 Object是顶级父类
+
+4 js中的[{},{}]  <-->  java中的 List<Map<String,Object>>
+
+5 myEclipse：
+	快捷键：
+		代码补全 	Content Assist 	alt+w（改）
+		getter		alt+shit+s打开source，选getter
+		快速导包	ctrl+shift+o
+		
+	WEB-INF > lib中的所有jar包，右键 > build path > add to ..
+
+
+
+-----------------实体类？-----------------
+为什么要建实体类？
+	为了规范输入（实体类中没有的属性，输入了也没有用）
+为什么不建实体类？
+	懒得写
+	实体类中限制了变量类型，如果跟数据库中的变量类型不一致，需要转换的时候，容易出问题。
+
+
+	
+
+-----------------前后交互-----------------
+前 -> 后传输方式：
+	1 form表单
+		name很重要
+		其他参数可以放到<input type="hidden">中传
+		后端返回的时候，直接返回新的url地址：
+			response.sendRedirect("新地址?username=emily");
+		前端不用额外处理，直接跳转
+
+	2 ajax
+		后端返回的时候，直接返回参数：
+			response.setContentType("application/json;charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			out.print(result);
+		前端接到参数，再进行处理
+
+无论使用get还是post，都是只在传输过程中有差别（一个在url，一个在请求头）。
+对于后端的servlet，它接收数据时没有区别，都是用：
+	request.setCharacterEncoding("utf-8");
+	String username = request.getParameter("username");
+
+
+
