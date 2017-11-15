@@ -53,3 +53,86 @@
 
 
 
+
+-----------------web资源 tomcat-----------------
+web资源：
+	静态资源：html
+	动态资源：jsp servlet（浏览器请求动态资源时，服务器需要先把动态资源转换为静态资源html，再返回给浏览器）
+
+
+tomcat是"服务器"+"jsp/servlet容器"
+tomcat的默认端口是8080，如果想要修改，去server.xml中修改
+tomcat项目放在webapps中，每个项目必须有：
+	WEB-INF
+		--web.xml
+		--classes/
+		--lib/
+-----------------http协议-----------------
+请求头中的：
+	ref：从哪里点过来的（用途：统计广告有没有用、防盗链）
+
+200 成功
+302 重定向 location
+304 缓存
+	比较if-modified-since的时间，与文件修改时间。如果时间一样，那么不返回内容，浏览器从缓存里拿。
+404	页面不存在
+500 服务器内部错误
+html-head中的meta标签可以模拟响应头（注意不是request头，是response头）
+
+
+
+-----------------servlet-----------------
+servlet是javaWeb的三大组件之一，它属于动态资源。Servlet的作用是处理请求，服务器会把接收到的请求交给Servlet来处理，在servlet中通常需要：
+	接收请求数据
+	处理请求
+	完成响应
+
+每个servlet都是唯一的，它们的功能都不同。
+
+servlet特性：
+	单例，一个类只有一个对象
+	线程不安全，效率高
+
+servlet类由我们自己写，但是对象由服务器来创建，并且由服务器来调用相应的方法。servlet对象是在第一次接到请求后创建，二不是服务器开启后立刻就创建
+
+Servlet接口
+	--GenericServlet类
+		--HttpServlet类
+实现servlet有三种方式，最常用的是：
+	继承javax.servlet.http.HttpServlet类
+	
+Servlet接口中有五个函数待实现：
+	init：【生命周期方法】在servlet对象创建之后立刻执行，而且只执行一次
+		参数：ServletConfig servletConfig
+	service：【生命周期方法】每次处理请求，都是调用这个方法，会被调用多次
+		参数：ServletRequest request
+			  ServletResponse response
+	destroy：【生命周期方法】在servlet对象被销毁之前调用，而且只会被调用一次（不是自杀，是留遗言）
+	getServletInfo：获取servlet的信息（根本没人用）
+	getServletConfig：获取servlet的配置信息（一般没人用）
+
+如何让浏览器访问sevlet
+	1 给servlet指定一个路径
+	2 浏览器访问这个路径（在web.xml中配置）
+		<servlet>
+			<servlet-name>XXX</servlet-name>
+			<init-param>
+		    	<param-name>p1</param-name>
+		    	<param-value>v1</param-value>
+		   </init-param>
+			<init-param>
+		    	<param-name>p2</param-name>
+		    	<param-value>v2</param-value>
+		   </init-param>
+			<servlet-class>servlet类的路径</servlet-class>
+		</servlet>
+
+		<servlet-mapping>
+			<servlet-name>XXX</servlet-name>
+			<url-pattern>/aaa/bbb/servlet</url-pattern>
+		</servlet-mapping>
+
+		servlet-name：名字，可以随便起
+		servlet-class:servlet类的qualified name
+		url-pattern:在浏览器中输入的路径，可以随便起
+		init-param:初始化参数
