@@ -468,3 +468,169 @@ servlet中有三大域对象：request session application，都有下面三个�
 7 Class获取资源路径
 	以/开头：相对class目录
 	不以/开头：相对当前.class文件所在目录
+
+
+
+-----------------jsp的作用-----------------
+servlet：
+	优点：动态资源，可以编程
+	缺点：设置html响应体很麻烦，需要大量的response.getWriter().print()
+html：
+	优点：写html很简单
+	缺点：html是静态页面，不能包含动态信息
+jsp(java server page)：
+	优点：在原有html的基础上添加java脚本，构成jsp页面
+
+jsp和servlet的分工：
+	jsp：
+		作为请求发起页面
+		作为请求结束页面
+	servlet：
+		请求中处理数据
+
+
+
+-----------------jsp的组成-----------------
+jsp=html+java代码+jsp标签
+jsp中无需创建即可使用的对象一共有9个，被称之为9大内置对象，例如：request对象、out对象
+3种jsp脚本：
+	<% %> 
+	<%= %>	用于输出
+	<%! %>
+	<%-- --%> 注释，只存在于jsp文件中，服务器把jsp转换成.java时就已经忽略了注释，所以最终的页面中也不会有
+
+
+-----------------basepath-----------------
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<html>
+<head>
+	<base href="<%=basePath%>">    
+	<title></title>
+</head>  
+<body>
+</body>
+</html>
+
+base的href相当于写在所有的a和form之前（a和form如果是相对路径的话，即不以/开头才会自动加base）
+
+
+
+-----------------小练习-----------------
+在a.jsp中输入两个数，在b.jsp中显示结果：
+
+a.jsp:
+	<form action="AddServlet" method="post">
+		<input type="text"  value=""  name="num1">
+		<input type="text"  value=""  name="num2">
+		<input type="submit" value="+">
+	</form>
+
+AddServlet.java:
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException {
+
+		String num1=request.getParameter("num1");
+		Integer num11=Integer.parseInt(num1);
+
+		String num2=request.getParameter("num2");
+		Integer num22=Integer.parseInt(num2);
+		
+		Integer sum=num11+num22;
+		
+		request.setAttribute("sum", sum);
+		RequestDispatcher requestDispatcher=request.getRequestDispatcher("b.jsp");
+		requestDispatcher.forward(request, response);		
+	}
+
+b.jsp:
+	%= request.getAttribute("sum") %>
+
+
+
+-----------------jsp原理-----------------
+jsp其实是一种特殊的servlet
+	当jsp页面第一次（本次开启服务器后第一次）被访问时：
+		服务器会把jsp编译成java文件（这个java其实是一个servlet类）
+		然后再把java文件编译成.class
+		然后创建该类对象
+		最后调用它的service()方法
+	第二次请求同一jsp时：
+		直接调用service()方法
+
+jsp文件对应的java文件和.class文件，存放在tomcat目录/work下
+
+
+
+-----------------cookie-----------------
+cookie是http协议制定的。由服务器把cookie保存到浏览器，浏览器进行下一次请求时，把上次从服务器得到的server再归还给服务器。
+
+javaWeb中使用cookie：
+	Cookie cookie=new Cookie("name","emily");
+	response.addCookie(cookie);
+
+	Cookie[] arr = request.getCookies();
+	if (arr != null) {
+		for (Cookie c : arr) {
+			out.print(c.getName() + ": " + c.getValue());
+		}
+	}
+
+cookie的maxAge
+	cookie.setMaxAge(60);
+	maxAge>0：浏览器会把cookie保存到硬盘中，有效时间为maxAge秒（不是ms）
+	maxAge<0：默认，cookie只在浏览器内存中存在；用户关闭浏览器时，cookie也消失了
+	maxAge=0：浏览器会立刻删除cookie
+
+cookie的path：
+	cookie的path并不是设置这个cookie在用户的电脑硬盘中保存的位置
+	cookie的path由服务器创建cookie时设置
+	当浏览器访问服务器某个路径时，需要归还那些cookie给服务器呢？这由cookie的path决定
+	浏览器访问服务器的路径，如果包含某个cookie的路径，那么就会归还这个cookie
+	cookie的默认path：当前访问文件的所在路径
+
+如果cookie中要存取中文：
+	// 存
+	Cookie cookie=new Cookie("username",java.net.URLEncoder.encode(name,"utf-8") );
+	// 取
+	name=java.net.URLDecoder.decode(cookie.getValue(),"utf-8");
+
+
+-----------------HttpSession-----------------
+HttpSession是由javaWeb提供的，http协议中没有。它是用来跟踪会话的。session是服务器端对象，保存在服务器。
+session底层依赖cookie或者url重写，cookie不能跨浏览器，所以session也不能。 
+HttpSession是servlet三大域对象之一（request session application），所以它也有：
+	setAttribute();
+	getAttribute();
+	removeAttribute();
+
+会话：一个用户对服务器的连贯请求（连贯：中途没有关闭浏览器）
+
+得到session对象：
+	servlet中：
+		HttpSession session=request.getSession();
+	jsp中：
+		是内置对象，不用创建直接使用
+		<% 
+			session.getAttribute("name");
+		%>
+
+用途：验证是否登录过
+	登录成功之后添加session
+	其他所有页面先验证session
+
+session的原理：
+	http://blog.csdn.net/sunny2come/article/details/7545420
+
+session的其他方法：
+	String getId()
+	int getMaxInactiveInterval()
+	void invalidate()：让session失效，"用户退出/注销"时用
+	boolean isNew()
+
+web.xml中配置session的最大不活动时间：15min
+	<session-config>
+		<session-timeout>15</session-timeout>
+	</session-config>
