@@ -54,7 +54,7 @@
 			out.print(result);
 		前端接到参数，再进行处理
 
-无论使用get还是post，都是只在传输过程中有差别（一个在url，一个在请求头）。
+无论使用get还是post，都是只在传输过程中有差别（一个在url，一个在请求体）。
 对于后端的servlet，它接收数据时没有区别，都是用：
 	request.setCharacterEncoding("utf-8");
 	String username = request.getParameter("username");
@@ -79,7 +79,7 @@ tomcat项目放在webapps中，每个项目必须有：
 
 
 -----------------servlet-----------------
-servlet是javaWeb的三大组件之一，它属于动态资源。Servlet的作用是处理请求，服务器会把接收到的请求交给Servlet来处理，在servlet中通常需要：
+servlet是javaWeb的三大组件之一，它属于动态资源。服务器会把接收到的请求交给Servlet来处理，在servlet中通常需要：
 	接收请求数据
 	处理请求
 	完成响应
@@ -333,7 +333,7 @@ response的类型为：HttpServletResponse
 	response.setHeader("pragma", "no-cache");
 	response.setDateHeader("expires", -1);
 
-html-head中的meta标签可以模拟响应头
+html - head中的meta标签可以模拟响应头
 
 
 响应体：通常是html，也可以是图片
@@ -350,13 +350,13 @@ response的两个流：不能同时使用，会报错
 
 -----------------request-----------------
 请求头例子：
-	GET /rcj-99d43ead6bdf30da8ed5ffcb4f17100c.html HTTP/1.1
+	GET /login.html HTTP/1.1
 	Host: vars.hotjar.com
 	Connection: keep-alive
 	Upgrade-Insecure-Requests: 1
 	User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36
 	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-	Referer: http://www.asda.com/ 【从哪里点过来的（用途：统计广告有没有用、防盗链）】
+	Referer: http://www.asdf.com/ 【从哪里点过来的（用途：统计广告有没有用、防盗链）】
 	Accept-Encoding: gzip, deflate, br
 	Accept-Language: zh-CN,zh;q=0.8
 
@@ -430,14 +430,14 @@ servlet中有三大域对象：request session application，都有下面三个�
 		response.setHeader("Content-Type","text/html;charset=utf-8");
 		上面一句不仅能告诉浏览器自己用utf-8，而且自己真的会用utf-8，所以可以不再写【1】
 	设置Content-Type还有一个便捷方法：		
-		response.setContentType("text/html;charset=utf-8");
+		response.setContentType("text/html;charset=utf-8");【以后都这么设置response的编码】
 
 2 请求编码
 	客户端传来的参数是什么编码？
-		在地址栏中直接输入参数（gbk）（不理他）
+		在地址栏中直接输入参数（gbk）[这种情况就让它乱吧，没辙]
 		在页面中点击（如果你的页面是utf-8，那么你传递的参数就是utf-8）
 	tomcat默认使用iso来处理请求参数，会乱码
- 		post：只需要在获取参数之前，request.setCharacterEncoding("utf-8");
+ 		post：只需要在获取参数之前，request.setCharacterEncoding("utf-8");【以后都这么设置request的编码】
  		get：比较麻烦
  			String name=request.getParameter("name");
  			byte[] bytes=name.getBytes("ISO-8859-1");
@@ -453,7 +453,7 @@ servlet中有三大域对象：request session application，都有下面三个�
 	以/开头：相对当前项目路径 http://localhost:8080/项目名/
 	不以/开头：相对当前servlet所在目录
 
-3 重定向路径（是客户端路径）
+3 重定向路径（是client端路径）
 	以/开头：相对当前主机 http://localhost:8080/ 所以需要手动写上项目名"/practice/AServlet"
 
 4 页面中的a和form路径
@@ -565,7 +565,7 @@ jsp文件对应的java文件和.class文件，存放在tomcat目录/work下
 
 
 -----------------cookie-----------------
-cookie是http协议制定的。由服务器把cookie保存到浏览器，浏览器进行下一次请求时，把上次从服务器得到的server再归还给服务器。
+cookie是http协议制定的。由服务器把cookie保存到浏览器，浏览器进行下一次请求时，把上次从服务器得到的cookie再归还给服务器。
 
 javaWeb中使用cookie：
 	Cookie cookie=new Cookie("name","emily");
@@ -587,7 +587,7 @@ cookie的maxAge
 cookie的path：
 	cookie的path并不是设置这个cookie在用户的电脑硬盘中保存的位置
 	cookie的path由服务器创建cookie时设置
-	当浏览器访问服务器某个路径时，需要归还那些cookie给服务器呢？这由cookie的path决定
+	当浏览器访问服务器某个路径时，需要归还哪些cookie给服务器呢？这由cookie的path决定
 	浏览器访问服务器的路径，如果包含某个cookie的路径，那么就会归还这个cookie
 	cookie的默认path：当前访问文件的所在路径
 
@@ -629,7 +629,7 @@ session的其他方法：
 	int getMaxInactiveInterval()
 	void invalidate()：让session失效，"用户退出/注销"时用
 	boolean isNew()
-
+	
 web.xml中配置session的最大不活动时间：15min
 	<session-config>
 		<session-timeout>15</session-timeout>
