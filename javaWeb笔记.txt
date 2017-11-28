@@ -634,3 +634,21 @@ web.xml中配置session的最大不活动时间：15min
 	<session-config>
 		<session-timeout>15</session-timeout>
 	</session-config>
+
+如果客户禁用了cookie，那么：
+	1 提示用户"浏览器安全等级过高，请..."。放弃给其httpSession
+	2 使用url重写：http://blog.csdn.net/u014753393/article/details/49634813
+
+
+-----------------登录/注册时的验证码-----------------
+思路分析：
+	1 利用session
+	2 验证码图片要动态从后台获取。img的src写VCodeServlet的地址
+	  VCodeServlet：
+	  	生成新图片，返回。
+	  	把新生成的txt放到session中
+	3 "看不清，换一张"：
+		img的src重新赋一遍值。为了防止缓存，把时间戳当成参数来偏偏浏览器
+	4 判断验证码输入：
+		取session不能在前台（那样不安全）
+		所以要在后台判断
