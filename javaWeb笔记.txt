@@ -12,10 +12,21 @@
 
 5 myEclipse：
 	快捷键：
-		代码补全 	Content Assist 	alt+w（改）
-		getter		alt+shit+s打开source，选getter
-		快速导包	ctrl+shift+o
-		
+		代码补全 		Content Assist 		alt + w（改）
+		快速导\删包		Organize Imports 	ctrl + shift + o
+		移动当前行		Move Lines Up/Down 	ctrl + shift + 上下键头（改） 
+		复制当前行		Copy Lines			ctrl + shift + d（改）
+		删除当前行  	Delete Line 		ctrl + shift + k（改）
+		快速修复		Quick Fix			ctrl + 1
+		单行注释		Toggle Comment 		ctrl + /
+		多行注释		Add Block Comment	ctrl + shift + /
+		取消多行注释						ctrl + shift + \
+		代码格式化		Format				ctrl + shift + f
+		变量改名							ctrl + 2,R
+		接收返回值							ctrl + 2,L
+
+		getter			alt+shit+s打开source，选getter
+
 	WEB-INF > lib中的所有jar包，右键 > build path > add to ..
 
 	配置是跟着工作空间走的：
@@ -26,6 +37,11 @@
 		tomcat
 		取出MyEclipse自带tomcat
 		General -> Startup and Shutdown -> MyEclipse Derby
+
+	把项目导入myEclipse：
+		import - general -existing projects into workspace
+
+
 
 
 -----------------实体类？-----------------

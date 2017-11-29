@@ -1,4 +1,3 @@
-
 -------------变量----------------
 
 变量是内存中的小容器，用来存储数据。那么计算机内存是怎么存储数据的呢？
@@ -25,9 +24,27 @@
 	float	4		-3.403E38～3.403E38
 	double	8		-1.798E308～1.798E308
 字符型
-	char	2		表示一个字符，如('a'，'A'，'0'，'家')
+	char	2		表示一个字符，如('a'，'A'，'0'，'家') 0~65535
 布尔型
 	boolean	1		只有两个值true与false
+
+
+
+
+---------------char--------------
+char可以自动转成int类型，会查询编码表，得到整数
+int转成char时，需要强制转换，查询编码表
+
+	System.out.println((int)'a');	// 97
+	System.out.println((int)'z');	// 122
+
+打印a-z：
+	char c='a';
+	for(int i=0;i<26;i++){
+		System.out.println(c);
+		c++;
+	}
+
 
 
 ---------------常量与类型--------------
@@ -43,6 +60,7 @@ java中默认的浮点类型是double类型
 3.14没有后缀，所以它是double类型
 5.28D为double类型
 1.26F为float类型
+
 
 
 ---------------数据类型转换--------------
@@ -125,6 +143,7 @@ jdk7.0+：String
 数据类型：
 	1）基本数据类型：8种
 	2）引用数据类型: 数组、类、接口、枚举
+		ArrayList是集合，集合是特殊的类。
 
 包装类：
 	int --> Integer
@@ -193,6 +212,91 @@ System.out.println()就是重载
 引用类型传参，传的是地址
 
 
+
+--------------------------------
+
+	Phone phone=new Phone();
+内存中发生了什么？
+	JVM在堆内存中开辟了一块空间，存储新new的对象
+	属性也跟着进入堆内存，赋予默认值。
+	JVM把这块内存的地址，传递给p。p中保存的是新对象在内存中的地址。
+
+
+
+
+---------------ArrayList----------------
+为了保存数目不确定的元素，JDK中提供了一系列特殊的类，这些类可以存储任意类型的元素，并且长度可变，统称为集合。
+ArrayList集合是程序中最常见的一种集合，它属于引用数据类型（类）。在ArrayList内部封装了一个长度可变的数组，当存入的元素超过数组长度时，ArrayList会在内存中分配一个更大的数组来存储这些元素，因此可以将ArrayList集合看作一个长度可变的数组。
+
+	ArrayList<String> arr1=new ArrayList<String>();
+	ArrayList<Integer> arr2=new ArrayList<Integer>();
+
+包：java.util.ArrayList
+只能存储引用类型，不能存基本类型，要用包装类。
+存：add()
+取：get()
+长度：size()
+不常用方法：
+	boolean add（int index,  Object obj）	将指定元素obj插入到集合中指定的位置
+	Object remve（int index）	从集合中删除指定index处的元素，返回该元素
+	void clear（）	清空集合中所有元素
+	Object set（int index, Object obj）	用指定元素obj替代集合中指定位置上的元素
+
+
+
+
+--------------------------------
+
+
+java不允许多继承，因为有安全问题。
+
+
+子类、父类中，出现重名的field、方法时，默认用子类的，想要用父类需要指明super.xxx
+
+
+
+--------------抽象类 抽象方法----------------
+
+	abstract class Worker {
+		public abstract void work();
+	}
+
+1、抽象类和抽象方法都需要被abstract修饰。抽象方法一定要定义在抽象类中。
+2、抽象类不可以new
+3、只有覆盖了抽象类中所有的抽象方法后，其子类才可以创建对象。否则该子类还是一个抽象类。
+之所以继承抽象类，更多的是在思想，是面对共性类型操作会更简单。
+
+4、abstract不可以和哪些关键字共存？	
+1、private：abstract要求子类去实现这个方法，而private使子类根本无法得到父类这个方法。矛盾。
+2、final
+3、static
+
+
+
+
+--------------接口----------------
+	public interface Animal{
+		public abstract void eat();
+	}
+
+1 是比抽象类更为抽象的”类”。不能new
+2 接口只描述所应该具备的方法，具体的实现由接口的实现类来完成。这样将功能的"定义"与"实现"分离
+
+3 接口中的方法：
+	只能是public abstract的，可以省略不写
+	接口中：void eat();		// 等价于public abstract void eat();
+	
+4 接口中的成员变量：
+	只能是public static final的，可以省略不写，
+  	接口中：int a=1; 		// 等价于public static final int a=1;
+  	可以直接：接口.a
+
+5 接口的实现类，必须重写接口中的【所有】抽象方法
+  如果实现类没有重写所有，那么实现类还是一个抽象类abstract
+
+
+
+
 --------------------------------
 java三大特征：继承 + 封装 + 多态
 
@@ -206,6 +310,7 @@ java三大特征：继承 + 封装 + 多态
 	体现：Animal a = new Cat();
 	好处：提高了程序的扩展性。
 	弊端：当父类引用指向子类对象时，虽然提高了扩展性，但是只能访问父类中具备的方法，不可以访问子类中特有的方法。
+
 
 
 
@@ -250,19 +355,6 @@ JDK：Java Development Kit
 1 eclipse：免费 开发工具
 2 myeclipse：收费 插件
 
-
-
------------------myeclipse快捷键-----------------
-代码提示 		Content Assist 		alt+w（改）
-快速导包		Organize Imports 	ctrl+shift+o
-快速修复		Quick Fix			ctrl+1
-单行注释		Toggle Comment 		ctrl+/
-多行注释		Add Block Comment	ctrl+shift+/
-取消多行注释						ctrl+shift+\
-删除行			Delete Line			ctrl+d
-代码格式化		Format				ctrl+shift+f
-
-getter		alt+shift+s打开source，选getter
 
 
 
