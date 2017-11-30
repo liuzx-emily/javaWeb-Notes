@@ -24,6 +24,8 @@
 		代码格式化		Format				ctrl + shift + f
 		变量改名							ctrl + 2,R
 		接收返回值							ctrl + 2,L
+		查看继承树		Quick Hierarchy		ctrl + T
+		查看源码							ctrl + 鼠标悬浮
 
 		getter			alt+shit+s打开source，选getter
 
@@ -41,7 +43,10 @@
 	把项目导入myEclipse：
 		import - general -existing projects into workspace
 
+	JRE System Library是放的时JRE中的类库，是很多编译后的.class文件（不是源文件.java）。在该位置可以查找到平常使用的String类、Random类、Math类等。
 
+	生成文档注释	export - javaDoc
+	生成jar包		export - jar
 
 
 -----------------实体类？-----------------

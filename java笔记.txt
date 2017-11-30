@@ -247,11 +247,11 @@ ArrayList集合是程序中最常见的一种集合，它属于引用数据类�
 
 --------------------------------
 
-
-java不允许多继承，因为有安全问题。
+java不允许多继承，因为有安全问题。用多实现。
 
 
 子类、父类中，出现重名的field、方法时，默认用子类的，想要用父类需要指明super.xxx
+
 
 
 
@@ -264,7 +264,6 @@ java不允许多继承，因为有安全问题。
 1、抽象类和抽象方法都需要被abstract修饰。抽象方法一定要定义在抽象类中。
 2、抽象类不可以new
 3、只有覆盖了抽象类中所有的抽象方法后，其子类才可以创建对象。否则该子类还是一个抽象类。
-之所以继承抽象类，更多的是在思想，是面对共性类型操作会更简单。
 
 4、abstract不可以和哪些关键字共存？	
 1、private：abstract要求子类去实现这个方法，而private使子类根本无法得到父类这个方法。矛盾。
@@ -294,6 +293,49 @@ java不允许多继承，因为有安全问题。
 5 接口的实现类，必须重写接口中的【所有】抽象方法
   如果实现类没有重写所有，那么实现类还是一个抽象类abstract
 
+6 为什么要定义接口，和抽象类相比有什么优势？
+	解决多继承的弊端。将多继承通过多实现完成了。
+	多继承时，当多个父类中有相同功能时，子类调用会产生不确定性。
+	而多实现不会。
+
+7 子类通过继承父类扩展功能，通过继承扩展的功能都是子类应该具备的基础功能。如果子类想要继续扩展其他类中的功能呢？这时通过实现接口来完成。
+  接口的出现避免了单继承的局限性。父类中定义的事物的基本功能。接口中定义的事物的扩展功能。
+
+8 多个接口之间可以使用extends进行继承。
+	interface Fu1{
+		void show1();
+	}
+	interface Fu2{
+		void show2();
+	}
+	interface Zi extends Fu1,Fu2{
+		void show3();
+	}
+
+接口没有构造方法
+
+
+
+
+--------------抽象类&接口------------------
+
+	class 缉毒犬 extends 犬科 implements 缉毒
+
+相同点:
+用于被其他类实现或继承;
+都不能直接new
+都包含抽象方法,其子类都必须覆写这些抽象方法
+
+区别:
+抽象类为部分方法提供实现；接口只能包含抽象方法
+一个类只能继承一个直接父类(可能是抽象类)，却可以实现多个接口
+抽象类是这个事物中应该具备的内容, 继承体系是一种 is a关系
+接口是这个事物中的额外内容,实现体系是一种 like a关系
+
+二者的选用:
+优先选用接口,尽量少用抽象类;
+需要定义子类的行为,又要为子类提供共性功能时才选用抽象类;
+
 
 
 
@@ -310,6 +352,397 @@ java三大特征：继承 + 封装 + 多态
 	体现：Animal a = new Cat();
 	好处：提高了程序的扩展性。
 	弊端：当父类引用指向子类对象时，虽然提高了扩展性，但是只能访问父类中具备的方法，不可以访问子类中特有的方法。
+	在使用a调用方法时，会调用子类Cat重写后的方法。
+
+
+
+----------------多态----------------
+1 field：当子父类中出现同名的成员变量时，多态调用该变量时：
+		编译和运行都参考等号的左边。
+	class Fu {
+		int num = 4;
+	}
+	class Zi extends Fu {
+		int num = 5;
+	}
+	public class Demo {
+		public static void main(String[] args) 	{
+			Fu f = new Zi();
+			System.out.println(f.num);	// 4
+			Zi z = new Zi();
+			System.out.println(z.num);	// 5
+		}
+	}
+
+2 method：当子父类中出现同名的成员方法时，多态调用该方法时：
+		编译看左边，运行看右边。
+	
+	class Fu {
+		int num = 4;
+		void show()	{
+			System.out.println("Fu show num");
+		}
+	}
+	class Zi extends Fu {
+		int num = 5;
+		void show()	{
+			System.out.println("Zi show num");
+		}
+	}
+	class Demo {
+		public static void main(String[] args) 	{
+			Fu f = new Zi();
+			f.show();	// Zi show num
+		}
+	}
+
+
+
+----------------instanceof----------------
+
+	Person p1 = new Student();
+	boolean flag1 = p1 instanceof Student; 	// true
+	boolean flag2 = p1 instanceof Teacher; 	// false
+	boolean flag3 = p1 instanceof Person; 	// true
+
+
+
+----------------多态 转型----------------
+向上转型：
+	Person p = new Student();
+向下转型：
+	Student stu = (Student) p;
+
+什么时候使用upcasting：
+	当不需要面对子类类型时，通过提高扩展性，或者使用父类的功能就能完成相应的操作，如：
+		Animal a = new Dog();
+	    a.eat();
+
+什么时候使用downcasting：
+	当要使用子类特有功能时，如：
+		Dog d = (Dog) a;
+		d.lookHome();
+	弊端：容易发生ClassCastException类型转换异常。在转换之前必须做类型判断，如：
+		if( !a instanceof Dog){…}
+
+
+
+
+----------------构造方法----------------
+1 默认构造方法
+	如果没有写构造方法，在编译时，编译器会自动添加默认的空构造方法
+
+2 一个类中可以有多个构造方法，多个构造方法是以重载的形式存在的
+  构造方法之间的调用，可以通过this关键字来完成。
+  调用其他构造方法的语句必须定义在构造方法的第一行，原因是初始化动作要最先执行。
+
+3 构造方法是可以被private修饰的，作用：其他程序无法创建该类的对象
+
+
+
+
+----------------this super---------------
+1 this：
+	一个构造方法调用另一个构造方法
+	this.field
+
+2 super：
+	在创建子类对象时，父类的构造方法会先执行，因为子类中所有构造方法的第一行有默认的隐式super();语句。
+	当父类中没有空参数构造方法时，子类的构造方法必须有显示的super语句，指定要访问的父类有参数构造方法。
+	
+	如果子类的构造方法第一行写了this调用了子类的其他构造方法，那么super调用父类的语句还有吗？————没有了。
+
+	父类构造方法中是否有隐式的super呢？
+	也是有的。记住：只要是构造方法默认第一行都是super();
+	父类的父类是谁呢？super调用的到底是谁的构造方法呢？
+	Java体系在设计，定义了一个所有对象的父类Object
+
+
+
+
+----------------继承中的构造方法---------------
+
+1 如果我们手动给出了构造方法，编译器不会在给我们提供默认的空参数构造方法
+  如果我们没写任何的构造方法，编译器提供给我们一个空参数构造方法
+
+2 在构造方法中，默认的第一条语句为 super();
+  它是用来访问父类中的空参数构造方法，进行父类成员的初始化操作
+
+3 当父类中没有空参数构造方法的时候，怎么办？
+	a: 通过 super(参数) 访问父类有参数的构造方法
+	b: 通过 this(参数) 访问本类中其他构造方法
+
+4 super(参数) 与 this(参数) 不能同时在构造方法中存在
+
+
+
+
+
+
+----------------final---------------
+final是个修饰符，它可以用来修饰：
+	类
+	类的成员：field method
+	局部变量
+
+1 final修饰的类不可以被继承。但是可以继承其他类。
+
+2 final修饰的方法不可以被覆盖。但父类中没有被final修饰方法，子类覆盖后可以加final。
+
+3 final修饰的变量称为常量，这些变量只能赋值一次。在编译生成.class文件后，该变量变为常量值
+	final int i = 20;
+	i = 30; 			// 报错
+
+  引用类型的变量值为地址，地址值不能更改，但是地址内的对象属性值可以修改。
+	final Person p = new Person();
+	Person p2 = new Person();
+	p = p2; 			// 报错
+	p.name = "小明";	// ok
+
+4 final修饰的成员变量，需要在创建对象前赋值，否则报错。
+	class Demo {
+		//直接赋值
+		final int m = 100;
+		
+		//final修饰的成员变量，需要在创建对象前赋值，否则报错。
+		final int n; 
+		public Demo(){
+			//可以在创建对象时所调用的构造方法中，为变量n赋值
+			n = 2016;
+		}
+	}
+
+
+
+
+
+----------------static---------------
+特点：
+	被static所修饰的成员，会被所有的对象所共享
+	被static所修饰的成员，可以通过类名直接调用	
+		Person.country = "中国";
+		Person.method();
+
+注意事项：
+	static的成员，随着类的加载而加载，优先于对象存在
+	在static方法中，不能使用this super
+	在static方法中，只能调用static的变量、方法
+
+
+使用public static final来定义静态常量。此时变量名用全部大写，多个单词使用下划线连接。
+
+	class Company {
+		public static final String COMPANY_NAME = "SLA";
+	}
+
+	System.out.println(Company.COMPANY_NAME); //打印传智播客
+	
+
+注意：
+	接口中的每个成员变量都默认使用public static final修饰。由于接口没有构造方法，所以必须显示赋值。
+	interface Inter {
+		public static final int COUNT = 100;
+	}
+
+	Inter.COUNT
+
+
+
+
+----------------匿名对象---------------
+1 创建匿名对象直接使用，没有变量名
+
+2 匿名对象在没有指定其引用变量时，只能使用一次
+	new Person().eat(); 	// 创建一个匿名对象，调用eat方法
+	new Person().eat(); 	// 重新创建了一个匿名对象
+
+3 匿名对象可以作为方法的实参、方法返回值：
+
+	public static Person getPerson(){
+		// 匿名对象作为方法返回值
+		return new Person(); 
+	}
+
+	// 匿名对象作为方法的实参
+	Demo.method(new Person());
+
+
+
+
+----------------内部类---------------
+
+1 内部类：在一个类中，定义了一个新类，这个新的类就是内部类
+  内部类分为成员内部类与局部内部类
+
+2 成员内部类
+
+	class Body {
+
+		private boolean life= true;
+
+	    public class Heart {
+			public void jump() {
+		        System.out.println("心脏噗通噗通的跳")
+				System.out.println("生命状态" + life);
+			}
+		}
+
+		public static void main(String[] args) {
+			Body.Heart bh = new Body().new Heart();
+			bh.jump();
+		}
+	}
+
+3 局部内部类
+	class Party {
+
+		public void puffBall(){
+
+			class Ball {
+	            public void puff(){System.out.println("气球膨胀了");}
+			}
+	
+			new Ball().puff();
+
+		}
+	}
+
+		public static void main(String[] args) {
+			Party p = new Party();
+			p.puffBall();
+		}
+	}
+
+4 内部类的实际使用：匿名内部类
+	内部类是为了应对更为复杂的类间关系。查看源代码中会涉及到，而在日常业务中很难遇到
+	最常用到的内部类就是匿名内部类，它是局部内部类的一种。
+
+		public abstract class Person{
+			public abstract void eat();
+		}
+		Person  p = new Person(){
+			public void eat() {
+				System.out.println("eat.....");
+			}
+		};
+		p.eat();
+
+	详见：https://www.cnblogs.com/nerxious/archive/2013/01/25/2876489.html
+
+
+
+
+----------------权限修饰符---------------
+
+					public	protected	默认的	private
+在当前类中			Y		Y			Y		Y
+同一包中的其他类	Y		Y			Y
+不同包中的子类		Y		Y	
+不同包中的其他类	Y
+
+归纳一下：
+	要想仅能在本类中访问：private
+	要想本包中的类都可以访问不加修饰符即可；
+	要想本包中的类与其他包中的子类可以访问：protected
+	要想所有包中的所有类都可以访问：public
+
+易错：
+	不写修饰符的，在其他包中的子类里不能用
+
+注意：如果类用public修饰，则类名必须与文件名相同。一个文件中只能有一个public修饰的类。
+
+
+
+
+----------------protected---------------
+protected：
+	1 同一包中的类可以用
+	2 其他包中的子类可以用，但是只能在子类的里面调用！！
+
+		public class A{
+			protected void func(){}
+		}
+		
+		// 另一个包中：
+		public class B extends A{
+			void func2(){
+				func();				// ok
+				new A().func();		// 报错
+			}
+			public static void main(String[] args){
+				new B().func();		// ok
+				new A().func();		// 报错
+			}
+		}
+
+
+
+
+----------------代码块---------------
+
+1 局部代码块：定义在方法中的，用来限制变量的作用范围
+
+	class Demo{
+		public static void main(String[] args)	{
+			{
+	         	int x = 1;
+	        	System.out.println("普通代码块" + x);
+			}
+			int x = 99;
+			System.out.println("代码块之外" + x);
+		}
+	}
+	结果：
+		普通代码块1
+		代码块之外99
+
+2 构造代码块：定义在类中方法外，用来给对象中的成员初始化赋值
+  特点：
+	优先于构造方法执行，构造代码块用于执行所有对象均需要的初始化动作
+	每创建一个对象均会执行一次构造代码块。
+
+	public class Person {
+		private String name;
+		private int age;
+		
+	     //构造代码块
+		{
+			System.out.println("构造代码块执行了");
+		}
+		Person(){
+			System.out.println("Person无参数的构造函数执行");
+		}
+		Person(int age){
+			this.age = age;
+			System.out.println("Person（age）参数的构造函数执行");
+		}
+	}
+	class PersonDemo{
+		public static void main(String[] args)	{
+			Person p = new Person();
+			Person p1 = new Person(23);
+		}
+	}
+	结果：
+		构造代码块执行了
+		Person无参数的构造函数执行
+		构造代码块执行了
+		Person（age）参数的构造函数执行
+
+3 静态代码块：定义在类中方法外，用来给类的静态成员初始化赋值
+  特点：
+	它优先于主方法执行、优先于构造代码块执行，当以任意形式第一次使用到该类时执行。
+	该类不管创建多少对象，静态代码块只执行一次。
+	可用于给静态变量赋值，用来给类进行初始化。
+
+	public class Person {
+		private String name;
+		private int age;
+	     //静态代码块
+		static{
+			System.out.println("静态代码块执行了");
+		}
+	}
 
 
 
