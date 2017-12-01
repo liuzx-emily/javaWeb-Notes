@@ -47,6 +47,7 @@ int转成char时，需要强制转换，查询编码表
 
 
 
+
 ---------------常量与类型--------------
 100是整数常量，但它是byte、short、int、long中的哪一种呢？
 是int，因为默认是int
@@ -60,6 +61,7 @@ java中默认的浮点类型是double类型
 3.14没有后缀，所以它是double类型
 5.28D为double类型
 1.26F为float类型
+
 
 
 
@@ -86,6 +88,7 @@ boolean类型不能进行任何类型转换！
 
 	byte b=100;
 	b+=1;	// 不报错，相当于b=(byte)b+1;
+
 
 
 
@@ -398,12 +401,14 @@ java三大特征：继承 + 封装 + 多态
 
 
 
+
 ----------------instanceof----------------
 
 	Person p1 = new Student();
 	boolean flag1 = p1 instanceof Student; 	// true
 	boolean flag2 = p1 instanceof Teacher; 	// false
 	boolean flag3 = p1 instanceof Person; 	// true
+
 
 
 
@@ -753,14 +758,14 @@ protected：
 集合框架
  
 集合和数组的区别：
-	1：
-		数组：长度固定
+
+	1： 数组：长度固定
 		集合：长度可变
-	2：
-		数组：可存基本+引用数据类型
+
+	2： 数组：可存基本+引用数据类型
 		集合：只能存引用数据类型
-	3：
-		数组存储的元素必须是同一个数据类型；
+
+	3： 数组存储的元素必须是同一个数据类型；
 		集合存储的对象可以是不同数据类型。
 
 
@@ -773,45 +778,6 @@ Iteraotr
 		|--HashMap
 
 
-
------------------JRE和JDK-----------------
-JRE： Java Runtime Environment
-	包含了java虚拟机，java基础类库
-JDK：Java Development Kit
-	包含了JRE，同时还包含了编译java源码的编译器javac，还包含了很多java程序调试和分析的工具：jconsole，jvisualvm等工具软件，还包含了java程序编写所需的文档和demo例子程序。
-
-需要运行java程序，只需安装JRE就可以了。如果要编写java程序，需要安装JDK。
-
-
-
------------------eclipse和myeclipse-----------------
-1 eclipse：免费 开发工具
-2 myeclipse：收费 插件
-
-
-
-
------------------单元测试junit-----------------
-1 测试内容：类中的方法
-2 junit不是javase的一部分，想要使用需要导入jar包。但是，myeclipse中自带了junit的jar包。
-  junit有不同的版本：3.x 4.x
-3 单元测试写法：
-	在项目下新建source folder，和src同级，起名为junittt（随便起）
-	在junittt中新建一个包，包名需要和"待测试的方法所在类"的包名一致
-
-	@Test：进行单元测试
-	@Ignore：不进行单元测试
-	@Before：在每个方法之前运行
-	@After：在每个方法之后运行
-	
-	public class 类名随便起 {
-		@Test
-		public void 方法名随便起(){
-			// 测试内容
-		}
-	}
-
-4 运行：Run As JUnit Test
 
 
 
@@ -905,7 +871,7 @@ HashMap：最常用的Map实现。只是将一个键和值相对应，并没有�
 
 
 -----------------jdk-----------------
-jdk版本：1.1 1.2 1.3 1.4 5.0
+jdk版本：1.1   1.2   1.3   1.4   5.0（变化很大，所以不叫1.5，叫5.0）
 jdk5.0新特性：
 	泛型
 	枚举
@@ -971,6 +937,8 @@ jdk5.0新特性：
 	泛型只存在于源代码中，编译后就不存在了
 
 
+
+
 -----------------jdk5.0新特性：枚举-----------------
 需要在一定的范围内取值（红绿灯）
 
@@ -1026,6 +994,7 @@ jdk5中扩展了switch语句，它除了可以接受int byte char short之外，
 
 
 
+
 -----------------jdk5.0新特性：静态导入-----------------
 了解即可，不常用。容易出错
 
@@ -1040,6 +1009,7 @@ jdk5中扩展了switch语句，它除了可以接受int byte char short之外，
 			out.println(num);			
 		}
 	}
+
 
 
 
@@ -1069,6 +1039,7 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 
 
 
+
 -----------------jdk5.0新特性：增强for循环-----------------
 为什么要引入增强for？
 	为了替代Iterator。如果实现了Iterator接口，就可以使用增强for循环。增强for的底层实现就是使用Iterator
@@ -1079,6 +1050,7 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 在集合中使用增强for遍历：
 	list set实现了Iterator接口，所以可以使用增强for
 	map没有实现Iterator接口，不可以使用增强for
+
 
 
 
@@ -1163,6 +1135,7 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 
 
 
+
 -----------------java画图-----------------		
 生成验证码：
 	
@@ -1195,3 +1168,275 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+
+
+
+
+-----------------Object类-----------------
+Object类是Java语言中的根类，即所有类的父类。
+
+1 Object中的equals方法：	
+	// 比较的是地址
+	public boolean equals(Object obj) {
+        return (this == obj);
+    }
+
+  子类重写equals方法：
+
+  	public class Person {
+  		
+  		private int id = 0;
+  		
+  		@Override
+  		public boolean equals(Object obj) {
+  			if (obj instanceof Person) {
+  				Person p=(Person) obj;
+  				return this.id==p.id;	// 问题：为什么能取private的p.id？？
+  			}else{
+  				return false;
+  			}
+  		}
+  		
+  	}
+2 Object中的toString方法：返回对象的类型+@+内存地址值
+	
+  在输出语句中，如果写的是对象，那么会默认调用对象的toString方法:
+	System.out.println(p);	// 等价于下面一行
+	System.out.println(p.toString());
+
+  子类重写toString方法：
+  	public class Person {
+  		
+  		private String name;
+  		
+  		Person(String name){
+  			this.name=name;
+  		}
+
+  		@Override
+  		public String toString() {
+  			return "这个人的名字是"+this.name;
+  		}
+  		
+  		public static void main(String[] args) {
+  			Person person=new Person("小红");
+  			System.out.println(person);	// 不需要写person.toString()
+  		}
+  	}
+
+
+
+
+
+-----------------String类-----------------
+Java 程序中的所有字符串字面值（如 "abc" ）都是String类的对象
+	String str="abc";	// abc是String类的对象。str是引用，存的是地址
+
+为什么输出str没有显示地址？
+	————因为String类重写了toString方法
+
+字符串是常量，它们的值在创建之后不能更改，这是什么意思呢？其实就是说一旦这个字符串确定了，那么就会在内存区域中就生成了这个字符串。字符串本身不能改变。
+"abc"这个对象不能改变，但是变量str中的地址是可以改变的。
+	String str="abc";
+	str="def";	// "abc"对象不变。新建了一个String类对象"def"，把它的地址给str
+
+通过使用双引号的方式创建对象与new的方式创建对象，有什么不同呢？
+	String s3 = "abc";
+	String s4 = new String("abc");
+	System.out.println(s3==s4);//false
+	System.out.println(s3.equals(s4));//true,因为String重写了equals方法
+
+	s3创建，在内存中只有一个对象"abc"。这个对象在字符串常量池中
+	s4创建，在内存中有两个对象。一个new的对象在堆中，一个字符串本身对象"abc"在字符串常量池中
+
+length()
+
+substring(int beginindex)
+substring(int beginindex,int endIndex) 包括起，不包括尾。返回新字符串
+
+boolean startsWith(String prefix);
+boolean endsWith(String suffix);
+boolean contains(String s);
+int indexOf(String str);	// 查找第一次出现的索引，没有就-1
+int indexOf(String str,int fromIndex);
+
+char[] toCharArray();	// 转成字符数组
+
+booleans equals(Object anObject);
+booleans equalsIgnoreCase(String anotherString);
+
+String replace(char old,char new);
+String replace(String old,String new);
+String trim() 去除字符串两端空格，中间的不会去除，返回一个新字符串
+String toLowerCase();
+String toUpperCase();
+
+
+
+
+-----------------StringBuilder-----------------
+String占内存，所以StringBuffer
+
+StringBuilder类，也是字符串缓冲区，StringBuilder与它和StringBuffer的有什么不同呢？
+	————此类提供一个与 StringBuffer 兼容的 API，用在字符串缓冲区被单个线程使用的时候（这种情况很普遍）。建议优先采用该类，因为在大多数实现中，它比 StringBuffer 要快。
+
+StringBuffer append(String str)
+StringBuffer insert(int offset,String str)
+StringBuffer deleteCharAt(int index)
+StringBuffer delete(int start,int end)
+StringBuffer replace(int start,int end,String str)
+StringBuffer reverse()
+String substring(int start) 
+String substring(int start,int end) 
+
+
+
+
+-----------------正则-----------------
+String类中正则相关的方法：
+	boolean matches(String regex);
+	String[] split(String regex);
+	String replaceAll(String regex,String replacement);
+
+
+	String s = "Hello12345World6789012";
+	String regex = "\\d";
+	String result = s.replaceAll(regex, "*");	// Hello*****World*******
+
+
+
+
+-----------------Date-----------------
+时间和日期类：java.util.Date
+  
+
+毫秒的0点: 
+   System.currentTimeMillis() 返回long
+   获取当前日期的毫秒值
+   时间原点：1970年1月1日 0:00:00 英国格林威治 毫秒值是0
+	long time = System.currentTimeMillis();
+	System.out.println(time);
+
+重要: 时间和日期的计算,必须依赖毫秒值
+	XXX-XXX-XX = 毫秒
+
+
+	Date date = new Date();		// 当前操作系统中的时间和日期
+
+	/*
+	 * Date类的long参数的构造方法
+	 * 传递毫秒值,将毫秒值转成对应的日期对象
+	 */
+	Date date = new Date(0); 	
+	System.out.println(date);	// Thu Jan 01 08:00:00 CST 1970
+
+	/*
+	 * Date类方法 setTime(long)传递毫秒值
+	 */
+	Date date = new Date();
+	date.setTime(0);
+
+	
+	/*
+	 *   Date类方法 getTime() 返回值long 毫秒值
+	 */
+	Date date = new Date();
+	long time = date.getTime();
+
+
+
+
+-----------------Date转String-----------------
+格式化输出Date:
+
+	对日期格式化的类 java.text.DateFormat 抽象类, 普通方法+抽象方法
+	实际使用是子类 java.text.SimpleDateFormat 可以使用父类普通方法,重写了抽象方法
+
+	/*
+	 * 如何对日期格式化
+	 *  步骤:
+	 *    1. 创建SimpleDateFormat对象
+	 *       在类构造方法中,写入字符串的日期格式 (自己定义)
+	 *    2. SimpleDateFormat调用方法format对日期进行格式化
+	 *         String format(Date date) 传递日期对象,返回字符串
+	 *    日期模式:
+	 *       yyyy    年份
+	 *       MM      月份
+	 *       dd      月中的天数
+	 *       HH      0-23小时
+	 *       mm      分钟
+	 *       ss      秒
+	 */
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH点mm分钟ss秒");
+	String date = sdf.format(new Date());
+	System.out.println(date);
+
+
+
+
+
+-----------------String转Date----------------
+	/*
+	 *  将字符串转成Date对象
+	 *  DateFormat类方法 parse
+	 *  步骤:
+	 *    1. 创建SimpleDateFormat的对象
+	 *       构造方法中,指定日期模式
+	 *    2. 子类对象,调用方法 parse 传递String,返回Date
+	 */
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	Date date = sdf.parse("1995-5-6");
+	System.out.println(date);
+
+
+
+
+-----------------Calendar类----------------
+	/*
+	 *   日历类 java.util.Calendar
+	 *   抽象类,使用他的子类对象
+	 *   
+	 *   Calendar类写了静态方法 getInstance() 直接返回了子类的对象
+	 */
+	Calendar c = Calendar.getInstance();
+	System.out.println(c);
+	
+
+	/*
+	 * int get(int field)
+	 */
+	Calendar c = Calendar.getInstance();
+	// 获取年份
+	int year = c.get(Calendar.YEAR);
+	// 获取月份
+	int month = c.get(Calendar.MONTH) + 1;
+	// 获取天数
+	int day = c.get(Calendar.DAY_OF_MONTH);
+	System.out.println(year + "年" + month + "月" + day + "日");
+
+
+	/*
+	 * set(int field,int value)
+	 * set(int year,int month,int day)
+	 */
+	Calendar c = Calendar.getInstance();
+	// 设置到10月
+	c.set(Calendar.MONTH, 9);
+	// 设置到2019年5月1日
+	c.set(2019, 4, 1);
+
+
+	/*
+	 * add(int field, int value)：进行整数的偏移 
+	 */
+	Calendar c = Calendar.getInstance();
+	// 向后偏移280天
+	c.add(Calendar.DAY_OF_MONTH, 280);
+	
+
+	/*
+	 * getTime() ：把日历对象,转成Date日期对象
+	 */
+	Calendar c = Calendar.getInstance();
+	Date date = c.getTime();
+	
