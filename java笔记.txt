@@ -1,4 +1,8 @@
--------------变量----------------
+
+
+
+
+-----------------变量--------------------【START】
 
 变量是内存中的小容器，用来存储数据。那么计算机内存是怎么存储数据的呢？
 最小信息单元叫“位（bit）”，我们又称之为“比特位”，通常用小写的字母b表示。而计算机最小的存储单元叫“字节（byte）”，通常用大写字母B表示，字节是由连续的8个位组成。
@@ -34,9 +38,6 @@
 ---------------char--------------
 char可以自动转成int类型，会查询编码表，得到整数
 int转成char时，需要强制转换，查询编码表
-
-	System.out.println((int)'a');	// 97
-	System.out.println((int)'z');	// 122
 
 打印a-z：
 	char c='a';
@@ -175,9 +176,9 @@ jdk7.0+：String
 		数据类型			|		默认初始化值
 	byte、short、int、long	|	0
 	float、double			|	0.0
-	char					|	一个空字符（空格），即’\u0000’
+	char					|	一个空格，即’\u0000’
 	boolean					|	false
-	引用数据类型			|	null，表示变量不引用任何对象
+	引用数据类型			|	null
 4 异常：
 	1 索引越界异常 
 		arr[-3]
@@ -229,7 +230,7 @@ System.out.println()就是重载
 
 ---------------ArrayList----------------
 为了保存数目不确定的元素，JDK中提供了一系列特殊的类，这些类可以存储任意类型的元素，并且长度可变，统称为集合。
-ArrayList集合是程序中最常见的一种集合，它属于引用数据类型（类）。在ArrayList内部封装了一个长度可变的数组，当存入的元素超过数组长度时，ArrayList会在内存中分配一个更大的数组来存储这些元素，因此可以将ArrayList集合看作一个长度可变的数组。
+ArrayList集合是程序中最常见的一种集合，它属于引用数据类型中的类。
 
 	ArrayList<String> arr1=new ArrayList<String>();
 	ArrayList<Integer> arr2=new ArrayList<Integer>();
@@ -242,7 +243,7 @@ ArrayList集合是程序中最常见的一种集合，它属于引用数据类�
 不常用方法：
 	boolean add（int index,  Object obj）	将指定元素obj插入到集合中指定的位置
 	Object remve（int index）	从集合中删除指定index处的元素，返回该元素
-	void clear（）	清空集合中所有元素
+	void clear()	清空集合中所有元素
 	Object set（int index, Object obj）	用指定元素obj替代集合中指定位置上的元素
 
 
@@ -269,7 +270,7 @@ java不允许多继承，因为有安全问题。用多实现。
 3、只有覆盖了抽象类中所有的抽象方法后，其子类才可以创建对象。否则该子类还是一个抽象类。
 
 4、abstract不可以和哪些关键字共存？	
-1、private：abstract要求子类去实现这个方法，而private使子类根本无法得到父类这个方法。矛盾。
+1、private
 2、final
 3、static
 
@@ -282,7 +283,7 @@ java不允许多继承，因为有安全问题。用多实现。
 	}
 
 1 是比抽象类更为抽象的”类”。不能new
-2 接口只描述所应该具备的方法，具体的实现由接口的实现类来完成。这样将功能的"定义"与"实现"分离
+2 将功能的"定义"与"实现"分离
 
 3 接口中的方法：
 	只能是public abstract的，可以省略不写
@@ -293,16 +294,14 @@ java不允许多继承，因为有安全问题。用多实现。
   	接口中：int a=1; 		// 等价于public static final int a=1;
   	可以直接：接口.a
 
-5 接口的实现类，必须重写接口中的【所有】抽象方法
-  如果实现类没有重写所有，那么实现类还是一个抽象类abstract
+5 实现类，必须重写接口中的【所有】抽象方法
+  如果没有重写所有，那么实现类还是一个抽象类
 
 6 为什么要定义接口，和抽象类相比有什么优势？
 	解决多继承的弊端。将多继承通过多实现完成了。
-	多继承时，当多个父类中有相同功能时，子类调用会产生不确定性。
-	而多实现不会。
 
-7 子类通过继承父类扩展功能，通过继承扩展的功能都是子类应该具备的基础功能。如果子类想要继续扩展其他类中的功能呢？这时通过实现接口来完成。
-  接口的出现避免了单继承的局限性。父类中定义的事物的基本功能。接口中定义的事物的扩展功能。
+7 父类中定义的事物的基本功能。接口中定义的事物的扩展功能。
+	class 缉毒犬 extends 犬科 implements 缉毒
 
 8 多个接口之间可以使用extends进行继承。
 	interface Fu1{
@@ -317,27 +316,9 @@ java不允许多继承，因为有安全问题。用多实现。
 
 接口没有构造方法
 
-
-
-
---------------抽象类&接口------------------
-
-	class 缉毒犬 extends 犬科 implements 缉毒
-
-相同点:
-用于被其他类实现或继承;
-都不能直接new
-都包含抽象方法,其子类都必须覆写这些抽象方法
-
-区别:
-抽象类为部分方法提供实现；接口只能包含抽象方法
-一个类只能继承一个直接父类(可能是抽象类)，却可以实现多个接口
-抽象类是这个事物中应该具备的内容, 继承体系是一种 is a关系
-接口是这个事物中的额外内容,实现体系是一种 like a关系
-
-二者的选用:
+抽象类&接口的选用:
 优先选用接口,尽量少用抽象类;
-需要定义子类的行为,又要为子类提供共性功能时才选用抽象类;
+需要为子类提供共性功能时才选用抽象类;
 
 
 
@@ -345,23 +326,15 @@ java不允许多继承，因为有安全问题。用多实现。
 --------------------------------
 java三大特征：继承 + 封装 + 多态
 
-继承：OOP最显著的特性。好处：
-	1：提高了代码的复用性。
-	2：让类与类之间产生了关系，提供了另一个特征多态的前提。
-
-封装：隐藏内部实现(private)，对外提供借口
-
 多态：
 	体现：Animal a = new Cat();
 	好处：提高了程序的扩展性。
-	弊端：当父类引用指向子类对象时，虽然提高了扩展性，但是只能访问父类中具备的方法，不可以访问子类中特有的方法。
-	在使用a调用方法时，会调用子类Cat重写后的方法。
+	弊端：不可以访问子类中特有的方法。
 
 
 
 ----------------多态----------------
-1 field：当子父类中出现同名的成员变量时，多态调用该变量时：
-		编译和运行都参考等号的左边。
+1 field：当子父类中出现同名的成员变量时，多态调用该变量时
 	class Fu {
 		int num = 4;
 	}
@@ -418,8 +391,7 @@ java三大特征：继承 + 封装 + 多态
 向下转型：
 	Student stu = (Student) p;
 
-什么时候使用upcasting：
-	当不需要面对子类类型时，通过提高扩展性，或者使用父类的功能就能完成相应的操作，如：
+什么时候使用upcasting：使用父类的功能就能完成相应的操作，如：
 		Animal a = new Dog();
 	    a.eat();
 
@@ -428,7 +400,7 @@ java三大特征：继承 + 封装 + 多态
 		Dog d = (Dog) a;
 		d.lookHome();
 	弊端：容易发生ClassCastException类型转换异常。在转换之前必须做类型判断，如：
-		if( !a instanceof Dog){…}
+		if( !a instanceof Dog)
 
 
 
@@ -439,7 +411,7 @@ java三大特征：继承 + 封装 + 多态
 
 2 一个类中可以有多个构造方法，多个构造方法是以重载的形式存在的
   构造方法之间的调用，可以通过this关键字来完成。
-  调用其他构造方法的语句必须定义在构造方法的第一行，原因是初始化动作要最先执行。
+  调用其他构造方法的语句必须定义在构造方法的第一行。
 
 3 构造方法是可以被private修饰的，作用：其他程序无法创建该类的对象
 
@@ -453,29 +425,28 @@ java三大特征：继承 + 封装 + 多态
 
 2 super：
 	在创建子类对象时，父类的构造方法会先执行，因为子类中所有构造方法的第一行有默认的隐式super();语句。
-	当父类中没有空参数构造方法时，子类的构造方法必须有显示的super语句，指定要访问的父类有参数构造方法。
+	当父类中没有空参数构造方法时，子类的构造方法必须有显示的super语句。
 	
 	如果子类的构造方法第一行写了this调用了子类的其他构造方法，那么super调用父类的语句还有吗？————没有了。
 
 	父类构造方法中是否有隐式的super呢？
 	也是有的。记住：只要是构造方法默认第一行都是super();
-	父类的父类是谁呢？super调用的到底是谁的构造方法呢？
-	Java体系在设计，定义了一个所有对象的父类Object
+	父类的父类是谁呢？super调用的到底是谁的构造方法呢？————Object类
 
 
 
 
 ----------------继承中的构造方法---------------
 
-1 如果我们手动给出了构造方法，编译器不会在给我们提供默认的空参数构造方法
-  如果我们没写任何的构造方法，编译器提供给我们一个空参数构造方法
+1 如果我们没写任何的构造方法，编译器提供给我们一个空参数构造方法
+  如果我们手动给出了构造方法，编译器不会再给我们提供默认的空参数构造方法
 
 2 在构造方法中，默认的第一条语句为 super();
   它是用来访问父类中的空参数构造方法，进行父类成员的初始化操作
 
 3 当父类中没有空参数构造方法的时候，怎么办？
 	a: 通过 super(参数) 访问父类有参数的构造方法
-	b: 通过 this(参数) 访问本类中其他构造方法
+	b: 通过 this(参数) 访问本类中其他构造方法，其他构造方法需要调用了有参super
 
 4 super(参数) 与 this(参数) 不能同时在构造方法中存在
 
@@ -523,10 +494,8 @@ final是个修饰符，它可以用来修饰：
 
 ----------------static---------------
 特点：
-	被static所修饰的成员，会被所有的对象所共享
-	被static所修饰的成员，可以通过类名直接调用	
-		Person.country = "中国";
-		Person.method();
+	被所有的对象所共享
+	可以通过类名直接调用
 
 注意事项：
 	static的成员，随着类的加载而加载，优先于对象存在
@@ -554,26 +523,6 @@ final是个修饰符，它可以用来修饰：
 
 
 
-----------------匿名对象---------------
-1 创建匿名对象直接使用，没有变量名
-
-2 匿名对象在没有指定其引用变量时，只能使用一次
-	new Person().eat(); 	// 创建一个匿名对象，调用eat方法
-	new Person().eat(); 	// 重新创建了一个匿名对象
-
-3 匿名对象可以作为方法的实参、方法返回值：
-
-	public static Person getPerson(){
-		// 匿名对象作为方法返回值
-		return new Person(); 
-	}
-
-	// 匿名对象作为方法的实参
-	Demo.method(new Person());
-
-
-
-
 ----------------内部类---------------
 
 1 内部类：在一个类中，定义了一个新类，这个新的类就是内部类
@@ -582,16 +531,12 @@ final是个修饰符，它可以用来修饰：
 2 成员内部类
 
 	class Body {
-
 		private boolean life= true;
-
 	    public class Heart {
 			public void jump() {
-		        System.out.println("心脏噗通噗通的跳")
 				System.out.println("生命状态" + life);
 			}
 		}
-
 		public static void main(String[] args) {
 			Body.Heart bh = new Body().new Heart();
 			bh.jump();
@@ -600,18 +545,12 @@ final是个修饰符，它可以用来修饰：
 
 3 局部内部类
 	class Party {
-
 		public void puffBall(){
-
 			class Ball {
 	            public void puff(){System.out.println("气球膨胀了");}
-			}
-	
+			}	
 			new Ball().puff();
-
 		}
-	}
-
 		public static void main(String[] args) {
 			Party p = new Party();
 			p.puffBall();
@@ -681,119 +620,29 @@ protected：
 		}
 
 
-
-
-----------------代码块---------------
-
-1 局部代码块：定义在方法中的，用来限制变量的作用范围
-
-	class Demo{
-		public static void main(String[] args)	{
-			{
-	         	int x = 1;
-	        	System.out.println("普通代码块" + x);
-			}
-			int x = 99;
-			System.out.println("代码块之外" + x);
-		}
-	}
-	结果：
-		普通代码块1
-		代码块之外99
-
-2 构造代码块：定义在类中方法外，用来给对象中的成员初始化赋值
-  特点：
-	优先于构造方法执行，构造代码块用于执行所有对象均需要的初始化动作
-	每创建一个对象均会执行一次构造代码块。
-
-	public class Person {
-		private String name;
-		private int age;
-		
-	     //构造代码块
-		{
-			System.out.println("构造代码块执行了");
-		}
-		Person(){
-			System.out.println("Person无参数的构造函数执行");
-		}
-		Person(int age){
-			this.age = age;
-			System.out.println("Person（age）参数的构造函数执行");
-		}
-	}
-	class PersonDemo{
-		public static void main(String[] args)	{
-			Person p = new Person();
-			Person p1 = new Person(23);
-		}
-	}
-	结果：
-		构造代码块执行了
-		Person无参数的构造函数执行
-		构造代码块执行了
-		Person（age）参数的构造函数执行
-
-3 静态代码块：定义在类中方法外，用来给类的静态成员初始化赋值
-  特点：
-	它优先于主方法执行、优先于构造代码块执行，当以任意形式第一次使用到该类时执行。
-	该类不管创建多少对象，静态代码块只执行一次。
-	可用于给静态变量赋值，用来给类进行初始化。
-
-	public class Person {
-		private String name;
-		private int age;
-	     //静态代码块
-		static{
-			System.out.println("静态代码块执行了");
-		}
-	}
-
-
-
-
 --------------------------------
-数组：int[] arr={1,3,5};
-
-集合框架
- 
 集合和数组的区别：
 
 	1： 数组：长度固定
 		集合：长度可变
 
-	2： 数组：可存基本+引用数据类型
-		集合：只能存引用数据类型
+	2： 数组：基本、引用都能存
+		集合：只能存引用
 
 	3： 数组存储的元素必须是同一个数据类型；
 		集合存储的对象可以是不同数据类型。
 
 
-Iteraotr
-	|--Collection：	
-		|--Set：无序，不可重复。
-	    |--List：有序，可重复
-		    |--ArrayList
-	|--Map：
-		|--HashMap
-
-
-
-
 
 -----------------list集合-----------------
 list：
-	1 ArrayList：最有用的List集合实现。由一个整形数字或数组存储了集合的大小（数组中第一个没有使用的元素）。像所有的List集合一样，ArrayList可以在必要的时候扩展它的大小。ArrayList访问元素的时间开销固定。在尾部添加元素成本低（为常数复杂度），而在头部添加元素成本很高（线性复杂度）。这是由ArrayList的实现原理——所有的元素的从角标为0开始一个接着一个排列造成的。也就是说，从要插入的元素位置往后，每个元素都要向后移动一个位置。
+	1 ArrayList：最有用的List集合实现。由一个整形数字或数组存储了集合的大小（数组中第一个没有使用的元素）。像所有的List集合一样，ArrayList可以在必要的时候扩展它的大小。ArrayList访问元素的时间开销固定。在尾部添加元素成本低，而在头部添加元素成本很高。
 	2 linkedList：每一个节点都保存着上一个节点和下一个节点的指针。这就意味着数据的存取和更新具有线性复杂度（这也是一个最佳化的实现，每次操作都不会遍历数组一半以上，操作成本最高的元素就是数组中间的那个）。
-	3 Vector：一个带有线程同步方法的ArrayList版本，现在已经被ArrayList代替了
 
 例子：
 	List<String> list = new ArrayList<String>();
-	// 添加：add()
-	list.add("aaa");
-	list.add("bbb");
-	// 取：get(index)
-	System.out.println(list.get(1));
+	add()
+	get()
 
 
 遍历方法：
@@ -843,10 +692,9 @@ list：
 HashMap：最常用的Map实现。只是将一个键和值相对应，并没有其他的功能。
 
 	Map<String,Integer> map = new HashMap<String,Integer>();
-	map.put("a",1);
-	map.put("b",2);
-	map.put("c",3);
-	System.out.println(map.get("a"));
+	
+	put()
+	get()
 
 遍历方法：
 	1 获取所有的key，通过key得到value
@@ -883,7 +731,7 @@ jdk5.0新特性：
 
 
 -----------------jdk5.0新特性：泛型-----------------
-泛型里面不能写基本数据类型，要写对应的包装类
+泛型里面不能写基本数据类型，要写对应的包装类（因为集合中只能存引用，不能存基本）
 	byte		Byte
 	short		Short
 	int 		Integer
@@ -946,41 +794,9 @@ jdk5.0新特性：
 枚举类中声明的每一个枚举值，都是枚举类的一个实例对象。
 与java中的普通类一样，在声明枚举类时，也可以声明属性、方法和构造函数，但构造函数必须是private的。
 枚举类可以实现接口、继承抽象类。
-jdk5中扩展了switch语句，它除了可以接受int byte char short之外，还可以接收一个枚举类型。
+jdk5中扩展了switch语句，它除了可以接受 byte short char int之外，还可以接收枚举类型。
 
-	public class MeiJu {
-		public static void main(String[] args) {		
-			Color color=Color.GREEN;
-		}
-	}
-	enum Color{
-		RED,GREEN,YELLOW;
-	}
-	class Color2{
-		public static final Color2 RED=new Color2();
-		public static final Color2 GREEN=new Color2();
-		public static final Color2 YELLOW=new Color2();
-	}
-	(枚举类Color是Color2的简写形式)	
-	------------------------------
-	public class MeiJu {
-		public static void main(String[] args) {		
-			Color color=Color.GREEN;
-			color.show();
-		}
-	}
-	enum Color{
-		RED("red",1),GREEN("green",2),YELLOW("yellow",3);
-		private String name;
-		private Integer level;
-		private Color(String name,Integer level){
-			this.name=name;
-			this.level=level;
-		}
-		public void show(){
-			System.out.println("颜色："+this.name+"；重要级别："+this.level);
-		}
-	}
+	http://blog.csdn.net/qq_27093465/article/details/52180865
 
 常用方法：
 	color.name()：返回枚举的名称
@@ -989,8 +805,6 @@ jdk5中扩展了switch语句，它除了可以接受int byte char short之外，
 还有两个方法不在API里面，但是编译的时候会生成：
 	Color.valueof(String name)：返回枚举对象
 	Color.values()：返回所有枚举对象数组
-
-练习：枚举对象、枚举对象下标、枚举对象名称之间的转换
 
 
 
@@ -1034,8 +848,8 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 	private static void doo(Integer i){
 		System.out.println("Integer");
 	}
-	输出结果：double【易错】
-	分析：jdk1.4-中肯定是double。jdk1.5+虽然有自动拆装箱，但是为了保证向下兼容，所以还是会double
+	输出结果：double
+	分析：jdk1.4-中肯定是double。jdk1.5+虽然有自动拆装箱，但是为了保证向下兼容，所以还是double
 
 
 
@@ -1085,20 +899,17 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 反射的原理：
 	首先需要把java文件保存到本地硬盘 .java
 	编译：.java -> .class文件
-	使用jvm，把class文件通过类加载到内存中
-	class文件在内存中使用Class类表示
+	使用jvm，把class文件通过类加载到内存中。class文件在内存中使用Class类表示
 
 	当使用反射的时候，首先需要获取到Class类。得到了这个类之后，就可以得到class文件里面的所有内容：属性、构造方法、普通方法
 	属性通过类Field来表示
 	构造方法通过类Constructor来表示
 	普通方法通过类Method来表示
 
-获取Class类的三种方法：
-	Class c1=Person.class;
-	Class c2=new Person("emily").getClass();
-	Class c3=Class.forName("emily.Person");	//最常用
+获取Class类的最常用方法：
+	Class c3=Class.forName("emily.Person");
 
-[插播：不用new，创建实例对象的方法：]
+[不用new，创建实例对象的方法：]
 	Class c1=Class.forName("emily.Person");
 	Person p1=(Person)c1.newInstance();
 
@@ -1121,17 +932,16 @@ jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行
 	Field f2=c1.getDeclaredField("age");
 	f2.setAccessible(true);
 	f2.set(p1, 37);
-	p1.show();
 	
 	// 操作普通方法
 	Method m1=c1.getDeclaredMethod("setAge",Integer.class);
-	// m1.setAccessible(true);
+	m1.setAccessible(true);
 	m1.invoke(p2, -200);
 	p2.show();
 	
 	// 操作static的属性、方法：对象的位置写null
-	// f3.set(null 37);
-	// m3.invoke(null, -200);
+	f3.set(null,37);
+	m3.invoke(null, -200);
 
 
 
@@ -1198,6 +1008,7 @@ Object类是Java语言中的根类，即所有类的父类。
   		}
   		
   	}
+
 2 Object中的toString方法：返回对象的类型+@+内存地址值
 	
   在输出语句中，如果写的是对象，那么会默认调用对象的toString方法:
@@ -1230,12 +1041,12 @@ Object类是Java语言中的根类，即所有类的父类。
 
 -----------------String类-----------------
 Java 程序中的所有字符串字面值（如 "abc" ）都是String类的对象
-	String str="abc";	// abc是String类的对象。str是引用，存的是地址
+	String str="abc";	// "abc"是String类的对象。str是引用，存的是地址
 
 为什么输出str没有显示地址？
 	————因为String类重写了toString方法
 
-字符串是常量，它们的值在创建之后不能更改，这是什么意思呢？其实就是说一旦这个字符串确定了，那么就会在内存区域中就生成了这个字符串。字符串本身不能改变。
+字符串的值在创建之后不能更改。就是说一旦这个字符串确定了，那么在内存区域中就生成了这个字符串，字符串本身不能改变。
 "abc"这个对象不能改变，但是变量str中的地址是可以改变的。
 	String str="abc";
 	str="def";	// "abc"对象不变。新建了一个String类对象"def"，把它的地址给str
@@ -1243,8 +1054,8 @@ Java 程序中的所有字符串字面值（如 "abc" ）都是String类的对�
 通过使用双引号的方式创建对象与new的方式创建对象，有什么不同呢？
 	String s3 = "abc";
 	String s4 = new String("abc");
-	System.out.println(s3==s4);//false
-	System.out.println(s3.equals(s4));//true,因为String重写了equals方法
+	System.out.println(s3==s4); //false
+	System.out.println(s3.equals(s4)); //true,因为String重写了equals方法
 
 	s3创建，在内存中只有一个对象"abc"。这个对象在字符串常量池中
 	s4创建，在内存中有两个对象。一个new的对象在堆中，一个字符串本身对象"abc"在字符串常量池中
@@ -1275,9 +1086,9 @@ String toUpperCase();
 
 
 -----------------StringBuilder-----------------
-String占内存，所以StringBuffer
+String浪费内存，所以StringBuffer
 
-StringBuilder类，也是字符串缓冲区，StringBuilder与它和StringBuffer的有什么不同呢？
+StringBuilder类，也是字符串缓冲区，它和StringBuffer有什么不同呢？
 	————此类提供一个与 StringBuffer 兼容的 API，用在字符串缓冲区被单个线程使用的时候（这种情况很普遍）。建议优先采用该类，因为在大多数实现中，它比 StringBuffer 要快。
 
 StringBuffer append(String str)
@@ -1307,8 +1118,7 @@ String类中正则相关的方法：
 
 
 -----------------Date-----------------
-时间和日期类：java.util.Date
-  
+时间和日期类：java.util.Date  
 
 毫秒的0点: 
    System.currentTimeMillis() 返回long
@@ -1377,12 +1187,7 @@ String类中正则相关的方法：
 
 -----------------String转Date----------------
 	/*
-	 *  将字符串转成Date对象
 	 *  DateFormat类方法 parse
-	 *  步骤:
-	 *    1. 创建SimpleDateFormat的对象
-	 *       构造方法中,指定日期模式
-	 *    2. 子类对象,调用方法 parse 传递String,返回Date
 	 */
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	Date date = sdf.parse("1995-5-6");
@@ -1396,7 +1201,7 @@ String类中正则相关的方法：
 	 *   日历类 java.util.Calendar
 	 *   抽象类,使用他的子类对象
 	 *   
-	 *   Calendar类写了静态方法 getInstance() 直接返回了子类的对象
+	 *   Calendar类的静态方法 getInstance() 直接返回子类对象
 	 */
 	Calendar c = Calendar.getInstance();
 	System.out.println(c);
@@ -1405,7 +1210,6 @@ String类中正则相关的方法：
 	/*
 	 * int get(int field)
 	 */
-	Calendar c = Calendar.getInstance();
 	// 获取年份
 	int year = c.get(Calendar.YEAR);
 	// 获取月份
@@ -1419,7 +1223,6 @@ String类中正则相关的方法：
 	 * set(int field,int value)
 	 * set(int year,int month,int day)
 	 */
-	Calendar c = Calendar.getInstance();
 	// 设置到10月
 	c.set(Calendar.MONTH, 9);
 	// 设置到2019年5月1日
@@ -1429,7 +1232,6 @@ String类中正则相关的方法：
 	/*
 	 * add(int field, int value)：进行整数的偏移 
 	 */
-	Calendar c = Calendar.getInstance();
 	// 向后偏移280天
 	c.add(Calendar.DAY_OF_MONTH, 280);
 	
@@ -1437,6 +1239,16 @@ String类中正则相关的方法：
 	/*
 	 * getTime() ：把日历对象,转成Date日期对象
 	 */
-	Calendar c = Calendar.getInstance();
 	Date date = c.getTime();
 	
+
+
+
+-----------------空集合----------------
+Collections.emptyList()、emptySet()、emptyMap()
+
+如果你想new一个空List，而这个List以后也不会再添加元素，那么就用 Collections.emptyList()。
+new ArrayList() 或者 new LinkedList() 在创建的时候有会有初始大小，浪费内存
+
+注意的地方：
+这个空的集合是不能调用.add()添加元素的，会直接报异常。因为源码就是这么写的：直接抛异常。

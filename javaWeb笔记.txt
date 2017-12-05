@@ -1,139 +1,25 @@
---------------------------------
-	小tip
-1 强转String：
-	(String)
-	.toString()：可以把时间戳转成时间
-
-2 判断String是否相同，不能用==，用S1.equals(S2)
-
-3 Object是顶级父类
-
-4 js中的[{},{}]  <-->  java中的 List<Map<String,Object>>
-
-5 myEclipse：
-	快捷键：
-		代码补全 		Content Assist 		alt + w（改）
-		快速导\删包		Organize Imports 	ctrl + shift + o
-		移动当前行		Move Lines Up/Down 	ctrl + shift + 上下键头（改） 
-		复制当前行		Copy Lines			ctrl + shift + d（改）
-		删除当前行  	Delete Line 		ctrl + shift + k（改）
-		快速修复		Quick Fix			ctrl + 1
-		单行注释		Toggle Comment 		ctrl + /
-		多行注释		Add Block Comment	ctrl + shift + /
-		取消多行注释						ctrl + shift + \
-		代码格式化		Format				ctrl + shift + f
-		变量改名							ctrl + 2,R
-		接收返回值							ctrl + 2,L
-		查看继承树		Quick Hierarchy		ctrl + T
-		查看源码							ctrl + 鼠标悬浮
-
-		getter			alt+shit+s打开source，选getter
-
-	WEB-INF > lib中的所有jar包，右键 > build path > add to ..
-
-	配置是跟着工作空间走的：
-		General -> workspace -> utf-8
-		General -> editors -> associations -> jsp -> myEclipse jsp editor
-		搜索jsp -> utf-8
-		java -> Installed JREs -> 添加
-		tomcat
-		取出MyEclipse自带tomcat
-		General -> Startup and Shutdown -> MyEclipse Derby
-
-	把项目导入myEclipse：
-		import - general -existing projects into workspace
-
-	JRE System Library是放的时JRE中的类库，是很多编译后的.class文件（不是源文件.java）。在该位置可以查找到平常使用的String类、Random类、Math类等。
-
-	生成文档注释	export - javaDoc
-	生成jar包		export - jar
-
-
------------------实体类？-----------------
-为什么要建实体类？
-	为了规范输入（实体类中没有的属性，输入了也没有用）
-为什么不建实体类？
-	懒得写
-	实体类中限制了变量类型，如果跟数据库中的变量类型不一致，需要转换的时候，容易出问题。
-
-
-	
-
------------------前后交互-----------------
-前 -> 后传输方式：
-	1 form表单
-		name很重要
-		其他参数可以放到<input type="hidden">中传
-		后端返回的时候，直接返回新的url地址：
-			response.sendRedirect("新地址?username=emily");
-		前端不用额外处理，直接跳转
-
-	2 ajax
-		后端返回的时候，直接返回参数：
-			response.setContentType("application/json;charset=UTF-8");
-			PrintWriter out = response.getWriter();
-			out.print(result);
-		前端接到参数，再进行处理
-
-无论使用get还是post，都是只在传输过程中有差别（一个在url，一个在请求体）。
-对于后端的servlet，它接收数据时没有区别，都是用：
-	request.setCharacterEncoding("utf-8");
-	String username = request.getParameter("username");
-
-
-
-
------------------web资源 tomcat-----------------
-web资源：
-	静态资源：html
-	动态资源：jsp servlet（浏览器请求动态资源时，服务器需要先把动态资源转换为静态资源html，再返回给浏览器）
-
-
-tomcat是"服务器"+"jsp/servlet容器"
-tomcat的默认端口是8080，如果想要修改，去server.xml中修改
-tomcat项目放在webapps中，每个项目必须有：
-	WEB-INF
-		--web.xml
-		--classes/
-		--lib/
-
 
 
 -----------------servlet-----------------
-servlet是javaWeb的三大组件之一，它属于动态资源。服务器会把接收到的请求交给Servlet来处理，在servlet中通常需要：
-	接收请求数据
-	处理请求
-	完成响应
+servlet是javaWeb的三大组件之一，它属于动态资源。服务器会把接收到的请求交给Servlet来处理
 
 每个servlet都是唯一的，它们的功能都不同。
+
+servlet类由我们自己写，但是对象由服务器来创建，并且由服务器来调用相应的方法。servlet对象默认是在第一次接到请求后创建，而不是服务器开启后立刻就创建
 
 servlet特性：
 	单例，一个类只有一个对象
 	线程不安全，速度快
 
-servlet类由我们自己写，但是对象由服务器来创建，并且由服务器来调用相应的方法。servlet对象是在第一次接到请求后创建，二不是服务器开启后立刻就创建
-
-Servlet接口
-	--GenericServlet类
-		--HttpServlet类
-实现servlet有三种方式，最常用的是：
-	继承javax.servlet.http.HttpServlet类
+Servlet接口 - GenericServlet类 - HttpServlet类
+实现servlet最常用的方式是：继承javax.servlet.http.HttpServlet类
 
 
 
 -----------------如何让浏览器访问sevlet-----------------
-1 给servlet指定一个路径
-2 浏览器访问这个路径（在web.xml中配置）
+在web.xml中配置：
 	<servlet>
 		<servlet-name>XXX</servlet-name>
-		<init-param>
-	    	<param-name>p1</param-name>
-	    	<param-value>v1</param-value>
-	   </init-param>
-		<init-param>
-	    	<param-name>p2</param-name>
-	    	<param-value>v2</param-value>
-	   </init-param>
 		<servlet-class>servlet类的路径</servlet-class>
 	</servlet>
 
@@ -145,7 +31,6 @@ Servlet接口
 	servlet-name：名字，可以随便起
 	servlet-class:servlet类的qualified name
 	url-pattern:在浏览器中输入的路径，可以随便起
-	init-param:初始化参数
 
 
 
@@ -359,7 +244,7 @@ html - head中的meta标签可以模拟响应头
 
 响应体：通常是html，也可以是图片
 response的两个流：不能同时使用，会报错
-	ServletOutputStream：用来向客户端发送字节数据。（万能的，什么都能发，文字、图片）
+	ServletOutputStream：用来向客户端发送字节数据。（什么都能发，文字、图片）
 		String txt="hello";
 		byte[] bytes=txt.getBytes();
 		ServletOutputStream stream=response.getOutputStream();
@@ -444,21 +329,16 @@ servlet中有三大域对象：request session application，都有下面三个�
 
 -----------------编码-----------------
 1 响应编码
-	在使用response.getWriter()之前，需要先设置编码（因为默认iso，不支持中文）
-		response.setCharacterEncoding("utf-8");	// 服务器用utf-8编码【1】
-	但是浏览器不知道我们的数据用什么编码，一般浏览器会默认把数据当作gbk，所以用utf-8发、gbk接，还是会乱码。
-	所以要把我们使用的编码告诉浏览器，设置Content-Type响应头。
-		response.setHeader("Content-Type","text/html;charset=utf-8");
-		上面一句不仅能告诉浏览器自己用utf-8，而且自己真的会用utf-8，所以可以不再写【1】
-	设置Content-Type还有一个便捷方法：		
-		response.setContentType("text/html;charset=utf-8");【以后都这么设置response的编码】
+	response.setContentType("text/html;charset=utf-8");
+	这一句不仅规定传给浏览器的时候使用utf-8编码；而且告诉浏览器需要用utf-8来解码
+	是下面这句的简写方式：response.setHeader("Content-Type","text/html;charset=utf-8");
 
 2 请求编码
 	客户端传来的参数是什么编码？
-		在地址栏中直接输入参数（gbk）[这种情况就让它乱吧，没辙]
-		在页面中点击（如果你的页面是utf-8，那么你传递的参数就是utf-8）
+		在地址栏中直接输入参数（gbk）[让它乱吧，没辙]
+		在页面中点击（如果页面是utf-8，那么传递的参数就是utf-8）
 	tomcat默认使用iso来处理请求参数，会乱码
- 		post：只需要在获取参数之前，request.setCharacterEncoding("utf-8");【以后都这么设置request的编码】
+ 		post：只需要在获取参数之前，request.setCharacterEncoding("utf-8");
  		get：比较麻烦
  			String name=request.getParameter("name");
  			byte[] bytes=name.getBytes("ISO-8859-1");
@@ -673,3 +553,91 @@ web.xml中配置session的最大不活动时间：15min
 	4 判断验证码输入：
 		取session不能在前台（那样不安全）
 		所以要在后台判断
+
+
+---------------myEclipse-----------------【START】
+快捷键：
+	代码补全 		Content Assist 		alt + w（改）
+	快速导\删包		Organize Imports 	ctrl + shift + o
+	移动当前行		Move Lines Up/Down 	ctrl + shift + 上下键头（改） 
+	复制当前行		Copy Lines			ctrl + shift + d（改）
+	删除当前行  	Delete Line 		ctrl + shift + k（改）
+	快速修复		Quick Fix			ctrl + 1
+	单行注释		Toggle Comment 		ctrl + /
+	多行注释		Add Block Comment	ctrl + shift + /
+	取消多行注释						ctrl + shift + \
+	代码格式化		Format				ctrl + shift + f
+	变量改名							ctrl + 2,R
+	接收返回值							ctrl + 2,L
+	查看继承树		Quick Hierarchy		ctrl + T
+	查看源码							ctrl + 鼠标悬浮
+
+	getter			alt+shit+s打开source，选getter
+
+WEB-INF > lib中的所有jar包，右键 > build path > add to ..
+
+配置是跟着工作空间走的：
+	General -> workspace -> utf-8
+	General -> editors -> associations -> jsp -> myEclipse jsp editor
+	搜索jsp -> utf-8
+	java -> Installed JREs -> 添加
+	tomcat
+	取出MyEclipse自带tomcat
+	General -> Startup and Shutdown -> MyEclipse Derby
+
+把项目导入myEclipse：
+	import - general -existing projects into workspace
+
+JRE System Library是放的时JRE中的类库，是很多编译后的.class文件（不是源文件.java）。在该位置可以查找到平常使用的String类、Random类、Math类等。
+
+生成文档注释	export - javaDoc
+生成jar包		export - jar
+
+
+-----------------实体类？-----------------
+为什么要建实体类？
+	规范输入
+为什么不建实体类？
+	增加代码量
+	实体类中规定了变量类型，如果跟数据库中的变量类型不一致，需要转换的时候，容易出问题。
+
+
+	
+
+-----------------前后交互-----------------
+前 -> 后传输方式：
+	1 form表单
+		name很重要
+		其他参数可以放到<input type="hidden">中传
+		后端返回的时候，直接返回新的url地址：
+			response.sendRedirect("新地址?username=emily");
+		前端不用额外处理，直接跳转
+
+	2 ajax
+		后端返回的时候，直接返回参数：
+			response.setContentType("application/json;charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			out.print(result);
+		前端接到参数，再进行处理
+
+无论使用get还是post，都是只在传输过程中有差别（一个在url，一个在请求体）。
+对于后端的servlet，它接收数据时没有区别，都是用：
+	request.setCharacterEncoding("utf-8");
+	String username = request.getParameter("username");
+
+
+
+
+-----------------web资源 tomcat-----------------
+web资源：
+	静态资源：html
+	动态资源：jsp servlet（浏览器请求动态资源时，服务器需要先把动态资源转换为静态资源html，再返回给浏览器）
+
+tomcat是"服务器"+"jsp/servlet容器"
+tomcat的默认端口是8080，如果想要修改，去server.xml中修改
+tomcat项目放在webapps中，每个项目必须有：
+	WEB-INF
+		--web.xml
+		--classes/
+		--lib/
+
