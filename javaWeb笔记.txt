@@ -1,560 +1,5 @@
 
 
------------------servlet-----------------
-servlet是javaWeb的三大组件之一，它属于动态资源。服务器会把接收到的请求交给Servlet来处理
-
-每个servlet都是唯一的，它们的功能都不同。
-
-servlet类由我们自己写，但是对象由服务器来创建，并且由服务器来调用相应的方法。servlet对象默认是在第一次接到请求后创建，而不是服务器开启后立刻就创建
-
-servlet特性：
-	单例，一个类只有一个对象
-	线程不安全，速度快
-
-Servlet接口 - GenericServlet类 - HttpServlet类
-实现servlet最常用的方式是：继承javax.servlet.http.HttpServlet类
-
-
-
------------------如何让浏览器访问sevlet-----------------
-在web.xml中配置：
-	<servlet>
-		<servlet-name>XXX</servlet-name>
-		<servlet-class>servlet类的路径</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>XXX</servlet-name>
-		<url-pattern>/aaa/bbb/servlet</url-pattern>
-	</servlet-mapping>
-
-	servlet-name：名字，可以随便起
-	servlet-class:servlet类的qualified name
-	url-pattern:在浏览器中输入的路径，可以随便起
-
-
-
------------------Servlet接口-----------------	
-Servlet接口中有五个函数待实现：
-	init：【生命周期方法】在servlet对象创建之后立刻执行，而且只执行一次
-		参数：ServletConfig servletConfig
-	service：【生命周期方法】每次处理请求，都是调用这个方法，会被调用多次
-		参数：ServletRequest request
-			  ServletResponse response
-	destroy：【生命周期方法】在servlet对象被销毁之前调用，而且只会被调用一次（不是自杀，是留遗言）
-	getServletInfo：获取servlet的信息
-	getServletConfig：获取servlet的配置信息
-
-
-
------------------GenericServlet-----------------	
-GenericServlet类实现Servlet接口
-
-
-
------------------HttpServlet类-----------------
-HttpServlet extends GenericServlet{
-
-	void service(ServletRequest,ServletResponse) --> 生命周期方法
-		* 强制转换两个参数为http协议相关的类型
-		* 调用本类的service(HttpServletRequest,HttpServletResponse)
-
-	void service(HttpServletRequest,HttpServletResponse) --> 参数已经是Http协议相关的，使用起来更方便
-		* 它会通过request得到请求方式（GET或POST）
-		* 根据请求方式再调用doGet()或doPost()
-
-	void doGet() 
-		* 返回405
-
-	void doPost()
-		* 返回405
-
-}  
-
-我们的servlet继承HttpServlet类，只需要重写doGet()和doPost()。
-【如果你没有覆盖doGet或doPost，并且它们被调用了，那么会出现405错误】
-
-
-
------------------servlet小细节-----------------
-servlet是线程不安全的：
-	解决方法：
-		初学者：不要在servlet中创建field，创建局部变量即可
-		进阶：可以创建field，但是field是只读的
-
-404页面怎么来的？jsp是谁处理的？
-	所有项目中的web.xml，都有一个"父类"：tomcat目录下的conf/web.xml（记为[1]）
-	[1]中的所有内容，相当于写在所有项目的web.xml中了
-	[1]中有两个servlet：
-
-		<!-- The default servlet for all web applications, that serves static     -->
-		<!-- resources.  It processes all requests that are not mapped to other   -->
-		<!-- servlets with servlet mappings (defined either here or in your own   -->
-		<!-- web.xml file).  													  -->
-
-		<servlet>
-		    <servlet-name>default</servlet-name>
-		    <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
-		    <init-param>
-		        <param-name>debug</param-name>
-		        <param-value>0</param-value>
-		    </init-param>
-		    <init-param>
-		        <param-name>listings</param-name>
-		        <param-value>false</param-value>
-		    </init-param>
-		    <load-on-startup>1</load-on-startup>
-		</servlet>
-
-
-	  <!-- The JSP page compiler and execution servlet, which is the mechanism  -->
-	  <!-- used by Tomcat to support JSP pages.  Traditionally, this servlet    -->
-	  <!-- is mapped to the URL pattern "*.jsp".  						        -->
-
-		<servlet>
-			<servlet-name>jsp</servlet-name>
-			<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
-			<init-param>
-			    <param-name>fork</param-name>
-			    <param-value>false</param-value>
-			</init-param>
-			<init-param>
-			    <param-name>xpoweredBy</param-name>
-			    <param-value>false</param-value>
-			</init-param>
-			<load-on-startup>3</load-on-startup>
-		</servlet>
-
-
-	    <!-- The mapping for the default servlet -->
-	    <servlet-mapping>
-	        <servlet-name>default</servlet-name>
-	        <url-pattern>/</url-pattern>		能匹配所有，所以优先级最低。显示404
-	    </servlet-mapping>
-
-	    <!-- The mappings for the JSP servlet -->
-	    <servlet-mapping>
-	        <servlet-name>jsp</servlet-name>
-	        <url-pattern>*.jsp</url-pattern>	匹配所有jsp，用来将动态资源jsp转换成浏览器认识的静态资源html
-	        <url-pattern>*.jspx</url-pattern>
-	    </servlet-mapping>
-
-
-
------------------ServletContext-----------------
-一个项目只有一个ServletContext对象，使用它可以在多个Servlet之间传递数据
-命最长，和tomcat同生共死（在tomcat启动时就创建，在关闭时才消失）
-
-获取ServletContext对象：
-	在GenericServlet类有getServletContext()方法
-	所以集成了GenericServlet类的类，可以用this.getServletContext()
-
-javaWeb有四个域对象：(范围从小到大)
-	PageContext
-	ServletRequest
-	HttpSession
-	ServletContext
-域对象用来在servlet之间传递数据。因为域对象内部有一个map，用来存储数据。下面的是ServletContext对象操作数据的方法：
-	void setAttribute(String name,Object value)
-	Object getAttribute(String name)
-	void removeAttribute(String name)
-	Enumeration getAttributeNames()
-
-可以用来：统计访问量
-
-
--------------ServletContext的初始化参数-------------
-设置初始化参数：web.xml中:
-	<context-param>
-		<param-name>p1</param-name>
-		<param-value>v1</param-value>
-	</context-param>
-
-在servlet中获取初始化参数：
-	ServletContext app=this.getServletContext();
-	String value=app.getInitParameter("p1");
-
-每个servlet下的初始化参数，是只属于自己的。
-ServletContext的初始化参数，是公共的。
-
-
-
-
------------server处理请求的流程-----------
-server每次收到请求时，都会为这个请求开辟一个新的线程
-server会把客户端的"请求数据"封装到request对象中，request就是"请求数据"的载体
-server还会创建response对象，把这个对象与客户端连接在一起，它可以用来向客户端发送响应
-
-
-
------------------response-----------------
-响应头例子：
-	HTTP/1.1 200 OK
-	Date: Thu, 16 Nov 2017 01:53:37 GMT
-	Content-Type: text/html
-	Connection: keep-alive
-	Last-Modified: Wed, 25 Oct 2017 15:22:44 GMT
-
-
-response的类型为：HttpServletResponse
-	ServletResponse --> 与协议无关的类型
-	HttpServletResponse --> 与http协议相关的类型
-
-
-状态码：
-	200 成功
-	302 重定向，会带着location
-	304 缓存(比较if-modified-since的时间，与文件修改时间。如果时间一样，那么不返回内容，浏览器从缓存里拿)
-	404	页面不存在
-	405 servlet中没有覆盖doGet、doPost方法
-	500 服务器内部错误
-发送状态码的方法：
-	sendError(int sc) --> 发送错误状态码，例如404 500
-	sendError(int sc,String msg) --> 发送错误状态码，还可以带一个错误信息
-	sendStatus(int sc) --> 发送成功的状态码，例如302
-例子：
-	response.sendError(404,"资源存在，但就是不给你看！");			
-
-
-响应头：Content-Type、Refresh、Location等
-设置响应头：
-	setHeader(String name,String value)：适用于单值的
-		response.setHeader("aaa","A");
-	setIntHeader(String name,int value)：适用于单值的、int类型的
-		response.setIntHeader("Content_length",888);
-	setDataHeader(String name,long value)：适用于单值的、毫秒类型的
-		response.setDataHeader("expires",-1);
-
-例子：【重定向】
-	response.setHeader("Location", "/practice/Bservlet");
-	response.setStatus(302);
-	【快捷重定向】方法内部还是设置302，location
-	response.sendRedirect('/practice/Bservlet');
-例子：【定时刷新】可以理解为定时重定向
-	response.setHeader("Refresh", "3;URL='/practice/Bservlet'");
-	PrintWriter w=response.getWriter();
-	w.print("will jump in 3 sec");
-例子：【禁用缓存，开发阶段用】
-	response.setHeader("Cache-Control", "no-cache");
-	response.setHeader("pragma", "no-cache");
-	response.setDateHeader("expires", -1);
-
-html - head中的meta标签可以模拟响应头
-
-
-响应体：通常是html，也可以是图片
-response的两个流：不能同时使用，会报错
-	ServletOutputStream：用来向客户端发送字节数据。（什么都能发，文字、图片）
-		String txt="hello";
-		byte[] bytes=txt.getBytes();
-		ServletOutputStream stream=response.getOutputStream();
-		stream.write(bytes);
-	PrintWriter：用来向客户端发送字符数据，需要设置编码（只能发文字）
-		PrintWriter p=response.getWriter();
-
-
-
------------------request-----------------
-请求头例子：
-	GET /login.html HTTP/1.1
-	Host: vars.hotjar.com
-	Connection: keep-alive
-	Upgrade-Insecure-Requests: 1
-	User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36
-	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-	Referer: http://www.asdf.com/ 【从哪里点过来的（用途：统计广告有没有用、防盗链）】
-	Accept-Encoding: gzip, deflate, br
-	Accept-Language: zh-CN,zh;q=0.8
-
-获取常用信息：
-	getRemoteAddr()：获取客户端的ip地址【封IP】
-	getMethod()：获取请求方式
-
-获取请求头：
-	String getHeader(String name)
-	int getIntHeader(String name)
-	long getDateHeader(String name)
-
-获取请求url：
-	request.getScheme() 协议：http
-	request.getServerName() 服务器名：localhost
-	request.getServerPort() 端口：8080
-	request.getContextPath() 项目名：practice
-	request.getServletPath() servlet路径：/AServlet
-	request.getQueryString() 参数部分，不包括问号：name=emily&psw=123456
-	request.getRequestURI() 项目名+Servlet路径：/practice/AServlet
-	request.getRequestURL() 不包含参数的整个请求路径：http://localhost:8080/practice/AServlet
-
-获取请求参数：post的在请求体中，get的在url之后。获取方式完全相同
-	String getParameter(String name);
-	String[] getParameterValues(String name); form表单中的多选
-
-请求转发和请求包含：
-	有时一个请求需要多个Servlet协作才能完成，所以需要从一个servlet跳到另一个servlet。
-	请求转发：由下一个servlet完成响应体，当前servlet只可以设置响应头（设置响应体会：无效果或者报错）
-	请求包含（很少用）：由两个servlet共同完成响应体
-	无论是转发，还是包含，都在一个请求范围内，使用同一个request和response。通过request域来"交流"
-
-	RequestDispatcher rd=request.getRequestDispathcer("/BServlet");
-	请求转发：rd.forward(request,response);
-	请求包含：rd.include(request,response);
-
-
-
------------------request域-----------------
-servlet中有三大域对象：request session application，都有下面三个方法
-	void setAttribute(String name,Object value);
-	Object getAttribute(String name);
-	void removeAttribute(String name);
-
-同一请求范围内使用setAttribute、getAttribute方法，来在servlet之间传值。前一个servlet用set，后一个servlet用get
-同一请求：转发、包含；重定向是两次请求
-
-
-
------------------请求转发&重定向-----------------
-请求转发：
-	一次请求 	
-	地址栏不变	
-	只能转发到本项目的其他servlet	
-	是服务器行为，只需给出转发的servlet路径
-
-重定向：
-	两次请求	
-	地址栏会变化 	
-	可以定向到任意位置（百度）
-	需要给出requestURI，即包含项目名
-
-
-
------------------编码-----------------
-1 响应编码
-	response.setContentType("text/html;charset=utf-8");
-	这一句不仅规定传给浏览器的时候使用utf-8编码；而且告诉浏览器需要用utf-8来解码
-	是下面这句的简写方式：response.setHeader("Content-Type","text/html;charset=utf-8");
-
-2 请求编码
-	客户端传来的参数是什么编码？
-		在地址栏中直接输入参数（gbk）[让它乱吧，没辙]
-		在页面中点击（如果页面是utf-8，那么传递的参数就是utf-8）
-	tomcat默认使用iso来处理请求参数，会乱码
- 		post：只需要在获取参数之前，request.setCharacterEncoding("utf-8");
- 		get：比较麻烦
- 			String name=request.getParameter("name");
- 			byte[] bytes=name.getBytes("ISO-8859-1");
- 			name=new String(bytes,"utf-8");
-
-
-
------------------路径-----------------
-1 servlet路径：web.xml中的<url-pattern>路径
-	必须以*或/开头
-
-2 请求转发、包含的路径
-	以/开头：相对当前项目路径 http://localhost:8080/项目名/
-	不以/开头：相对当前servlet所在目录
-
-3 重定向路径（是client端路径）
-	以/开头：相对当前主机 http://localhost:8080/ 所以需要手动写上项目名"/practice/AServlet"
-
-4 页面中的a和form路径
-	与重定向相同，都是客户端路径，需要添加项目名"/practice/AServlet"
-
-5 ServletContext获取资源路径
-	相对当前项目目录，即WebRoot
-
-6 ClassLoader获取资源路径
-	相对classes目录
-
-7 Class获取资源路径
-	以/开头：相对class目录
-	不以/开头：相对当前.class文件所在目录
-
-
-
------------------jsp的作用-----------------
-servlet：
-	优点：动态资源，可以编程
-	缺点：设置html响应体很麻烦，需要大量的response.getWriter().print()
-html：
-	优点：写html很简单
-	缺点：html是静态页面，不能包含动态信息
-jsp(java server page)：
-	优点：在原有html的基础上添加java脚本，构成jsp页面
-
-jsp和servlet的分工：
-	jsp：
-		作为请求发起页面
-		作为请求结束页面
-	servlet：
-		请求中处理数据
-
-
-
------------------jsp的组成-----------------
-jsp=html+java代码+jsp标签
-jsp中无需创建即可使用的对象一共有9个，被称之为9大内置对象，例如：request对象、out对象
-3种jsp脚本：
-	<% %> 
-	<%= %>	用于输出
-	<%! %>
-	<%-- --%> 注释，只存在于jsp文件中，服务器把jsp转换成.java时就已经忽略了注释，所以最终的页面中也不会有
-
-
------------------basepath-----------------
-<%
-String path = request.getContextPath();
-String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-%>
-<html>
-<head>
-	<base href="<%=basePath%>">    
-	<title></title>
-</head>  
-<body>
-</body>
-</html>
-
-base的href相当于写在所有的a和form之前（a和form如果是相对路径的话，即不以/开头才会自动加base）
-
-
-
------------------小练习-----------------
-在a.jsp中输入两个数，在b.jsp中显示结果：
-
-a.jsp:
-	<form action="AddServlet" method="post">
-		<input type="text"  value=""  name="num1">
-		<input type="text"  value=""  name="num2">
-		<input type="submit" value="+">
-	</form>
-
-AddServlet.java:
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-				throws ServletException, IOException {
-
-		String num1=request.getParameter("num1");
-		Integer num11=Integer.parseInt(num1);
-
-		String num2=request.getParameter("num2");
-		Integer num22=Integer.parseInt(num2);
-		
-		Integer sum=num11+num22;
-		
-		request.setAttribute("sum", sum);
-		RequestDispatcher requestDispatcher=request.getRequestDispatcher("b.jsp");
-		requestDispatcher.forward(request, response);		
-	}
-
-b.jsp:
-	%= request.getAttribute("sum") %>
-
-
-
------------------jsp原理-----------------
-jsp其实是一种特殊的servlet
-	当jsp页面第一次（本次开启服务器后第一次）被访问时：
-		服务器会把jsp编译成java文件（这个java其实是一个servlet类）
-		然后再把java文件编译成.class
-		然后创建该类对象
-		最后调用它的service()方法
-	第二次请求同一jsp时：
-		直接调用service()方法
-
-jsp文件对应的java文件和.class文件，存放在tomcat目录/work下
-
-
-
------------------cookie-----------------
-cookie是http协议制定的。由服务器把cookie保存到浏览器，浏览器进行下一次请求时，把上次从服务器得到的cookie再归还给服务器。
-
-javaWeb中使用cookie：
-	Cookie cookie=new Cookie("name","emily");
-	response.addCookie(cookie);
-
-	Cookie[] arr = request.getCookies();
-	if (arr != null) {
-		for (Cookie c : arr) {
-			out.print(c.getName() + ": " + c.getValue());
-		}
-	}
-
-cookie的maxAge
-	cookie.setMaxAge(60);
-	maxAge>0：浏览器会把cookie保存到硬盘中，有效时间为maxAge秒（不是ms）
-	maxAge<0：默认，cookie只在浏览器内存中存在；用户关闭浏览器时，cookie也消失了
-	maxAge=0：浏览器会立刻删除cookie
-
-cookie的path：
-	cookie的path并不是设置这个cookie在用户的电脑硬盘中保存的位置
-	cookie的path由服务器创建cookie时设置
-	当浏览器访问服务器某个路径时，需要归还哪些cookie给服务器呢？这由cookie的path决定
-	浏览器访问服务器的路径，如果包含某个cookie的路径，那么就会归还这个cookie
-	cookie的默认path：当前访问文件的所在路径
-
-如果cookie中要存取中文：
-	// 存
-	Cookie cookie=new Cookie("username",java.net.URLEncoder.encode(name,"utf-8") );
-	// 取
-	name=java.net.URLDecoder.decode(cookie.getValue(),"utf-8");
-
-
------------------HttpSession-----------------
-HttpSession是由javaWeb提供的，http协议中没有。它是用来跟踪会话的。session是服务器端对象，保存在服务器。
-session底层依赖cookie或者url重写，cookie不能跨浏览器，所以session也不能。 
-HttpSession是servlet三大域对象之一（request session application），所以它也有：
-	setAttribute();
-	getAttribute();
-	removeAttribute();
-
-会话：一个用户对服务器的连贯请求（连贯：中途没有关闭浏览器）
-
-得到session对象：
-	servlet中：
-		HttpSession session=request.getSession();
-	jsp中：
-		是内置对象，不用创建直接使用
-		<% 
-			session.getAttribute("name");
-		%>
-
-用途：验证是否登录过
-	登录成功之后添加session
-	其他所有页面先验证session
-
-session的原理：
-	http://blog.csdn.net/sunny2come/article/details/7545420
-
-session的其他方法：
-	String getId()
-	int getMaxInactiveInterval()
-	void invalidate()：让session失效，"用户退出/注销"时用
-	boolean isNew()
-	
-web.xml中配置session的最大不活动时间：15min
-	<session-config>
-		<session-timeout>15</session-timeout>
-	</session-config>
-
-如果客户禁用了cookie，那么：
-	1 提示用户"浏览器安全等级过高，请..."。放弃给其httpSession
-	2 使用url重写：http://blog.csdn.net/u014753393/article/details/49634813
-
-
------------------登录/注册时的验证码-----------------
-思路分析：
-	1 利用session
-	2 验证码图片要动态从后台获取。img的src写VCodeServlet的地址
-	  VCodeServlet：
-	  	生成新图片，返回。
-	  	把新生成的txt放到session中
-	3 "看不清，换一张"：
-		img的src重新赋一遍值。为了防止缓存，把时间戳当成参数来偏偏浏览器
-	4 判断验证码输入：
-		取session不能在前台（那样不安全）
-		所以要在后台判断
-
-
 ---------------myEclipse-----------------【START】
 快捷键：
 	代码补全 		Content Assist 		alt + w（改）
@@ -641,3 +86,531 @@ tomcat项目放在webapps中，每个项目必须有：
 		--classes/
 		--lib/
 
+
+
+-----------------servlet-----------------
+servlet是javaWeb的三大组件之一，它属于动态资源。服务器会把接收到的请求交给Servlet来处理
+
+每个servlet都是唯一的，它们的功能都不同。
+
+servlet类由我们自己写，但是对象由服务器来创建，并且由服务器来调用相应的方法。servlet对象默认是在第一次接到请求后创建，而不是服务器开启后立刻就创建
+
+servlet特性：
+	单例，一个类只有一个对象
+	线程不安全，速度快
+
+Servlet接口 - GenericServlet类 - HttpServlet类
+实现servlet最常用的方式：继承javax.servlet.http.HttpServlet类
+
+
+
+-----------------如何让浏览器访问sevlet-----------------
+在web.xml中配置：
+	<servlet>
+		<servlet-name>XXX</servlet-name>
+		<servlet-class>servlet类的路径</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>XXX</servlet-name>
+		<url-pattern>/aaa/bbb/servlet</url-pattern>
+	</servlet-mapping>
+
+	servlet-name：名字，可以随便起
+	servlet-class:servlet类的qualified name
+	url-pattern:在浏览器中输入的路径，可以随便起
+
+
+
+-----------------Servlet接口-----------------	
+Servlet接口中有五个函数待实现：
+	init：【生命周期方法】在servlet对象创建之后立刻执行，而且只执行一次
+		参数：ServletConfig sc
+	service：【生命周期方法】每次处理请求，都是调用这个方法，会被调用多次
+		参数：ServletRequest request
+			  ServletResponse response
+	destroy：【生命周期方法】在servlet对象被销毁之前调用，而且只会被调用一次（不是自杀，是留遗言）
+	getServletInfo：获取servlet的信息
+	getServletConfig：获取servlet的配置信息
+
+
+GenericServlet类实现Servlet接口
+
+
+
+-----------------HttpServlet类-----------------
+HttpServlet extends GenericServlet{
+
+	void service(ServletRequest,ServletResponse) --> 生命周期方法
+		* 强制转换两个参数为http协议相关的类型
+		* 调用本类的service(HttpServletRequest,HttpServletResponse)
+
+	void service(HttpServletRequest,HttpServletResponse) --> 参数已经是Http协议相关的，使用起来更方便
+		* 它会通过request得到请求方式（GET或POST）
+		* 根据请求方式再调用doGet()或doPost()
+
+	void doGet() 
+		* 返回405
+
+	void doPost()
+		* 返回405
+
+}  
+
+我们的servlet继承HttpServlet类，只需要重写doGet()和doPost()。
+【如果你没有覆盖doGet或doPost，并且它们被调用了，那么会出现405错误】
+
+
+
+-----------------servlet小细节-----------------
+servlet是线程不安全的：
+	所以，如果创建field，field必须是只读的
+
+404页面怎么来的？jsp是谁处理的？
+	所有项目中的web.xml，都有一个"父类"：tomcat目录下的conf/web.xml（记为[1]）
+	[1]中的所有内容，相当于写在所有项目的web.xml中了
+	[1]中有两个servlet：
+
+		<!-- The default servlet for all web applications, that serves static     -->
+		<!-- resources.  It processes all requests that are not mapped to other   -->
+		<!-- servlets with servlet mappings (defined either here or in your own   -->
+		<!-- web.xml file).  													  -->
+
+		<servlet>
+		    <servlet-name>default</servlet-name>
+		    <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+		    <init-param>
+		        <param-name>debug</param-name>
+		        <param-value>0</param-value>
+		    </init-param>
+		    <init-param>
+		        <param-name>listings</param-name>
+		        <param-value>false</param-value>
+		    </init-param>
+		    <load-on-startup>1</load-on-startup>
+		</servlet>
+
+
+	  <!-- The JSP page compiler and execution servlet, which is the mechanism  -->
+	  <!-- used by Tomcat to support JSP pages.  Traditionally, this servlet    -->
+	  <!-- is mapped to the URL pattern "*.jsp".  						        -->
+
+		<servlet>
+			<servlet-name>jsp</servlet-name>
+			<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+			<init-param>
+			    <param-name>fork</param-name>
+			    <param-value>false</param-value>
+			</init-param>
+			<init-param>
+			    <param-name>xpoweredBy</param-name>
+			    <param-value>false</param-value>
+			</init-param>
+			<load-on-startup>3</load-on-startup>
+		</servlet>
+
+
+	    <!-- The mapping for the default servlet -->
+	    <servlet-mapping>
+	        <servlet-name>default</servlet-name>
+	        <url-pattern>/</url-pattern>		能匹配所有，所以优先级最低。显示404
+	    </servlet-mapping>
+
+	    <!-- The mappings for the JSP servlet -->
+	    <servlet-mapping>
+	        <servlet-name>jsp</servlet-name>
+	        <url-pattern>*.jsp</url-pattern>	匹配所有jsp，用来将动态资源jsp转换成浏览器认识的静态资源html
+	        <url-pattern>*.jspx</url-pattern>
+	    </servlet-mapping>
+
+
+
+-----------------ServletContext-----------------
+一个项目只有一个ServletContext对象，使用它可以在多个Servlet之间传递数据
+命最长，和tomcat同生共死（在tomcat启动时就创建，在关闭时才消失）
+
+获取ServletContext对象：
+	在GenericServlet类有getServletContext()方法
+	所以继承了GenericServlet类的类，可以用this.getServletContext()
+
+javaWeb有四个域对象：(范围从大到小)
+	ServletContext
+	HttpSession
+	ServletRequest
+	PageContext
+域对象用来在servlet之间传递数据。下面的是ServletContext对象操作数据的方法：
+	void setAttribute(String name,Object value)
+	Object getAttribute(String name)
+	void removeAttribute(String name)
+	Enumeration getAttributeNames()
+
+可以用来：统计访问量
+
+
+-------------ServletContext的初始化参数-------------
+web.xml中:
+	<context-param>
+		<param-name>p1</param-name>
+		<param-value>v1</param-value>
+	</context-param>
+
+在servlet中获取初始化参数：
+	ServletContext app=this.getServletContext();
+	String value=app.getInitParameter("p1");
+
+每个servlet下的初始化参数，是只属于自己的。
+ServletContext的初始化参数，是公共的。
+
+
+
+
+-----------server处理请求的流程-----------
+server每次收到请求时，都会为这个请求开辟一个新的线程
+server会把客户端的"请求数据"封装到request对象中
+server还会创建response对象，它可以用来向客户端发送响应
+
+
+
+-----------------response-----------------
+响应头例子：
+	HTTP/1.1 200 OK
+	Date: Thu, 16 Nov 2017 01:53:37 GMT
+	Content-Type: text/html
+	Connection: keep-alive
+	Last-Modified: Wed, 25 Oct 2017 15:22:44 GMT
+
+
+response的类型为：HttpServletResponse
+	ServletResponse --> 与协议无关的类型
+	HttpServletResponse --> 与http协议相关的类型
+
+
+状态码：
+	200 成功
+	302 重定向，会带着location
+	304 缓存(比较if-modified-since的时间，与文件修改时间。如果时间一样，那么不返回内容，浏览器从缓存里拿)
+	404	页面不存在
+	405 servlet中没有覆盖doGet、doPost方法
+	500 服务器内部错误
+发送状态码的方法：
+	sendError(int sc) --> 发送错误状态码，例如404 500
+	sendError(int sc,String msg) --> 发送错误状态码，带一个错误信息
+	sendStatus(int sc) --> 发送成功的状态码，例如302
+例子：
+	response.sendError(404,"资源存在，但就是不给你看！");			
+
+
+响应头：Content-Type、Refresh、Location等
+设置响应头：
+	setHeader(String name,String value)：适用于单值的
+		response.setHeader("aaa","A");
+	setIntHeader(String name,int value)：适用于单值的、int类型的
+		response.setIntHeader("Content_length",888);
+	setDataHeader(String name,long value)：适用于单值的、毫秒类型的
+		response.setDataHeader("expires",-1);
+
+例子：【重定向】
+	response.setHeader("Location", "/practice/Bservlet");
+	response.setStatus(302);
+	【快捷重定向】方法内部还是设置302，location
+	response.sendRedirect('/practice/Bservlet');
+例子：【定时刷新】可以理解为定时重定向
+	response.setHeader("Refresh", "3;URL='/practice/Bservlet'");
+	PrintWriter w=response.getWriter();
+	w.print("will jump in 3 sec");
+例子：【禁用缓存，开发阶段用】
+	response.setHeader("Cache-Control", "no-cache");
+	response.setHeader("pragma", "no-cache");
+	response.setDateHeader("expires", -1);
+
+html - head中的meta标签可以模拟响应头
+
+
+响应体：通常是html，也可以是图片
+response的两个流：不能同时使用，会报错
+	ServletOutputStream：用来向客户端发送字节数据。（什么都能发，文字、图片）
+		String txt="hello";
+		byte[] bytes=txt.getBytes();
+		ServletOutputStream stream=response.getOutputStream();
+		stream.write(bytes);
+	PrintWriter：用来向客户端发送字符数据，需要设置编码（只能发文字）
+		response.setHeader("Content-Type","text/html;charset=utf-8");
+		PrintWriter p=response.getWriter();
+
+
+
+-----------------request-----------------
+请求头例子：
+	GET /login.html HTTP/1.1
+	Host: vars.hotjar.com
+	Connection: keep-alive
+	Upgrade-Insecure-Requests: 1
+	User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+	Referer: http://www.asdf.com/ 【从哪里点过来的（用途：统计广告有没有用、防盗链）】
+	Accept-Encoding: gzip, deflate, br
+	Accept-Language: zh-CN,zh;q=0.8
+
+获取常用信息：
+	getRemoteAddr()：获取客户端的ip地址【封IP】
+	getMethod()：获取请求方式
+
+获取请求头：
+	String getHeader(String name)
+	int getIntHeader(String name)
+	long getDateHeader(String name)
+
+获取请求url：
+	request.getScheme() 协议：http
+	request.getServerName() 服务器名：localhost
+	request.getServerPort() 端口：8080
+	request.getContextPath() 项目名：practice
+	request.getServletPath() servlet路径：/AServlet
+	request.getQueryString() 参数部分，不包括问号：name=emily&psw=123456
+	request.getRequestURI() 项目名+Servlet路径：/practice/AServlet
+	request.getRequestURL() 不包含参数的整个请求路径：http://localhost:8080/practice/AServlet
+
+获取请求参数：post的在请求体中，get的在url之后。获取方式完全相同
+	String getParameter(String name);
+	String[] getParameterValues(String name); form表单中的多选
+
+请求转发：
+	有时一个请求需要多个Servlet协作才能完成，所以需要从一个servlet跳到另一个servlet。
+	请求转发：由下一个servlet完成响应体，当前servlet只可以设置响应头（设置响应体会：无效果或者报错）
+	在一个请求范围内，使用同一个request和response。通过request域来"交流"
+
+	RequestDispatcher rd=request.getRequestDispathcer("/BServlet");
+	rd.forward(request,response);
+
+
+
+-----------------request域-----------------
+servlet中有三大域对象：request session application，都有下面三个方法
+	void setAttribute(String name,Object value);
+	Object getAttribute(String name);
+	void removeAttribute(String name);
+
+同一请求：请求转发；
+重定向是两次请求
+
+
+
+-----------------请求转发&重定向-----------------
+请求转发：
+	一次请求 	
+	地址栏不变	
+	只能转发到本项目的其他servlet	
+	是服务器行为，只需给出转发的servlet路径
+
+重定向：
+	两次请求	
+	地址栏会变化 	
+	可以定向到任意位置（百度）
+	需要给出requestURI，即包含项目名
+
+
+
+-----------------编码-----------------
+1 响应编码
+	response.setContentType("text/html;charset=utf-8");
+	这一句不仅规定传给浏览器的时候使用utf-8编码；而且告诉浏览器需要用utf-8来解码
+	是下面这句的简写方式：response.setHeader("Content-Type","text/html;charset=utf-8");
+
+2 请求编码
+	浏览器传来的参数是什么编码？
+		在地址栏中直接输入参数（gbk）[让它乱吧，没辙]
+		在页面中点击（如果页面是utf-8，那么传递的参数就是utf-8）
+	tomcat默认使用iso来处理请求参数，会乱码
+ 		post：只需要在获取参数之前，request.setCharacterEncoding("utf-8");
+ 		get：比较麻烦
+ 			String name=request.getParameter("name");
+ 			byte[] bytes=name.getBytes("ISO-8859-1");
+ 			name=new String(bytes,"utf-8");
+
+
+
+-----------------路径-----------------
+1 servlet路径：web.xml中的<url-pattern>路径
+	必须以*或/开头
+
+2 请求转发的路径
+	以/开头：绝对路径，+当前项目路径 http://localhost:8080/项目名/
+	不以/开头：相对当前servlet所在目录
+
+3 重定向路径（是client端路径）
+	以/开头：相对当前主机 http://localhost:8080/ 所以需要手动写上项目名"/practice/AServlet"
+
+4 页面中的a和form路径
+	与重定向相同，都是客户端路径，需要添加项目名"/practice/AServlet"
+
+
+
+
+-----------------jsp的作用-----------------
+servlet：
+	优点：动态资源，可以编程
+	缺点：设置html响应体很麻烦，需要大量的response.getWriter().print()
+html：
+	优点：写html很简单
+	缺点：html是静态页面，不能包含动态信息
+jsp(java server page)：
+	优点：在原有html的基础上添加java脚本，构成jsp页面
+
+
+
+
+-----------------jsp的组成-----------------
+jsp=html+java代码+jsp标签
+jsp中无需创建即可使用的对象一共有9个，被称之为9大内置对象，例如：request对象、out对象
+3种jsp脚本：
+	<% %> 
+	<%= %>	用于输出
+	<%! %>
+	<%-- --%> 注释，只存在于jsp文件中，服务器把jsp转换成.java时就已经忽略了注释，所以最终的页面中也不会有
+
+
+-----------------basepath-----------------
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+
+
+
+-----------------小练习-----------------
+在a.jsp中输入两个数，在b.jsp中显示结果：
+
+a.jsp:
+	<form action="AddServlet" method="post">
+		<input type="text"  value=""  name="num1">
+		<input type="text"  value=""  name="num2">
+		<input type="submit" value="+">
+	</form>
+
+AddServlet.java:
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException {
+
+		String num1=request.getParameter("num1");
+		Integer num11=Integer.parseInt(num1);
+
+		String num2=request.getParameter("num2");
+		Integer num22=Integer.parseInt(num2);
+		
+		Integer sum=num11+num22;
+		
+		request.setAttribute("sum", sum);
+		RequestDispatcher requestDispatcher=request.getRequestDispatcher("b.jsp");
+		requestDispatcher.forward(request, response);		
+	}
+
+b.jsp:
+	<%= request.getAttribute("sum") %>
+
+
+
+-----------------jsp原理-----------------
+jsp其实是一种特殊的servlet
+	当jsp页面第一次（本次开启服务器后第一次）被访问时：
+		服务器会把jsp编译成java文件（这个java其实是一个servlet类）
+		然后再把java文件编译成.class
+		然后创建该类对象
+		最后调用它的service()方法
+	第二次请求同一jsp时：
+		直接调用service()方法
+
+jsp文件对应的java文件和.class文件，存放在tomcat目录/work下
+
+
+
+-----------------cookie-----------------
+cookie是http协议制定的。由服务器把cookie保存到浏览器，浏览器进行下一次请求时，把上次从服务器得到的cookie再归还给服务器。
+
+javaWeb中使用cookie：
+	Cookie cookie=new Cookie("name","emily");
+	response.addCookie(cookie);
+
+	Cookie[] arr = request.getCookies();
+	if (arr != null) {
+		for (Cookie c : arr) {
+			out.print(c.getName() + ": " + c.getValue());
+		}
+	}
+
+cookie的maxAge
+	cookie.setMaxAge(60);
+	maxAge>0：浏览器会把cookie保存到硬盘中，有效时间为maxAge秒（不是ms）
+	maxAge<0：默认，cookie只在浏览器内存中存在；用户关闭浏览器时，cookie也消失了
+	maxAge=0：浏览器会立刻删除cookie
+
+cookie的path：
+	cookie的path并不是设置这个cookie在用户的电脑硬盘中保存的位置
+	cookie的path由服务器创建cookie时设置
+	当浏览器访问服务器某个路径时，需要归还哪些cookie给服务器呢？这由cookie的path决定
+	浏览器访问服务器的路径，如果包含某个cookie的路径，那么就会归还这个cookie
+	cookie的默认path：当前访问文件的所在路径
+
+如果cookie中要存取中文：
+	// 存
+	Cookie cookie=new Cookie("username",java.net.URLEncoder.encode(name,"utf-8") );
+	// 取
+	name=java.net.URLDecoder.decode(cookie.getValue(),"utf-8");
+
+
+
+-----------------HttpSession-----------------
+HttpSession是由javaWeb提供的，http协议中没有。它是用来跟踪会话的。session是服务器端对象，保存在服务器。
+session底层依赖cookie或者url重写，cookie不能跨浏览器，所以session也不能。 
+HttpSession是servlet三大域对象之一（request session application），所以它也有：
+	setAttribute();
+	getAttribute();
+	removeAttribute();
+
+会话：一个用户对服务器的连贯请求（连贯：中途没有关闭浏览器）
+
+得到session对象：
+	servlet中：
+		HttpSession session=request.getSession();
+	jsp中：
+		是内置对象，不用创建直接使用
+		<% 
+			session.getAttribute("name");
+		%>
+
+用途：验证是否登录过
+	登录成功之后添加session
+	其他所有页面先验证session
+
+session的原理：
+	http://blog.csdn.net/sunny2come/article/details/7545420
+
+session的其他方法：
+	String getId()
+	int getMaxInactiveInterval()
+	void invalidate()：让session失效，"用户退出/注销"时用
+	boolean isNew()
+	
+web.xml中配置session的最大不活动时间：15min
+	<session-config>
+		<session-timeout>15</session-timeout>
+	</session-config>
+
+如果客户禁用了cookie，那么：
+	1 提示用户"浏览器安全等级过高，请..."。放弃给其httpSession
+	2 使用url重写：http://blog.csdn.net/u014753393/article/details/49634813
+
+
+
+-----------------登录/注册时的验证码-----------------
+思路分析：
+	1 利用session
+	2 验证码图片要动态从后台获取。img的src写VCodeServlet的地址
+	  VCodeServlet：
+	  	生成新图片，返回。
+	  	把新生成的txt放到session中
+	3 "看不清，换一张"：
+		img的src重新赋一遍值。为了防止缓存，把时间戳当成参数来偏偏浏览器
+	4 判断验证码输入：
+		取session不能在前台（那样不安全）
+		所以要在后台判断
