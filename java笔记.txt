@@ -1,278 +1,276 @@
 
 
+-----------------异常-----------------
+异常就是一个类。产生了一个异常，就是产生了一个类的对象
+
+Throwable
+	Error
+	Exception （能治愈的疾病）      ： 异常，程序员能处理
+		非RuntimeExcetion   非运行时期异常,编译器异常，要求我们在编译器就必须进行处理
+		RuntimeException（运行时期异常 ）
+
+Error错误：出现在运行期。通常没有具体的处理方式，程序将会结束运行。Error错误的发生往往都是系统级别的问题，都是jvm所在系统发生的，并反馈给jvm的。我们无法针对处理，只能修正代码。
+	int[] arr = new int[1024*1024*100];	// 运行时发生了utOfMemoryError
+
+Exception异常：出现在编译、运行期间。可以对异常进行具体的处理。若不处理异常，程序将会结束运行。
+	比如：ArrayIndexOutOfBoundsException
 
 
------------------包装类Integer----------------
-String转int：
-	int Interger.parseInt(String s);
-	int Interger.parseInt(String s,int radix);	// 进制
+区分throw和throws：
+	throw：方法内，抛出一个异常对象。将这个异常对象传递到方法调用者处，并结束当前方法的执行。
+	throws：方法声明中，声明异常。
 
-int转String：
-	int i=3;
-	String s1=i+"";
-	String s2=Integer.toString(i);	// 麻烦。用上面的 +""
+处理异常的方法：throws和try...catch
 
+throws的例子：
+	public static void main(String[] args) throws Exception {
+		int[] arr = {};
+		int i = getEle(arr);
+		System.out.println(i);
+	}
+	public static int getEle(int[] arr) throws Exception {
+		if( arr == null){
+			throw new Exception("数组为null");
+		}		
+		if(arr.length == 0){
+			throw new Exception("数组中无元素");
+		}
+		int i = arr[arr.length-1];
+		return i*2;
+	}
+	说明：
+		getEle方法内新建一个异常对象，并且抛出给它的调用者main函数。
+		main函数抛出给虚拟机。
+		虚拟机在控制台打印错误信息，中止程序运行。
 
------------------System类----------------
+try {
+	//可能产生异常的代码
+}catch(异常类 变量) {
+	//处理异常
+}finally {
+	// 无论异常是否发生，都需要执行的语句。比如try\catch中有return或者抛出新异常，那么finally中的语句还是会"顽强"地执行。除非碰上System.exit(0);
+	// 常用于：释放资源
+}
 
-static long currentTimeMillis() 获取当前系统时间的毫秒值（1970）【可以求差计算程序执行时间】
-static void exit(int status) 结束正在运行的Java程序。参数传入一个数字即可。通常传入0记为正常状态，其他为异常状态
-static void gc() 运行JVM中的垃圾回收器，完成内存中垃圾的清除。
-static void arraycopy(Object src,int srcPos,Object dest,int destPos,int length) 将源数组的部分元素复制到目标数组的指定位置
-	int[] src = new int[]{1,2,3,4,5};
-	int[] dest = new int[]{6,7,8,9,10};
-	System.arraycopy(src,0,dest,0,3); 	//dest:[1,2,3,9,10]
-
-
-
-
------------------Arrays类----------------
-此类包含用来操作数组的各种方法
-
-sort：升序排序
-	int[] arr = {1,5,9,3,7};
-	Arrays.sort(arr);					// arr:{1,3,5,7,9}
-
-toString：
-	int[] arr = {1,5,9,3,7};
-	String str = Arrays.toString(arr); 	// str:[1, 3, 5, 7, 9]
-
-binarySearch：查找给定元素值出现的位置。若没有查询到，返回值为负。要求该数组必须是个有序的数组。
-	int[] arr = {1,3,4,5,6};
-	int index = Arrays.binarySearch(arr, 4); // 2
-	int index2= Arrasy.binarySearch(arr, 7); // -6
-
-
-
------------------BigInteger----------------
-java中long型为最大整数类型，对于超过long型的数据如何去表示呢？，而不是直接用运算符。
-
-	BigInteger big1 = new BigInteger("123456789098765432154210");
-	BigInteger big2 = new BigInteger("98765432101234567890");
-	BigInteger bigAdd = big1.add(big2);
-	BigInteger bigSub = big1.subtract(big2);
-	BigInteger bigMul = big1.multiply(big2);
-	BigInteger bigDiv = big2.divide(big1);
-
-
-
-
------------------BigDecimal----------------
-    System.out.println(0.09 + 0.01);	//0.09999999999999999
-    System.out.println(1.0 - 0.32);		//0.6799999999999999
-    System.out.println(1.015 * 100);	//101.49999999999999
-    System.out.println(1.301 / 100);	//0.013009999999999999
-
-double和float类型在运算中很容易丢失精度，造成数据的不准确性，Java提供BigDecimal类可以实现浮点数据的高精度运算。
-
-	BigDecimal big1 = new BigDecimal("0.09");
-    BigDecimal big2 = new BigDecimal("0.01");
-    //add
-    BigDecimal bigAdd = big1.add(big2);
-    
-    BigDecimal big3 = new BigDecimal("1.0");
-    BigDecimal big4 = new BigDecimal("0.32");
-    //subtract
-    BigDecimal bigSub = big3.subtract(big4);
-    
-    BigDecimal big5 = new BigDecimal("1.105");
-    BigDecimal big6 = new BigDecimal("100");
-    //multiply
-    BigDecimal bigMul = big5.multiply(big6);
-
-    divide：除法，可以指定保留位数，和保留方式
+try...catch的例子：
+	public static void main(String[] args) {
+		int[] arr = null;
+		try{
+			int i = getEle(arr);
+			System.out.println(i);
+			
+		}catch(NullPointerException ex){
+			System.out.println(ex);
+			
+		}catch(ArrayIndexOutOfBoundsException ex){			
+			System.out.println(ex);
+		}
+		System.out.println("Game Over");
+	}
+	public static int getEle(int[] arr)throws NullPointerException,ArrayIndexOutOfBoundsException{
+		if( arr == null){
+			throw new NullPointerException("数组为null");
+		}		
+		if(arr.length == 0){
+			throw new ArrayIndexOutOfBoundsException("数组中无元素");
+		}
+		int i = arr[arr.length-1];
+		return i*2;
+	}
+	说明：
+		getEle方法内新建一个异常对象，并且抛出给它的调用者main函数。
+		因为main函数有try..catch，所以接到异常不再抛给虚拟机，而是在对应的catch中处理。处理之后接着运行程序。
 
 
+多catch：有顺序
+	所以有继承关系的异常，子类写在上面，父类写在下面
 
 
------------------长度的3种表示----------------
-	数组.length
-	字符串.length()
-	集合.size()
+异常分为:
+	运行异常: RuntimeException类和其子类
+	编译异常: Exception中所有的其他类
 
+运行异常的特点:
+	方法的声明上,不需要throws语句,方法的调用者也不需要处理
+	设计原因：运行异常一旦发生，不要处理，请你修改源代码。运行异常一旦发生,后面的代码没有执行的意义
+	public static void main(String[] args){
+         method();
+    }
+    public static void method(){
+        throw new RuntimeException();
+    }
 
+继承后,在子类重写父类方法的时候,异常处理
+  父类的方法如果抛出异常A,子类重写后
+    可以不抛出异常
+    也可以抛出异常,但是,如果子类要抛,抛出的异常必须是A或A的子类
+      
+  父类的方法没有抛出异常,子类重写后也不能抛出异常
 
------------------集合继承关系图----------------
+Throwable类中的方法:
+  void printStackTrace() 将异常信息追踪到标准的错误流 JVM默认调用的就是这个方法
 
-                     Collection接口     
-                           |
-    		---------------------------------
-    		|                               |
-    	List接口                         Set接口
-    		|                               |
-     ----------------                 --------------
-     |              |                 |            |
-ArrayList类    LinkedList类     HashSet类    LinkedHashSet类
-
-Collection接口中的方法，是集合中所有实现类必须拥有的方法：
-	Object[] toArray() 集合转成数组
-    boolean contains(Object o) 判断对象是否存在于集合中，利用equals逐个比较判断
-    void clear() 清空集合中的所有元素
-    boolean remove(Object o) 移除集合中指定的元素（有多个的话只移除第一个）
-
-在使用ArrayList类时，该类已经把所有抽象方法进行了重写。
+
+如果Java没有提供你需要的异常，则可以自定义异常类。
+编译时异常继承Exception，运行时异常继承RuntimeException。在构造方法中,用super将异常信息传递给父类
 
 
 
 
 
------------------list接口-----------------
-list接口的常用子类：
-	1 ArrayList：是数组结构。元素增删慢，查找快，由于日常开发中使用最多的功能为查询、遍历，所以ArrayList是最常用的集合。
-	2 linkedList：是链表结构。元素增删块，查找慢。提供了大量首尾操作的方法。
-		addFirst() addLast() getFirst() getLast() removeFirst() removeLast()
+-----------------File-----------------
+Java中把"文件"或者"目录"（文件夹）都封装成File对象。
 
+构造函数：
+	File(File parent, String child) 
+	File(String pathname) 
+	File(String parent, String child) 
 例子：
-	List<String> list = new ArrayList<String>();
+	File f1 = new File("e:\\abc\\hello.java");	
+	File f2 = new File("e:\\abc","hello.java");	
+	File f3 = new File(new File("e:\\abc"),"hello.java");
 
-	add()
-	add(int index, Object e)
 
-	remove(Object e) 			// 返回值为被删除的元素
-	remove(int index) 			// 返回值为被删除的元素
+	/*
+	 *  删除：boolean delete()
+	 *  不走回收站,直接从硬盘中删除【谨慎】
+	 */
+	File file = new File("c:\\a.txt");
+	boolean b = file.delete();
 
-	set(int index, Object e)	// 替换
+	/*
+	 *  创建文件夹：boolean mkdirs() 可以创建多级文件夹
+	 *  如果文件夹已经存在了,不再重新创建
+	 */
+	File file = new File("c:\\abc\\def");
+	boolean b = file.mkdirs();
 
-	get(int index)
+	/*
+	 *  创建文件：boolean createNewFile()
+	 *  如果文件已经存在了,不再重新创建
+	 */
+	File file = new File("c:\\a.txt");
+	boolean b = file.createNewFile();
 
-遍历方法：
-	1 普通for
-		for(int i=0;i<list.size();i++){
-			 String txt=list.get(i);
-			 System.out.println(txt);
+	/*
+	* 获取父路径
+	* String getParent()
+	* File getParentFile()
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	File parent = file.getParentFile();
+
+	/*
+	* 获取绝对路径
+	* String getAbsolutePath() 返回String对象
+	* File   getAbsoluteFile() 返回File对象
+	* eclipse环境中,写的是一个相对路径,则默认是在项目的根目录
+	*/
+	File file = new File("src");
+	File absolute = file.getAbsoluteFile();
+
+	/*
+	* 获取文件的大小(字节数)：long length()
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	long length = file.length();
+
+	/*
+	*  获取文件或者文件夹名：String getName()
+	*  获取路径中的最后部分的名字
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	String name = file.getName();
+
+	/*
+	*  判断是不是文件夹：boolean isDirectory()
+	*  判断是不是文件：boolean isFile()
+	*  不存在，则都返回false
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	if(file.exists()){
+		boolean b = file.isDirectory();
+	}
+
+	/*
+	*  判断文件、路径是否存在：boolean exists()
+	*/
+	File file = new File("src");
+	boolean b = file.exists();
+
+	/*
+	*  File类的获取功能
+	*  File[] listFiles()
+	*  String[] list()
+	*  File[] listFiles(FileFilter filter)
+	*  File[] listFiles(FilenameFilter filter)
+	*/
+
+	File f = new File("E:\\liuzx-emily\\2 javaWeb学习笔记");
+	File[] listFiles = f.listFiles(new FilenameFilter() {			
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.toLowerCase().endsWith(".txt");
 		}
-	2 增强for
-		for (String txt : list) {
-			System.out.println(txt);
-		}
-	3 迭代器
-		Iterator<String> it=list.iterator();
-		while(it.hasNext()){
-			String txt=it.next();
-			System.out.println(txt);
-		}
-
-Iterator的并发修改异常：java.util.ConcurrentModificationException
-	在迭代时，不要改变集合的长度。
-	Iterator<String> it = list.iterator();	//包含"a" "b" "c"
-	while(it.hasNext()){
-		String str = it.next();
-		if("b".equals(str)){
-			list.add("123");	// 该操作会导致程序出错
-		}
+	});
+	for (File file : listFiles) {
+		System.out.println(file);
 	}
 
 
 
+-----------------IO流--------------------
+java.io.OutputStream 抽象类，是表示输出字节流的所有类的超类。操作的数据都是字节，定义了输出字节流的基本共性功能方法。
+因为操作的是字节，所以可以输出任意类型的文件：文本、图片、音频...
 
------------------set集合-----------------
-不能有重复，通过元素的equals方法，来判断是否为重复元素
+流对象特点：自己不做,依赖操作系统
 
-遍历方法：
-	1 增强for
-	2 迭代器
-		Iterator<String> it=set.iterator();
-		while(it.hasNext()){
-			String txt=it.next();
-			System.out.print(txt+"\t");
-		}
+	write(int b)：写入字节（int先转byte）
+	write(byte[] b)：写入字节数组
+	write(byte[] b,int off, int len)：写入字节数组，偏移量off，长度len
+	flush()：刷新此输出流，并强制写出所有缓冲的输出字节。
+	close()：关闭此输出流，并释放所有相关的系统资源。
 
-
-
------------------HashSet-----------------
-此类实现Set接口，采用哈希表结构存储数据（实际上是一个HashMap集合）
-哈希表：链表数组结合体。存取、查询都快，线程不安全。
-
-HashSet集合不能保证迭代顺序与元素存储顺序相同。
-
-保证元素唯一性的方式依赖于：hashCode()与equals()方法。
-Object类有hashCode方法，所以任何对象都有这个方法。
-在向哈希表中存放对象时，会调用对象的hashCode方法，算出对象在表中的存放位置。如果两个对象hashCode方法算出结果一样(这种现象称为"哈希冲突")，这时会调用对象的equals方法，比较这两个对象是不是同一个对象。
-
-给HashSet中存储JavaAPI中提供的类型元素时，不需要重写元素的hashCode和equals方法，因为这两个方法，在JavaAPI的每个类中已经重写完毕，如String类、Integer类等。
-
-如果我们往集合中存放自定义的对象，那么保证其唯一，就必须复写hashCode和equals方法建立属于当前对象的比较方式。（myE提供自动生成hashCode和equals）
-
-	Set<String> set =new HashSet<String>();
-	set.add("aaa");
-	set.add("bbb");		// 返回true
-	set.add("ccc");
-	set.add("ddd");
-	set.add("bbb");		// 返回false
-	for (String string : set) {
-		System.out.print(string+'\t');
-	}
-	输出结果:
-		aaa	ddd	ccc	bbb
-
-	说明：String类重写了hashCode方法，是通过包含的所有字符计算出来的。所以两个"bbb"计算出来的hashCode相同。
-	set发现第二个"bbb"的哈希值，和第一个"bbb"的哈希值相同，为了判断它们是不是相同元素，会调用equals方法去比较两个对象。
-	因为String类重写了equals方法，比较的不是地址，而是字符，所以返回true。
-	set就认为这两个"bbb"是相同的，不重复存储。
-
-
-HashSet有一个子类LinkedHashSet，它是链表和哈希表组合的一个数据存储结构，保证元素的存入和取出的顺序一致。
+流对象使用步骤：
+	1. 创建流对象
+	2. write()
+	3. close()
+  
+流对象的构造方法,可以创建文件,如果文件存在,直接覆盖
 
 
 
+-----------------FileOutputStream类--------------------
+抽象类OutputStream
+	---FileOutputStream类
 
------------------Collections-----------------
-Collections是集合工具类，用来对集合进行操作。部分方法如下：
-
-1 sort(List)	// 对List升序
-	Collections.sort(list);	//[33,11,77,55] -> [11,33,55,77]
-
-
-2 shuffle(List) // 对List打乱存储顺序
-	//list集合元素 [11,33,55,77]
-	Collections.shuffle(list);
-	//使用shuffle方法后，集合中的元素为[77,33,11,55]，每次执行该方法，集合中存储的元素位置都会随机打乱
-
-
-3 emptyList()、emptySet()、emptyMap()
-	如果你想new一个空List，并且以后也打算再添加元素，那么就用 Collections.emptyList()。
-	new ArrayList() 或者 new LinkedList() 在创建的时候有会有初始大小，浪费内存
-	注意：不能添加元素的，会直接报异常。
-
-
-
-
------------------集合体系中的面向对象思想-----------------
-
-接口：用来明确所有集合中该具有的功能，相当于规定功能标准；
-抽象类：把多个集合中功能实现方式相同的方法，抽取到抽象类实现，具体集合中不再写，直接继承到。
-具体类：继承抽象类，实现接口，重写所有抽象方法。每个具体集合类，根据自身的数据存储结构方式，对接口中的功能方法，进行不同方式的实现。
-
-
-
-
------------------map接口-----------------
-collection中的元素是"单身"的，map中的元素是"成对"的。collection和map之间没有任何继承关系。
-
-map<K,V>接口
-	---HashMap<K,V>：最常用的Map实现。只是将一个键和值相对应，并没有其他的功能。
-		---LinkedHashMap<K,V>：存储数据采用的哈希表结构+链表结构。通过链表结构可以保证元素的存取顺序一致；通过哈希表结构可以保证的键的唯一、不重复。
-
-如果键是自定义对象，为了保证唯一性，需要重写键的hashCode()、equals()方法。
-
-	Map<String,Integer> map = new HashMap<String,Integer>();
+构造函数：
+	FileOutputStream(File file) ：将字节写入文件开始处。如果文件已存在，则直接覆盖
+	FileOutputStream(File file,boolean append) ：将字节写入文件末尾处。不会覆盖已有内容
+	FileOutputStream(String name) 
+	FileOutputStream(String name,boolean append)
 	
-	put()
-	get()
 
-遍历方法：
-	1 获取所有的key，通过key得到value【利用key的唯一性】
-		Set<String> keySet=map.keySet();
-		for(String key:keySet){
-			Integer value=map.get(key);		
-		}
-	2 Entry是Map中用来保存一个键值对的，而Map实际上就是多个Entry的集合。
-		Set<Entry<String,Integer>> entrySet=map.entrySet();
-		for (Entry<String, Integer> entry : entrySet) {
-			String key=entry.getKey();
-			Integer value=entry.getValue();
-		}
-	如果要保证map中存放的key和取出的顺序一致，可以使用LinkedHashMap
+	public static void main(String[] args)throws IOException {
+		FileOutputStream fos = new FileOutputStream("e:\\a.txt",true);
+		//写入：abc
+		fos.write(97);
+		fos.write(98);
+		fos.write(99);
+		
+		//写入：ABCD
+		byte[] bytes = {65,66,67,68};
+		fos.write(bytes);
+		
+		//写入：B
+		fos.write(bytes, 1, 2);
+		
+		//写入：hello换行
+		fos.write("hello\n".getBytes());	//换行:\n \r
+
+		//关闭资源
+		fos.close();		
+	}
 
 
 
@@ -1420,5 +1418,279 @@ String类中正则相关的方法：
 	
 
 
+
+-----------------包装类Integer----------------
+String转int：
+	int Interger.parseInt(String s);
+	int Interger.parseInt(String s,int radix);	// 进制
+
+int转String：
+	int i=3;
+	String s1=i+"";
+	String s2=Integer.toString(i);	// 麻烦。用上面的 +""
+
+
+-----------------System类----------------
+
+static long currentTimeMillis() 获取当前系统时间的毫秒值（1970）【可以求差计算程序执行时间】
+static void exit(int status) 结束正在运行的Java程序。参数传入一个数字即可。通常传入0记为正常状态，其他为异常状态
+static void gc() 运行JVM中的垃圾回收器，完成内存中垃圾的清除。
+static void arraycopy(Object src,int srcPos,Object dest,int destPos,int length) 将源数组的部分元素复制到目标数组的指定位置
+	int[] src = new int[]{1,2,3,4,5};
+	int[] dest = new int[]{6,7,8,9,10};
+	System.arraycopy(src,0,dest,0,3); 	//dest:[1,2,3,9,10]
+
+
+
+
+-----------------Arrays类----------------
+此类包含用来操作数组的各种方法
+
+sort：升序排序
+	int[] arr = {1,5,9,3,7};
+	Arrays.sort(arr);					// arr:{1,3,5,7,9}
+
+toString：
+	int[] arr = {1,5,9,3,7};
+	String str = Arrays.toString(arr); 	// str:[1, 3, 5, 7, 9]
+
+binarySearch：查找给定元素值出现的位置。若没有查询到，返回值为负。要求该数组必须是个有序的数组。
+	int[] arr = {1,3,4,5,6};
+	int index = Arrays.binarySearch(arr, 4); // 2
+	int index2= Arrasy.binarySearch(arr, 7); // -6
+
+
+
+-----------------BigInteger----------------
+java中long型为最大整数类型，对于超过long型的数据如何去表示呢？，而不是直接用运算符。
+
+	BigInteger big1 = new BigInteger("123456789098765432154210");
+	BigInteger big2 = new BigInteger("98765432101234567890");
+	BigInteger bigAdd = big1.add(big2);
+	BigInteger bigSub = big1.subtract(big2);
+	BigInteger bigMul = big1.multiply(big2);
+	BigInteger bigDiv = big2.divide(big1);
+
+
+
+
+-----------------BigDecimal----------------
+    System.out.println(0.09 + 0.01);	//0.09999999999999999
+    System.out.println(1.0 - 0.32);		//0.6799999999999999
+    System.out.println(1.015 * 100);	//101.49999999999999
+    System.out.println(1.301 / 100);	//0.013009999999999999
+
+double和float类型在运算中很容易丢失精度，造成数据的不准确性，Java提供BigDecimal类可以实现浮点数据的高精度运算。
+
+	BigDecimal big1 = new BigDecimal("0.09");
+    BigDecimal big2 = new BigDecimal("0.01");
+    //add
+    BigDecimal bigAdd = big1.add(big2);
+    
+    BigDecimal big3 = new BigDecimal("1.0");
+    BigDecimal big4 = new BigDecimal("0.32");
+    //subtract
+    BigDecimal bigSub = big3.subtract(big4);
+    
+    BigDecimal big5 = new BigDecimal("1.105");
+    BigDecimal big6 = new BigDecimal("100");
+    //multiply
+    BigDecimal bigMul = big5.multiply(big6);
+
+    divide：除法，可以指定保留位数，和保留方式
+
+
+
+
+-----------------长度的3种表示----------------
+	数组.length
+	字符串.length()
+	集合.size()
+
+
+
+-----------------集合继承关系图----------------
+
+                     Collection接口     
+                           |
+    		--------------- ------
+    		|                    |
+    	List接口              Set接口
+    		|                    |
+     ----------------       	 |
+     |              |            |            
+ArrayList类    LinkedList类    HashSet类
+								 |
+							LinkedHashSet类
+											
+Collection接口中的方法，是集合中所有实现类必须拥有的方法：
+	Object[] toArray() 集合转成数组
+    boolean contains(Object o) 判断对象是否存在于集合中。实现类中都是用equals逐个判断
+    void clear() 清空集合中的所有元素
+    boolean remove(Object o) 移除集合中指定的元素（有多个的话只移除第一个）
+
+在使用ArrayList类时，该类已经把所有抽象方法进行了重写。
+
+
+
+
+
+-----------------list接口-----------------
+list接口的常用子类：
+	1 ArrayList：是数组结构。元素增删慢，查找快，由于日常开发中使用最多的功能为查询、遍历，所以ArrayList是最常用的集合。
+	2 linkedList：是链表结构。元素增删块，查找慢。提供了大量首尾操作的方法。
+		addFirst() addLast() getFirst() getLast() removeFirst() removeLast()
+
+例子：
+	List<String> list = new ArrayList<String>();
+
+	add()
+	add(int index, Object e)
+
+	remove(Object e) 			// 返回值为被删除的元素
+	remove(int index) 			// 返回值为被删除的元素
+
+	set(int index, Object e)	// 替换
+
+	get(int index)
+
+遍历方法：
+	1 普通for
+		for(int i=0;i<list.size();i++){
+			 String txt=list.get(i);
+			 System.out.println(txt);
+		}
+	2 增强for
+		for (String txt : list) {
+			System.out.println(txt);
+		}
+	3 迭代器
+		Iterator<String> it=list.iterator();
+		while(it.hasNext()){
+			String txt=it.next();
+			System.out.println(txt);
+		}
+
+Iterator的并发修改异常：java.util.ConcurrentModificationException
+	在迭代时，不要改变集合的长度。
+	Iterator<String> it = list.iterator();	//包含"a" "b" "c"
+	while(it.hasNext()){
+		String str = it.next();
+		if("b".equals(str)){
+			list.add("123");	// 该操作会导致程序出错
+		}
+	}
+
+
+
+
+-----------------set集合-----------------
+不能有重复，通过元素的equals方法，来判断是否为重复元素
+
+遍历方法：
+	1 增强for
+	2 迭代器
+		Iterator<String> it=set.iterator();
+		while(it.hasNext()){
+			String txt=it.next();
+			System.out.print(txt+"\t");
+		}
+
+
+
+-----------------HashSet-----------------
+此类实现Set接口，采用哈希表结构存储数据（实际上是一个HashMap集合）
+哈希表：链表数组结合体。存取、查询都快，线程不安全。
+
+HashSet集合不能保证迭代顺序与元素存储顺序相同。
+
+保证元素唯一性的方式依赖于：hashCode()与equals()方法。
+Object类有hashCode方法，所以任何对象都有这个方法。
+在向哈希表中存放对象时，会调用对象的hashCode方法，算出对象在表中的存放位置。如果两个对象hashCode方法算出结果一样(这种现象称为"哈希冲突")，这时会调用对象的equals方法，比较这两个对象是不是同一个对象。
+
+给HashSet中存储JavaAPI中提供的类型元素时，不需要重写元素的hashCode和equals方法，因为这两个方法，在JavaAPI的每个类中已经重写完毕，如String类、Integer类等。
+
+如果我们往集合中存放自定义的对象，那么保证其唯一，就必须复写hashCode和equals方法建立属于当前对象的比较方式。（myE提供自动生成hashCode和equals）
+
+	Set<String> set =new HashSet<String>();
+	set.add("aaa");
+	set.add("bbb");		// 返回true
+	set.add("ccc");
+	set.add("ddd");
+	set.add("bbb");		// 返回false
+	for (String string : set) {
+		System.out.print(string+'\t');
+	}
+	输出结果:
+		aaa	ddd	ccc	bbb
+
+	说明：String类重写了hashCode方法，是通过包含的所有字符计算出来的。所以两个"bbb"计算出来的hashCode相同。
+	set发现第二个"bbb"的哈希值，和第一个"bbb"的哈希值相同，为了判断它们是不是相同元素，会调用equals方法去比较两个对象。
+	因为String类重写了equals方法，比较的不是地址，而是字符，所以返回true。
+	set就认为这两个"bbb"是相同的，不重复存储。
+
+
+HashSet有一个子类LinkedHashSet，它是链表和哈希表组合的一个数据存储结构，保证元素的存入和取出的顺序一致。
+
+
+
+
+-----------------Collections-----------------
+Collections是集合工具类，用来对集合进行操作。部分方法如下：
+
+1 sort(List)	// 对List升序
+	Collections.sort(list);	//[33,11,77,55] -> [11,33,55,77]
+
+
+2 shuffle(List) // 对List打乱存储顺序
+	//list集合元素 [11,33,55,77]
+	Collections.shuffle(list);
+	//使用shuffle方法后，集合中的元素为[77,33,11,55]，每次执行该方法，集合中存储的元素位置都会随机打乱
+
+
+3 emptyList()、emptySet()、emptyMap()
+	如果你想new一个空List，并且以后也不打算再添加元素，那么就用 Collections.emptyList()。
+	new ArrayList() 或者 new LinkedList() 在创建的时候有会有初始大小，浪费内存
+	注意：不能添加元素的，会直接报异常。
+
+
+
+
+-----------------集合体系中的面向对象思想-----------------
+
+接口：用来明确所有集合中该具有的功能，相当于规定功能标准；
+抽象类：把多个集合中功能实现方式相同的方法，抽取到抽象类实现，具体集合中不再写，直接继承到。
+具体类：继承抽象类，实现接口，重写所有抽象方法。每个具体集合类，根据自身的数据存储结构方式，对接口中的功能方法，进行不同方式的实现。
+
+
+
+
+-----------------map接口-----------------
+collection中的元素是"单身"的，map中的元素是"成对"的。collection和map之间没有任何继承关系。
+
+map<K,V>接口
+	---HashMap<K,V>：最常用的Map实现。只是将一个键和值相对应，并没有其他的功能。
+		---LinkedHashMap<K,V>：存储数据采用的哈希表结构+链表结构。通过链表结构可以保证元素的存取顺序一致；通过哈希表结构可以保证的键的唯一、不重复。
+
+如果键是自定义对象，为了保证唯一性，需要重写键的hashCode()、equals()方法。
+
+	Map<String,Integer> map = new HashMap<String,Integer>();
+	
+	put()
+	get()
+
+遍历方法：
+	1 获取所有的key，通过key得到value【利用key的唯一性】
+		Set<String> keySet=map.keySet();
+		for(String key:keySet){
+			Integer value=map.get(key);		
+		}
+	2 Entry是Map中用来保存一个键值对的，而Map实际上就是多个Entry的集合。
+		Set<Entry<String,Integer>> entrySet=map.entrySet();
+		for (Entry<String, Integer> entry : entrySet) {
+			String key=entry.getKey();
+			Integer value=entry.getValue();
+		}
+	如果要保证map中存放的key和取出的顺序一致，可以使用LinkedHashMap
 
 
