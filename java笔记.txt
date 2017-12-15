@@ -78,7 +78,7 @@ try...catch的例子：
 		return i*2;
 	}
 	说明：
-		getEle方法内新建一个异常对象，并且抛出给它的调用者main函数。
+		getEle方法内新建一个异常对象，v并且抛出给它的调用者main函数。
 		因为main函数有try..catch，所以接到异常不再抛给虚拟机，而是在对应的catch中处理。处理之后接着运行程序。
 
 
@@ -219,28 +219,34 @@ Java中把"文件"或者"目录"（文件夹）都封装成File对象。
 
 
 
------------------IO流--------------------
-java.io.OutputStream 抽象类，是表示输出字节流的所有类的超类。操作的数据都是字节，定义了输出字节流的基本共性功能方法。
-因为操作的是字节，所以可以输出任意类型的文件：文本、图片、音频...
+-----------------IO字节流--------------------
+流对象使用步骤：
+	1. 创建流对象，指定操作文件
+	2. write()/read()
+	3. close()
 
 流对象特点：自己不做,依赖操作系统
 
+（一）字节流：OutputStream InputStream
+	抽象类，常用实现类：FileOutputStream FileInputStream
+	操作的是字节，所以可以操作任意类型的文件：文本、图片、音频...。每次只操作一个字节
+
+（二）字符流：Writer Reader
+	抽象类，常用实现类：FileWriter FileReader（这两个类都使用机器默认的编码表，和缓冲区大小。不能改）
+	操作的是字符，只能操作文本文件
+	因为中文可能占多个字节，所以用字符流比较好
+	如果需要指定编码表，则要使用"转换流"：OutputStreamWriter InputStreamWriter
+
+
+
+-----------------FileOutputStream类--------------------
+OutputStream：抽象类，是表示字节输出流的所有类的超类
 	write(int b)：写入字节（int先转byte）
 	write(byte[] b)：写入字节数组
 	write(byte[] b,int off, int len)：写入字节数组，偏移量off，长度len
 	flush()：刷新此输出流，并强制写出所有缓冲的输出字节。
 	close()：关闭此输出流，并释放所有相关的系统资源。
 
-流对象使用步骤：
-	1. 创建流对象
-	2. write()
-	3. close()
-  
-流对象的构造方法,可以创建文件,如果文件存在,直接覆盖
-
-
-
------------------FileOutputStream类--------------------
 抽象类OutputStream
 	---FileOutputStream类
 
@@ -248,8 +254,7 @@ java.io.OutputStream 抽象类，是表示输出字节流的所有类的超类�
 	FileOutputStream(File file) ：将字节写入文件开始处。如果文件已存在，则直接覆盖
 	FileOutputStream(File file,boolean append) ：将字节写入文件末尾处。不会覆盖已有内容
 	FileOutputStream(String name) 
-	FileOutputStream(String name,boolean append)
-	
+	FileOutputStream(String name,boolean append)	
 
 	public static void main(String[] args)throws IOException {
 		FileOutputStream fos = new FileOutputStream("e:\\a.txt",true);
@@ -272,6 +277,207 @@ java.io.OutputStream 抽象类，是表示输出字节流的所有类的超类�
 		fos.close();		
 	}
 
+异常处理：
+	FileOutputStream fos = null;
+	try{
+		fos = new FileOutputStream("d:\\a.txt");
+		fos.write(100);
+	}catch(IOException ex){
+		ex.printStackTrace();
+		throw new RuntimeException("文件写入失败,重试");
+	}finally{
+		try{
+			if(fos!=null){	// 如果对象建立失败，则不需要关闭资源
+		    	fos.close();
+			}
+		}catch(IOException ex){
+			throw new RuntimeException("关闭资源失败");
+		}
+	}
+
+
+
+
+-----------------FileInputStream类--------------------
+InputStream：抽象类，是表示字节输入流的所有类的超类
+	int  read()：读取1个字节
+	int  read(byte[] b)：读取一定量的字节,存储到数组中
+	void close()
+
+抽象类InputStream
+	---FileInputStream类
+
+构造函数：	
+	FileInputStream(File file)
+	FileInputStream(String name) 
+
+	/*
+	 *  int read()：
+	 * 		每执行一次,就会自动读取下一个字节
+	 * 		返回值：读取到的字节, 读取到结尾返回-1
+	 */
+	public static void main(String[] args) throws IOException{
+		FileInputStream fis = new FileInputStream("c:\\a.txt");
+		int b = 0;	
+		while( (b = fis.read()) != -1){
+			System.out.print((char)b);
+		}
+		fis.close();
+	}
+
+	/*
+	 *  int read(byte[] b)：
+	 *  	数组作用:提高效率
+	 *  	返回值：读取到的有效字节数
+	 *
+	public static void main(String[] args) throws IOException {
+		FileInputStream fis = new FileInputStream("c:\\a.txt");
+		//1024字节=1kb
+		byte[] b = new byte[1024];		
+		int len = 0 ;
+		while( (len = fis.read(b)) !=-1){
+			System.out.print(new String(b,0,len));
+		}
+		fis.close();
+	}
+
+
+
+
+
+-----------------利用IO流复制--------------------
+
+	public static void main(String[] args){
+		FileInputStream in=null;
+		FileOutputStream out=null;
+		try{
+			in=new FileInputStream("e:\\a.zip");
+			out=new FileOutputStream("e:\\b.zip");
+			int len=0;
+			byte[] b=new byte[1024*10];
+			while ((len = in.read(b))!=-1) {
+				out.write(b,0,len);
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new RuntimeException("文件复制失败");
+		}finally{
+			try{
+				if(out!=null)
+					out.close();
+			}catch(IOException ex){
+				throw new RuntimeException("释放资源失败");
+			}finally{
+				try{
+					if(in!=null)
+						in.close();
+				}catch(IOException ex){
+					throw new RuntimeException("释放资源失败");
+				}
+			}
+		}		
+	}
+
+
+
+
+
+-----------------FileWriter--------------------
+java.io.Writer 所有字符输出流的超类 
+只能写文本文件（用记事本打开能看懂的文件）
+抽象类，子类：FileWriter
+
+	write(int c) 写1个字符
+	write(char[] c)写字符数组
+	write(char[] c,int,int)字符数组一部分,开始索引,写几个
+	write(String s) 写入字符串
+
+
+Writer流，每次写完都要刷新flush()；close()会自动先刷新。具体：
+	flush():将流中的缓冲区的数据刷新到目的地中，刷新后，流还可以继续使用。
+	close():关闭资源，但在关闭前会将缓冲区中的数据先刷新到目的地，否则会丢失数据。关闭后流不可以使用。如果写入数据多，一定要一边写一边刷新，最后一次可以不刷新，由close完成刷新并关闭。
+
+
+	public static void main(String[] args) throws IOException{
+		FileWriter fw = new FileWriter("e:\\1.txt");
+		
+		//写1个字符
+		fw.write(100);
+		fw.flush();
+		
+		//写1个字符数组
+		char[] c = {'a','b','c','d','e'};
+		fw.write(c);
+		fw.flush();
+		
+		//写字符数组一部分
+		fw.write(c, 2, 2);
+		fw.flush();
+		
+		//写如字符串
+		fw.write("hello");
+		fw.flush();
+		
+		fw.close();
+	}
+
+
+
+-----------------FileReader--------------------
+java.io.Writer 所有字符输入流的超类 
+只能读文本文件
+抽象类，子类：FileReader
+
+	int read() 读取1个字符
+	int read(char[] c) 读取字符数组
+
+	public static void main(String[] args) throws IOException{
+		FileReader fr = new FileReader("c:\\1.txt");
+		char[] ch = new char[1024];
+		int len = 0 ;
+		while((len = fr.read(ch))!=-1){
+			System.out.print(new String(ch,0,len));
+		}		
+		fr.close();
+	}
+
+
+
+-----------------利用IO流复制文本文件--------------------
+
+public static void main(String[] args) {
+		FileReader fr = null;
+		FileWriter fw = null;
+		try{
+			fr = new FileReader("c:\\1.txt");
+			fw = new FileWriter("d:\\2.txt");
+			char[] cbuf = new char[1024];
+			int len = 0 ;
+			while(( len = fr.read(cbuf))!=-1){
+				fw.write(cbuf, 0, len);
+				fw.flush();
+			}
+			
+		}catch(IOException ex){
+			System.out.println(ex);
+			throw new RuntimeException("复制失败");
+		}finally{
+			try{
+				if(fw!=null)
+					fw.close();
+			}catch(IOException ex){
+				throw new RuntimeException("释放资源失败");
+			}finally{
+				try{
+					if(fr!=null)
+						fr.close();
+				}catch(IOException ex){
+					throw new RuntimeException("释放资源失败");
+				}
+			}
+		}
+	}
 
 
 
