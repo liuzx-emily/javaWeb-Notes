@@ -1,486 +1,5 @@
 
 
------------------异常-----------------
-异常就是一个类。产生了一个异常，就是产生了一个类的对象
-
-Throwable
-	Error
-	Exception （能治愈的疾病）      ： 异常，程序员能处理
-		非RuntimeExcetion   非运行时期异常,编译器异常，要求我们在编译器就必须进行处理
-		RuntimeException（运行时期异常 ）
-
-Error错误：出现在运行期。通常没有具体的处理方式，程序将会结束运行。Error错误的发生往往都是系统级别的问题，都是jvm所在系统发生的，并反馈给jvm的。我们无法针对处理，只能修正代码。
-	int[] arr = new int[1024*1024*100];	// 运行时发生了utOfMemoryError
-
-Exception异常：出现在编译、运行期间。可以对异常进行具体的处理。若不处理异常，程序将会结束运行。
-	比如：ArrayIndexOutOfBoundsException
-
-
-区分throw和throws：
-	throw：方法内，抛出一个异常对象。将这个异常对象传递到方法调用者处，并结束当前方法的执行。
-	throws：方法声明中，声明异常。
-
-处理异常的方法：throws和try...catch
-
-throws的例子：
-	public static void main(String[] args) throws Exception {
-		int[] arr = {};
-		int i = getEle(arr);
-		System.out.println(i);
-	}
-	public static int getEle(int[] arr) throws Exception {
-		if( arr == null){
-			throw new Exception("数组为null");
-		}		
-		if(arr.length == 0){
-			throw new Exception("数组中无元素");
-		}
-		int i = arr[arr.length-1];
-		return i*2;
-	}
-	说明：
-		getEle方法内新建一个异常对象，并且抛出给它的调用者main函数。
-		main函数抛出给虚拟机。
-		虚拟机在控制台打印错误信息，中止程序运行。
-
-try {
-	//可能产生异常的代码
-}catch(异常类 变量) {
-	//处理异常
-}finally {
-	// 无论异常是否发生，都需要执行的语句。比如try\catch中有return或者抛出新异常，那么finally中的语句还是会"顽强"地执行。除非碰上System.exit(0);
-	// 常用于：释放资源
-}
-
-try...catch的例子：
-	public static void main(String[] args) {
-		int[] arr = null;
-		try{
-			int i = getEle(arr);
-			System.out.println(i);
-			
-		}catch(NullPointerException ex){
-			System.out.println(ex);
-			
-		}catch(ArrayIndexOutOfBoundsException ex){			
-			System.out.println(ex);
-		}
-		System.out.println("Game Over");
-	}
-	public static int getEle(int[] arr)throws NullPointerException,ArrayIndexOutOfBoundsException{
-		if( arr == null){
-			throw new NullPointerException("数组为null");
-		}		
-		if(arr.length == 0){
-			throw new ArrayIndexOutOfBoundsException("数组中无元素");
-		}
-		int i = arr[arr.length-1];
-		return i*2;
-	}
-	说明：
-		getEle方法内新建一个异常对象，v并且抛出给它的调用者main函数。
-		因为main函数有try..catch，所以接到异常不再抛给虚拟机，而是在对应的catch中处理。处理之后接着运行程序。
-
-
-多catch：有顺序
-	所以有继承关系的异常，子类写在上面，父类写在下面
-
-
-异常分为:
-	运行异常: RuntimeException类和其子类
-	编译异常: Exception中所有的其他类
-
-运行异常的特点:
-	方法的声明上,不需要throws语句,方法的调用者也不需要处理
-	设计原因：运行异常一旦发生，不要处理，请你修改源代码。运行异常一旦发生,后面的代码没有执行的意义
-	public static void main(String[] args){
-         method();
-    }
-    public static void method(){
-        throw new RuntimeException();
-    }
-
-继承后,在子类重写父类方法的时候,异常处理
-  父类的方法如果抛出异常A,子类重写后
-    可以不抛出异常
-    也可以抛出异常,但是,如果子类要抛,抛出的异常必须是A或A的子类
-      
-  父类的方法没有抛出异常,子类重写后也不能抛出异常
-
-Throwable类中的方法:
-  void printStackTrace() 将异常信息追踪到标准的错误流 JVM默认调用的就是这个方法
-
-
-如果Java没有提供你需要的异常，则可以自定义异常类。
-编译时异常继承Exception，运行时异常继承RuntimeException。在构造方法中,用super将异常信息传递给父类
-
-
-
-
-
------------------File-----------------
-Java中把"文件"或者"目录"（文件夹）都封装成File对象。
-
-构造函数：
-	File(File parent, String child) 
-	File(String pathname) 
-	File(String parent, String child) 
-例子：
-	File f1 = new File("e:\\abc\\hello.java");	
-	File f2 = new File("e:\\abc","hello.java");	
-	File f3 = new File(new File("e:\\abc"),"hello.java");
-
-
-	/*
-	 *  删除：boolean delete()
-	 *  不走回收站,直接从硬盘中删除【谨慎】
-	 */
-	File file = new File("c:\\a.txt");
-	boolean b = file.delete();
-
-	/*
-	 *  创建文件夹：boolean mkdirs() 可以创建多级文件夹
-	 *  如果文件夹已经存在了,不再重新创建
-	 */
-	File file = new File("c:\\abc\\def");
-	boolean b = file.mkdirs();
-
-	/*
-	 *  创建文件：boolean createNewFile()
-	 *  如果文件已经存在了,不再重新创建
-	 */
-	File file = new File("c:\\a.txt");
-	boolean b = file.createNewFile();
-
-	/*
-	* 获取父路径
-	* String getParent()
-	* File getParentFile()
-	*/
-	File file = new File("d:\\eclipse\\eclipse.exe");
-	File parent = file.getParentFile();
-
-	/*
-	* 获取绝对路径
-	* String getAbsolutePath() 返回String对象
-	* File   getAbsoluteFile() 返回File对象
-	* eclipse环境中,写的是一个相对路径,则默认是在项目的根目录
-	*/
-	File file = new File("src");
-	File absolute = file.getAbsoluteFile();
-
-	/*
-	* 获取文件的大小(字节数)：long length()
-	*/
-	File file = new File("d:\\eclipse\\eclipse.exe");
-	long length = file.length();
-
-	/*
-	*  获取文件或者文件夹名：String getName()
-	*  获取路径中的最后部分的名字
-	*/
-	File file = new File("d:\\eclipse\\eclipse.exe");
-	String name = file.getName();
-
-	/*
-	*  判断是不是文件夹：boolean isDirectory()
-	*  判断是不是文件：boolean isFile()
-	*  不存在，则都返回false
-	*/
-	File file = new File("d:\\eclipse\\eclipse.exe");
-	if(file.exists()){
-		boolean b = file.isDirectory();
-	}
-
-	/*
-	*  判断文件、路径是否存在：boolean exists()
-	*/
-	File file = new File("src");
-	boolean b = file.exists();
-
-	/*
-	*  File类的获取功能
-	*  File[] listFiles()
-	*  String[] list()
-	*  File[] listFiles(FileFilter filter)
-	*  File[] listFiles(FilenameFilter filter)
-	*/
-
-	File f = new File("E:\\liuzx-emily\\2 javaWeb学习笔记");
-	File[] listFiles = f.listFiles(new FilenameFilter() {			
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.toLowerCase().endsWith(".txt");
-		}
-	});
-	for (File file : listFiles) {
-		System.out.println(file);
-	}
-
-
-
------------------IO字节流--------------------
-流对象使用步骤：
-	1. 创建流对象，指定操作文件
-	2. write()/read()
-	3. close()
-
-流对象特点：自己不做,依赖操作系统
-
-（一）字节流：OutputStream InputStream
-	抽象类，常用实现类：FileOutputStream FileInputStream
-	操作的是字节，所以可以操作任意类型的文件：文本、图片、音频...。每次只操作一个字节
-
-（二）字符流：Writer Reader
-	抽象类，常用实现类：FileWriter FileReader（这两个类都使用机器默认的编码表，和缓冲区大小。不能改）
-	操作的是字符，只能操作文本文件
-	因为中文可能占多个字节，所以用字符流比较好
-	如果需要指定编码表，则要使用"转换流"：OutputStreamWriter InputStreamWriter
-
-
-
------------------FileOutputStream类--------------------
-OutputStream：抽象类，是表示字节输出流的所有类的超类
-	write(int b)：写入字节（int先转byte）
-	write(byte[] b)：写入字节数组
-	write(byte[] b,int off, int len)：写入字节数组，偏移量off，长度len
-	flush()：刷新此输出流，并强制写出所有缓冲的输出字节。
-	close()：关闭此输出流，并释放所有相关的系统资源。
-
-抽象类OutputStream
-	---FileOutputStream类
-
-构造函数：
-	FileOutputStream(File file) ：将字节写入文件开始处。如果文件已存在，则直接覆盖
-	FileOutputStream(File file,boolean append) ：将字节写入文件末尾处。不会覆盖已有内容
-	FileOutputStream(String name) 
-	FileOutputStream(String name,boolean append)	
-
-	public static void main(String[] args)throws IOException {
-		FileOutputStream fos = new FileOutputStream("e:\\a.txt",true);
-		//写入：abc
-		fos.write(97);
-		fos.write(98);
-		fos.write(99);
-		
-		//写入：ABCD
-		byte[] bytes = {65,66,67,68};
-		fos.write(bytes);
-		
-		//写入：B
-		fos.write(bytes, 1, 2);
-		
-		//写入：hello换行
-		fos.write("hello\n".getBytes());	//换行:\n \r
-
-		//关闭资源
-		fos.close();		
-	}
-
-异常处理：
-	FileOutputStream fos = null;
-	try{
-		fos = new FileOutputStream("d:\\a.txt");
-		fos.write(100);
-	}catch(IOException ex){
-		ex.printStackTrace();
-		throw new RuntimeException("文件写入失败,重试");
-	}finally{
-		try{
-			if(fos!=null){	// 如果对象建立失败，则不需要关闭资源
-		    	fos.close();
-			}
-		}catch(IOException ex){
-			throw new RuntimeException("关闭资源失败");
-		}
-	}
-
-
-
-
------------------FileInputStream类--------------------
-InputStream：抽象类，是表示字节输入流的所有类的超类
-	int  read()：读取1个字节
-	int  read(byte[] b)：读取一定量的字节,存储到数组中
-	void close()
-
-抽象类InputStream
-	---FileInputStream类
-
-构造函数：	
-	FileInputStream(File file)
-	FileInputStream(String name) 
-
-	/*
-	 *  int read()：
-	 * 		每执行一次,就会自动读取下一个字节
-	 * 		返回值：读取到的字节, 读取到结尾返回-1
-	 */
-	public static void main(String[] args) throws IOException{
-		FileInputStream fis = new FileInputStream("c:\\a.txt");
-		int b = 0;	
-		while( (b = fis.read()) != -1){
-			System.out.print((char)b);
-		}
-		fis.close();
-	}
-
-	/*
-	 *  int read(byte[] b)：
-	 *  	数组作用:提高效率
-	 *  	返回值：读取到的有效字节数
-	 *
-	public static void main(String[] args) throws IOException {
-		FileInputStream fis = new FileInputStream("c:\\a.txt");
-		//1024字节=1kb
-		byte[] b = new byte[1024];		
-		int len = 0 ;
-		while( (len = fis.read(b)) !=-1){
-			System.out.print(new String(b,0,len));
-		}
-		fis.close();
-	}
-
-
-
-
-
------------------利用IO流复制--------------------
-
-	public static void main(String[] args){
-		FileInputStream in=null;
-		FileOutputStream out=null;
-		try{
-			in=new FileInputStream("e:\\a.zip");
-			out=new FileOutputStream("e:\\b.zip");
-			int len=0;
-			byte[] b=new byte[1024*10];
-			while ((len = in.read(b))!=-1) {
-				out.write(b,0,len);
-			}
-		}catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			throw new RuntimeException("文件复制失败");
-		}finally{
-			try{
-				if(out!=null)
-					out.close();
-			}catch(IOException ex){
-				throw new RuntimeException("释放资源失败");
-			}finally{
-				try{
-					if(in!=null)
-						in.close();
-				}catch(IOException ex){
-					throw new RuntimeException("释放资源失败");
-				}
-			}
-		}		
-	}
-
-
-
-
-
------------------FileWriter--------------------
-java.io.Writer 所有字符输出流的超类 
-只能写文本文件（用记事本打开能看懂的文件）
-抽象类，子类：FileWriter
-
-	write(int c) 写1个字符
-	write(char[] c)写字符数组
-	write(char[] c,int,int)字符数组一部分,开始索引,写几个
-	write(String s) 写入字符串
-
-
-Writer流，每次写完都要刷新flush()；close()会自动先刷新。具体：
-	flush():将流中的缓冲区的数据刷新到目的地中，刷新后，流还可以继续使用。
-	close():关闭资源，但在关闭前会将缓冲区中的数据先刷新到目的地，否则会丢失数据。关闭后流不可以使用。如果写入数据多，一定要一边写一边刷新，最后一次可以不刷新，由close完成刷新并关闭。
-
-
-	public static void main(String[] args) throws IOException{
-		FileWriter fw = new FileWriter("e:\\1.txt");
-		
-		//写1个字符
-		fw.write(100);
-		fw.flush();
-		
-		//写1个字符数组
-		char[] c = {'a','b','c','d','e'};
-		fw.write(c);
-		fw.flush();
-		
-		//写字符数组一部分
-		fw.write(c, 2, 2);
-		fw.flush();
-		
-		//写如字符串
-		fw.write("hello");
-		fw.flush();
-		
-		fw.close();
-	}
-
-
-
------------------FileReader--------------------
-java.io.Writer 所有字符输入流的超类 
-只能读文本文件
-抽象类，子类：FileReader
-
-	int read() 读取1个字符
-	int read(char[] c) 读取字符数组
-
-	public static void main(String[] args) throws IOException{
-		FileReader fr = new FileReader("c:\\1.txt");
-		char[] ch = new char[1024];
-		int len = 0 ;
-		while((len = fr.read(ch))!=-1){
-			System.out.print(new String(ch,0,len));
-		}		
-		fr.close();
-	}
-
-
-
------------------利用IO流复制文本文件--------------------
-
-public static void main(String[] args) {
-		FileReader fr = null;
-		FileWriter fw = null;
-		try{
-			fr = new FileReader("c:\\1.txt");
-			fw = new FileWriter("d:\\2.txt");
-			char[] cbuf = new char[1024];
-			int len = 0 ;
-			while(( len = fr.read(cbuf))!=-1){
-				fw.write(cbuf, 0, len);
-				fw.flush();
-			}
-			
-		}catch(IOException ex){
-			System.out.println(ex);
-			throw new RuntimeException("复制失败");
-		}finally{
-			try{
-				if(fw!=null)
-					fw.close();
-			}catch(IOException ex){
-				throw new RuntimeException("释放资源失败");
-			}finally{
-				try{
-					if(fr!=null)
-						fr.close();
-				}catch(IOException ex){
-					throw new RuntimeException("释放资源失败");
-				}
-			}
-		}
-	}
-
-
-
 
 -----------------变量--------------------【START】
 
@@ -1899,4 +1418,509 @@ map<K,V>接口
 		}
 	如果要保证map中存放的key和取出的顺序一致，可以使用LinkedHashMap
 
+
+
+
+-----------------异常-----------------
+异常就是一个类。产生了一个异常，就是产生了一个类的对象
+
+Throwable
+	---Error
+	---Exception：异常，能处理
+		---非RuntimeExcetion   非运行时期异常,编译器异常，要求我们在编译器就必须进行处理
+		---RuntimeException（运行时期异常 ）
+
+Error错误：只会出现在【运行期】。通常没有具体的处理方式，程序将会结束运行。Error错误的发生往往都是系统级别的问题，都是jvm所在系统发生的，并反馈给jvm的。我们无法针对处理，只能修正代码。
+	int[] arr = new int[1024*1024*100];	//outOfMemoryError
+
+Exception异常：出现在编译、运行期间。可以对异常进行具体的处理。若不处理异常，程序将会结束运行。
+	比如：ArrayIndexOutOfBoundsException
+
+
+区分throw和throws：
+	throw：抛出异常 throw new Exception();
+	throws：声明异常 throws Exception
+
+处理异常的方法：throws和try...catch
+
+（1）处理异常：throws
+	public static void main(String[] args) throws Exception {
+		myException();
+	}
+	public static int myException() throws Exception {
+		throw new Exception("异常演示");		
+	}
+	说明：
+		myException方法内新建一个异常对象，并且抛出给它的调用者main。
+		main把异常抛出给jvm。
+		jvm在控制台打印错误信息，中止程序运行。
+
+（2）处理异常：try..catch
+	try {
+	}catch(异常类 变量) {
+	}finally {
+		// 无论异常是否发生，都一定会执行的语句。即使try、catch中有return或者抛出新异常，那么finally中的语句还是会"顽强"地执行。除非碰上System.exit(0);
+		// 常用于：释放资源
+	}
+
+	public static void main(String[] args){
+		try{
+			myException();			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public static int myException() throws Exception {
+		throw new Exception("异常演示");		
+	}
+	说明：
+		myException方法内新建一个异常对象，并且抛出给它的调用者main。
+		因为main函数有try..catch，所以接到的异常不抛给虚拟机，而是在对应的catch中处理。处理之后接着运行程序。
+
+
+多catch：有顺序。所以父类异常写后面的catch里，子类写前面的。
+
+
+异常分为:
+	运行异常: RuntimeException类和其子类
+	编译异常: Exception中所有的其他类
+
+运行异常的特点:
+	【方法声明中不需要throws,方法的调用者也不需要处理】
+	设计原因：运行异常一旦发生，不要处理，请你修改源代码。运行异常一旦发生,后面的代码没有执行的意义
+	public static void main(String[] args){
+         myRuntimeException();
+    }
+    public static void myRuntimeException(){
+        throw new RuntimeException();
+    }
+
+继承后,在子类重写父类方法的时候,异常处理
+  父类的方法如果抛出异常A,子类重写后
+    可以不抛出异常
+    也可以抛出异常,但是,如果子类要抛,抛出的异常必须是A或A的子类
+      
+  父类的方法没有抛出异常,子类重写后也不能抛出异常
+
+Throwable类中的方法:
+  void printStackTrace() 将异常信息追踪到标准的错误流(JVM默认调用的就是这个方法)
+
+
+如果Java没有提供你需要的异常，则可以自定义异常类。
+编译时异常继承Exception，运行时异常继承RuntimeException。在构造方法中,用super将异常信息传递给父类
+
+
+
+
+
+-----------------File-----------------
+Java中把"文件"或者"目录"（文件夹）都封装成File对象。
+
+构造函数：
+	File(File parent, String child) 
+	File(String pathname) 
+	File(String parent, String child) 
+例子：
+	File f1 = new File("e:\\abc\\hello.java");	
+	File f2 = new File("e:\\abc","hello.java");	
+	File f3 = new File(new File("e:\\abc"),"hello.java");
+
+
+	/*
+	 *  删除：boolean delete()
+	 *  不走回收站,直接从硬盘中删除【谨慎】
+	 */
+	File file = new File("c:\\a.txt");
+	boolean b = file.delete();
+
+	/*
+	 *  创建文件夹：boolean mkdirs() 可以创建多级文件夹
+	 *  如果文件夹已经存在了,不再重新创建
+	 */
+	File file = new File("c:\\abc\\def");
+	boolean b = file.mkdirs();
+
+	/*
+	 *  创建文件：boolean createNewFile()
+	 *  如果文件已经存在了,不再重新创建
+	 */
+	File file = new File("c:\\a.txt");
+	boolean b = file.createNewFile();
+
+	/*
+	* 获取父路径
+	* String getParent()
+	* File getParentFile()
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	File parent = file.getParentFile();
+
+	/*
+	* 获取绝对路径
+	* String getAbsolutePath() 返回String对象
+	* File   getAbsoluteFile() 返回File对象
+	* eclipse环境中,写的是一个相对路径,则默认是在项目的根目录
+	*/
+	File file = new File("src");
+	File absolute = file.getAbsoluteFile();
+
+	/*
+	* 获取文件的大小(字节数)：long length()
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	long length = file.length();
+
+	/*
+	*  获取文件或者文件夹名：String getName()
+	*  获取路径中的最后部分的名字
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	String name = file.getName();
+
+	/*
+	*  判断是不是文件夹：boolean isDirectory()
+	*  判断是不是文件：boolean isFile()
+	*  不存在，则都返回false
+	*/
+	File file = new File("d:\\eclipse\\eclipse.exe");
+	if(file.exists()){
+		boolean b = file.isDirectory();
+	}
+
+	/*
+	*  判断文件、路径是否存在：boolean exists()
+	*/
+	File file = new File("src");
+	boolean b = file.exists();
+
+	/*
+	*  File类的获取功能
+	*  String[] list()
+	*  File[] listFiles()
+	*  File[] listFiles(FilenameFilter filter)：【筛选】
+	*/
+
+	File f = new File("E:\\liuzx-emily\\2 javaWeb学习笔记");
+	File[] listFiles = f.listFiles(new FilenameFilter() {			
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.toLowerCase().endsWith(".txt");
+		}
+	});
+	for (File file : listFiles) {
+		System.out.println(file);
+	}
+
+
+
+-----------------IO字节流--------------------
+流对象使用步骤：
+	1. 创建流对象，指定操作文件
+	2. write()/read()
+	3. close()
+
+流对象特点：自己不做,依赖操作系统
+
+（一）字节流
+	操作的是字节，所以可以操作任意类型的文件：文本、图片、音频...。每次只操作一个字节
+	常用实现类：FileOutputStream FileInputStream
+
+（二）字符流
+	操作的是字符，只能操作文本文件
+	因为中文可能占多个字节，所以用字符流比较好
+	常用实现类：OutputStreamWriter InputStreamWriter（"转换流"，可以指定编码）
+
+字节流：
+	InputStream（抽象类）
+	   FileInputStream
+	   BufferedInputStream
+	 
+	OuputStream（抽象类）
+		FileOutputStream
+		BufferedOuputStream
+
+字符流：
+	Writer（抽象类）
+		OutputStreamWriter
+		BufferedWriter
+
+	Reader（抽象类）
+		InputStreamReader
+		BufferedReader
+
+
+
+-----------------FileOutputStream类--------------------
+父类OutputStream：抽象类，是表示字节输出流的所有类的超类
+	write(int b)：写入字节
+	write(byte[] b)：写入字节数组
+	write(byte[] b,int off, int len)：写入字节数组，偏移量off，长度len
+	flush()：刷新此输出流，并强制写出所有缓冲的输出字节。
+	close()：关闭此输出流，并释放所有相关的系统资源。
+
+抽象类OutputStream
+	---FileOutputStream类
+
+构造函数：
+	FileOutputStream(File file) ：将字节写入文件开始处。如果文件已存在，则直接覆盖
+	FileOutputStream(File file,boolean append) ：将字节写入文件末尾处。不会覆盖已有内容
+	FileOutputStream(String name) 
+	FileOutputStream(String name,boolean append)	
+
+	public static void main(String[] args)throws IOException {
+		FileOutputStream out = new FileOutputStream("e:\\a.txt",true);		
+		byte[] bytes = {65,66,67,68};		
+		out.write(bytes, 1, 2); 	//写入：BC		
+		out.write("hello\n".getBytes()); 	//写入：hello换行
+		out.close();		
+	}
+
+异常处理：
+	FileOutputStream fos = null;
+	try{
+		fos = new FileOutputStream("d:\\a.txt");
+		fos.write(100);
+	}catch(IOException ex){
+		ex.printStackTrace();
+		throw new RuntimeException("文件写入失败,重试");
+	}finally{
+		try{
+			if(fos!=null){	// 如果对象建立失败，则不需要关闭资源
+		    	fos.close();
+			}
+		}catch(IOException ex){
+			throw new RuntimeException("关闭资源失败");
+		}
+	}
+
+
+
+
+-----------------FileInputStream类--------------------
+父类InputStream：抽象类，是表示字节输入流的所有类的超类
+	int  read()：读取1个字节。返回值：读取到的字节, 读取到结尾返回-1
+	int  read(byte[] b)：读取一定量的字节,存储到数组中。返回值：读取到的有效字节数
+	void close()
+
+抽象类InputStream
+	---FileInputStream类
+
+构造函数：	
+	FileInputStream(File file)
+	FileInputStream(String name) 
+
+	public static void main(String[] args) throws IOException {
+		FileInputStream fis = new FileInputStream("c:\\a.txt");
+		//1kb
+		byte[] b = new byte[1024];		
+		int len = 0 ;
+		while( (len = fis.read(b)) !=-1){
+			System.out.print(new String(b,0,len));
+		}
+		fis.close();
+	}
+
+
+
+
+-----------------转换流--------------------
+可以指定编码表
+
+	/*
+	 * InputStreamReader：读取字节，使用指定的编码表将其解码为字符
+	 * 继承Reader
+	 * 
+	 */
+	public static void read() throws Exception {
+		// 字节流
+		InputStream fis = new FileInputStream("E:\\笔记.txt");
+		// 转换流
+		Reader isw = new InputStreamReader(fis, "utf-8");
+		char[] cbuf = new char[1024];
+		int len = 0;
+		while ((len = isw.read(cbuf)) != -1) {
+			System.out.print(new String(cbuf, 0, len));
+		}
+		isw.close();
+	}
+
+	/*
+	 *  OutputStreamWriter：使用指定的编表，将要写入流中的字符编码成字节
+	 *  继承Writer
+	 *
+	 */
+	public static void write() throws Exception {
+		// 字节流
+		OutputStream fos = new FileOutputStream("E:\\abc.txt");
+		// 转换流
+		Writer osw = new OutputStreamWriter(fos, "utf-8");
+		osw.write("你好呀~");
+		osw.close();
+	}
+
+
+
+
+
+-----------------缓冲流--------------------
+缓冲流：提高IO流的读写速度，分类：字节缓冲流与字符缓冲流。
+
+	/*
+	 *  BufferedInputStream：字节 输入 缓冲流
+	 *  继承InputStream
+	 *  构造方法：可以传递任意的字节输入流(InputStream的子类)
+	 */
+	public static void read() throws Exception {
+		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(
+				"c:\\buffer.txt"));
+		byte[] bytes = new byte[10];
+		int len = 0;
+		while ((len = bis.read(bytes)) != -1) {
+			System.out.print(new String(bytes, 0, len));
+		}
+		bis.close();
+	}
+
+	/*
+	 *  BufferedOuputStream：字节 输出 缓冲流
+	 *  继承OutputStream
+	 *  构造方法：可以传递任意的字节输出流(OutputStream的子类)
+	 */
+	public static void write() throws Exception {
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("c:\\buffer.txt"));
+		bos.write(55);
+		byte[] bytes = "HelloWorld".getBytes();
+		bos.write(bytes);
+		bos.write(bytes, 3, 2);
+		bos.close();
+	}
+
+	/*
+	 *  BufferedReader：字符 输入 缓冲流
+	 *  继承Reader
+	 *  构造方法：可以传递任意的字符输入流(Reader的子类)
+	 *  【特有的方法：String readLine()
+	 *   	读取文本行。返回的每一行的有效字符不包括\r\n
+	 *   	如果到流末尾,返回null】
+	 */
+	public static void read() throws Exception {
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(new FileInputStream("c:\\a.txt")));
+		String line = null;
+		while ((line = bfr.readLine()) != null) {
+			System.out.println(line);
+		}
+		bfr.close();
+	}
+
+	/*
+	 *  BufferedWriter：字符 输出 缓冲流
+	 *  继承Writer
+	 *  构造方法：可以传递任意的字符输出流(Writer的子类)
+	 *  【特有的方法：void newLine() 换行(平台无关)】
+	 */
+	public static void write() throws Exception {
+		BufferedWriter bfw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("c:\\a.txt")));
+		bfw.write("你好");
+		bfw.newLine();
+		bfw.flush();
+		bfw.write("大家好");
+		bfw.close();
+	}
+
+
+
+
+
+-----------------实例：复制文件--------------------
+
+目的：复制mp4文件
+分析：
+	1 不是文本文件，所以用字节流
+	2 为了提高速度：①读数组 ②用缓冲流
+说明：为了结构清晰，把异常throws出去，不写try catch了
+
+	private static void copy_1() throws IOException {
+		FileInputStream in = new FileInputStream("E:\\movie.mp4");
+		FileOutputStream out = new FileOutputStream("D:\\movie.mp4");
+
+		BufferedInputStream bin = new BufferedInputStream(in);
+		BufferedOutputStream bout = new BufferedOutputStream(out);
+
+		byte[] bytes = new byte[1024];
+		int len = 0;
+		while ((len = bin.read(bytes)) != -1) {
+			bout.write(bytes, 0, len);
+		}
+		bin.close();
+		bout.close();
+	}
+
+
+
+
+
+
+-----------------实例：文本文件输入输出--------------------
+
+目的：从a.txt中读数据，向a2.txt中写数据
+分析：
+	1 用字符流
+	2 为了提高速度：①读数组 ②用缓冲流
+
+说明：为了结构清晰，把异常throws出去，不写try catch了
+	
+	private static void in_() throws IOException {
+		// 字节流
+		FileInputStream fis = new FileInputStream("E:\\a.txt");
+		// 转换流：字节流 -> 字符流 
+		InputStreamReader isr = new InputStreamReader(fis);
+		// 字符缓冲流：提速
+		BufferedReader bf=new BufferedReader(isr);
+		
+		FileOutputStream fos= new FileOutputStream("E:\\a2.txt");
+		OutputStreamWriter osw=new OutputStreamWriter(fos);
+		BufferedWriter bw=new BufferedWriter(osw);
+		
+		// 读：第一行姓名，第二行年龄
+		String name=bf.readLine();
+		String age=bf.readLine();
+		
+		// 写：
+		bw.write("姓名："+name);
+		bw.newLine();
+		bw.flush();
+		
+		// 写：
+		bw.write("年龄："+age);
+		bw.newLine();
+		bw.flush();
+
+		bf.close();
+		bw.close();
+	}
+
+
+
+
+
+
+
+-----------------多线程--------------------
+程序运行原理：
+	分时调度：平均
+	抢占式调度：优先级（Java用这种）
+
+	CPU使用抢占式调度模式在多个线程间高速切换。对于CPU的一个核而言，某个时刻，只能执行一个线程。因为切换速度极快，所以感觉上是多个应用同时运行。
+
+
+jvm启动后，有一个执行路径(线程)从main方法开始的，一直执行到main方法结束，这个线程在java中称之为主线程。
+
+
+
+
+-----------------Thread类--------------------
+
+创建新线程。
+	继承Thread，重写run()。这里的run()相当于其他线程的main()
+	创建对象，调用start()：开启线程,并且让jvm调用run()
 
