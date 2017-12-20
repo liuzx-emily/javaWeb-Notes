@@ -522,55 +522,21 @@ final是个修饰符，它可以用来修饰：
 
 
 
-----------------内部类---------------
+----------------匿名内部类---------------
+内部类是为了应对更为复杂的类间关系。查看源代码中会涉及到，而在日常业务中很难遇到
+最常用到的就是匿名内部类
 
-1 内部类：在一个类中，定义了一个新类，这个新的类就是内部类
-  内部类分为成员内部类与局部内部类
-
-2 成员内部类
-
-	class Body {
-		private boolean life= true;
-	    public class Heart {
-			public void jump() {
-				System.out.println("生命状态" + life);
-			}
-		}
-		public static void main(String[] args) {
-			Body.Heart bh = new Body().new Heart();
-			bh.jump();
-		}
+	public abstract class Person{
+		public abstract void eat();
 	}
-
-3 局部内部类
-	class Party {
-		public void puffBall(){
-			class Ball {
-	            public void puff(){System.out.println("气球膨胀了");}
-			}	
-			new Ball().puff();
+	Person  p = new Person(){
+		public void eat() {
+			System.out.println("eat.....");
 		}
-		public static void main(String[] args) {
-			Party p = new Party();
-			p.puffBall();
-		}
-	}
+	};
+	p.eat();
 
-4 内部类的实际使用：匿名内部类
-	内部类是为了应对更为复杂的类间关系。查看源代码中会涉及到，而在日常业务中很难遇到
-	最常用到的内部类就是匿名内部类，它是局部内部类的一种。
-
-		public abstract class Person{
-			public abstract void eat();
-		}
-		Person  p = new Person(){
-			public void eat() {
-				System.out.println("eat.....");
-			}
-		};
-		p.eat();
-
-	详见：https://www.cnblogs.com/nerxious/archive/2013/01/25/2876489.html
+写多线程时常用
 
 
 
@@ -1915,12 +1881,51 @@ Java中把"文件"或者"目录"（文件夹）都封装成File对象。
 
 jvm启动后，有一个执行路径(线程)从main方法开始的，一直执行到main方法结束，这个线程在java中称之为主线程。
 
-
+多线程执行时，每一个执行线程都有独立的栈内存空间。
 
 
 -----------------Thread类--------------------
 
-创建新线程。
-	继承Thread，重写run()。这里的run()相当于其他线程的main()
-	创建对象，调用start()：开启线程,并且让jvm调用run()
+创建新线程:
+	方法一：
+		继承Thread，重写run()。
+		创建对象，调用start()
+	方法二：
+		实现Runnable，重写run()。
+		创建Thread对象传参，调用start()
 
+继承树： Runnable接口 -- Thread类
+
+start()方法：开启线程,并且让jvm调用run()。其它线程的run()相当于主线程的main()
+
+	private static void tryThread(){
+		// 方法一：继承Thread
+		Thread myThread1=new Thread(){
+			@Override
+			public void run() {
+				for (int i = 0; i < 100; i++) {
+					System.out.println("thread1: "+i);
+				}
+			}
+		};
+		myThread1.start();
+		// 方法二：实现Runnable
+		Runnable myThread2=new Runnable(){
+			@Override
+			public void run() {
+				for (int i = 0; i < 100; i++) {
+					System.out.println("thread2: "+i);
+				}
+			}
+		};
+		new Thread(myThread2).start();
+	}
+
+方法二"实现Runnable"的好处：
+	1 可以继承别的
+	2 更加符合"面向对象思想"：线程对象、线程任务解耦
+	3 操作同一文件时共享
+
+获取线程的名字：Thread.currentThread().getName()
+
+让线程休眠：Thread.sleep(毫秒); //main也能休。会抛异常
