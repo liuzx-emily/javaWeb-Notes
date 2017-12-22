@@ -1,0 +1,209 @@
+数据库：mysql oracle
+数据库管理系统：navicat
+
+mysql安装过程中，输入的root密码，必须要记住
+
+mysql服务启动、关闭：
+	1 我的电脑 → 管理 → 服务 → 可以找到MySQL服务开启或停止
+	2 命令行：net start mysql
+			  net stop mysql
+
+
+----------------sql语句分类----------------
+数据定义语言：DDL(Definition)，创建、删除数据库，表，列等。关键字：create，alter，drop等 
+数据操作语言：DML(Manipulation) 增删改，关键字：insert，delete，update等
+数据控制语言：DCL(Control) 用来定义数据库的访问权限和安全级别，及创建用户。
+数据查询语言：DQL(Query) 查，关键字：select，from，where等
+
+
+
+----------------sql语法----------------
+1 语句以分号结尾
+2 不区分大小写
+3 注释 /**/
+4 常用数据结构：
+	int		
+	double
+	varchar	可变长度的字符串
+	date	日期类型，yyyy-MM-dd，没有时分秒
+	_Blob	主要用来存图片和视频，知道就行
+
+
+
+
+-------------------where条件-------------------
+	=
+	<>						不等于
+	<=
+	&& and
+	|| or 
+	! not	
+	in (1,6) 				1或者6
+	between x and y 		在x和y之间（包括xy）
+	is null
+	is not null
+	
+LIKE 通配符	模糊查询：
+	% 用来匹配任意个字符，可以无字符
+	_ 用来匹配一个字符
+
+
+
+-------------------增删改-------------------
+除了数值类型外，其它类型的值必须用引号
+
+1 增inserrt
+	insert into 表 (列名1,列名2,列名3..) values (值1,值2,值3..);
+	insert into 表 values (值1,值2,值3..);
+	INSERT student (id,name,age) VALUES (001,'小明',23);
+
+2 删delete
+	delete from 表名 [where 条件];
+	truncate table 表名;	#删除整个数据表
+	DELETE FROM student WHERE age=23;
+
+	问题：delete from 表名 和 truncate table 表名;的区别
+		delete是一条一条删除，不清空auto_increment记录数。
+		truncate直接将表删除后重建。auto_increment将置为零
+
+3 改update
+	update 表名 set 字段名=值,字段名=值;
+	update 表名 set 字段名=值,字段名=值 where 条件;
+	UPDATE student SET age=13 WHERE id=22;
+
+
+
+-------------------查-------------------
+1 语法
+	select 字段1,字段2 from 表名 [where 条件];
+	select * from 表名 [where 条件];
+
+2 别名 关键字as，可以省略
+	select * from 表名 as 别名;			#给表起别名
+	select 字段名 as 别名 from 表名; 	#给列起别名
+
+3 可以直接对列进行运算
+	select pname,price from product;	#显示的是加了100后的结果，数据库中的数据不变
+
+4 排序：order by 列名 [desc][asc]，默认asc
+	SELECT * FROM student WHERE class=1 ORDER BY age DESC;
+
+
+
+-------------------聚合函数-------------------
+之前我们做的查询都是横向，而使用聚合函数查询是纵向查询，
+它是对一列的值进行计算，然后返回一个单一的值；另外聚合函数会忽略空值null。
+
+	count：统计指定列不为NULL的记录行数
+	max min：如果指定列是字符串类型，那么使用字符串排序运算；
+	sum avg：如果指定列类型不是数值类型，那么计算结果为0；
+
+例：
+	SELECT COUNT(*) FROM zhangwu;	#查询一共有多少条数据
+	SELECT SUM(zname) FROM zhangwu WHERE zname LIKE'%收入%';
+	SELECT MAX(zmoney) FROM zhangwu;
+	SELECT AVG(zmoney) FROM zhangwu;
+
+
+
+-------------------分组查询-------------------
+分组查询:  group by 被分组的列名，必须跟随聚合函数
+SELECT SUM(money),name FROM zhangwu GROUP BY zname
+分组操作中的having子语句，是用于在分组后对数据进行过滤的
+
+having与where的区别
+	having：分组后过滤.
+	where：分组前过滤
+  
+-- 对name先查询，再分组求和,求和结果按照降序排列
+（这里给sum()起别名，是因为最后如果写ORDER BY getsum容易被误认为是执行了求和）
+	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%' GROUP BY name ORDER BY getsum DESC
+
+-- 对name先查询，再分组求和。分组求和的结果按照>5000筛选
+	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%'GROUP BY name HAVING getsum>5000
+
+
+
+-------------------limit-------------------
+分页中常用：
+	LIMIT 偏移量,行数
+	第一行的偏移量是0
+	
+	SELECT * FROM student LIMIT 5,10;  // 检索记录行 6-15
+	SELECT * FROM student LIMIT 95,-1; // 检索记录行 96-最后
+	SELECT * FROM student LIMIT 5;     //检索前5个记录行，等价于LIMIT 0,5
+
+
+
+-------------------例子-------------------
+1 从student表中查询年龄在25-30之间的（只有birth）
+	SELECT id,name,2017-birth as age,department from student HAVING age BETWEEN 25 AND 30;
+	SELECT id,name,2017-birth as age,department from student WHERE 2017-birth BETWEEN 25 AND 30;
+
+2 从student表中查询每个院系有多少人 
+	select COUNT(*),department FROM student GROUP BY department;
+
+3 从score表中查询每个科目的最高分
+	SELECT c_name,MAX(grade) from score GROUP BY c_name;
+
+4 查询李四的考试科目（c_name）和考试成绩（grade）
+	select c_name,grade from score where stu_id=(select id from student where name='李四');
+
+5 用连接的方式查询所有学生的信息和考试信息
+	select * from score,student where student.id=score.stu_id;
+
+6 同时参加计算机和英语考试的学生
+	select stu_id from score where stu_id in (select stu_id from score where c_name='计算机') and c_name='英语';
+	思路：先找到所有参加了计算机的，在找同时参加了英语的
+
+
+
+----------下面的：随便看看有印象就行，不用记。用的时候再查--------------
+	----------------数据库操作----------------
+	1 创建	
+		create database liuzx;
+		create database liuzx character set utf8;
+	2 查看
+		show databases;	#查看所有
+		show create database liuzx;	#查看特定
+	3 删除
+		drop database liuzx;
+	4 切换数据库：
+		use liuzx;
+	5 查看正在使用的数据库:
+		select database();
+	----------------表操作----------------
+	1 创建
+		CREATE TABLE student(
+			id VARCHAR(100),
+			name VARCHAR(20) NOT NULL,
+			age INT,
+			PRIMARY key(id)	#主键
+		);
+	2 删除
+		DROP TABLE student;
+	3 查看
+		show tables;	#查看所有
+		desc student;	#查看特定
+	4 删除
+		drop table student;
+	----------------修改表结构----------------
+	1 添加列
+		alter table 表名 add 列名 类型(长度) 约束;
+		ALTER TABLE student ADD col1 VARCHAR(20);
+	2 修改列的类型、长度、约束.
+		alter table 表名 modify 列名 类型(长度) 约束; 
+		ALTER TABLE student MODIFY col1 VARCHAR(50) NOT NULL;
+	3 修改列名
+		alter table 表名 change 旧列名 新列名 类型(长度) 约束; 
+		ALTER TABLE student CHANGE col1 col2 VARCHAR(30);
+	4 删除列
+		alter table 表名 drop 列名;	
+		ALTER TABLE student DROP col2;
+	5 修改表名
+		rename table 表名 to 新表名; 
+		RENAME TABLE student TO newstudent;
+	6 修改表的字符集
+		alter table 表名 character set 字符集;
+		ALTER TABLE newstudent CHARACTER SET gbk;
+----------上面的：随便看看有印象就行，不用记。用的时候再查--------------
