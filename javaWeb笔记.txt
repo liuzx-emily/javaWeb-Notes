@@ -17,34 +17,36 @@
 	查看继承树		Quick Hierarchy		ctrl + T
 	查看源码							ctrl + 鼠标悬浮
 
-	getter			alt+shit+s打开source，选getter
 
 WEB-INF > lib中的所有jar包，右键 > build path > add to ..
 
-配置是跟着工作空间走的：
+配置是跟着工作空间走的：Window -> Preferences ->
 	General -> workspace -> utf-8
 	General -> editors -> associations -> jsp -> myEclipse jsp editor
 	搜索jsp -> utf-8
+
+添加jdk：
 	java -> Installed JREs -> 添加
-	tomcat
-	取出MyEclipse自带tomcat
+
+取出MyEclipse自带tomcat：
 	General -> Startup and Shutdown -> MyEclipse Derby
 
 把项目导入myEclipse：
 	import - general -existing projects into workspace
 
-JRE System Library是放的时JRE中的类库，是很多编译后的.class文件（不是源文件.java）。在该位置可以查找到平常使用的String类、Random类、Math类等。
+JRE System Library是JRE中的类库，是很多编译后的.class文件（不是源文件.java）。在该位置可以找到常用的String类、Random类、Math类等。
 
 生成文档注释	export - javaDoc
 生成jar包		export - jar
 
 
 -----------------实体类？-----------------
-为什么要建实体类？
-	规范输入
-为什么不建实体类？
-	增加代码量
-	实体类中规定了变量类型，如果跟数据库中的变量类型不一致，需要转换的时候，容易出问题。
+实体类是对应数据库表的，属于javaBean的一种。
+
+
+为什么有时候不建实体类？
+	1. 懒
+	2. 实体类中规定了变量类型，如果跟数据库中的变量类型不一致，需要转换的时候，容易出问题。
 
 
 	
@@ -56,7 +58,6 @@ JRE System Library是放的时JRE中的类库，是很多编译后的.class文�
 		其他参数可以放到<input type="hidden">中传
 		后端返回的时候，直接返回新的url地址：
 			response.sendRedirect("新地址?username=emily");
-		前端不用额外处理，直接跳转
 
 	2 ajax
 		后端返回的时候，直接返回参数：
@@ -107,29 +108,23 @@ Servlet接口 - GenericServlet类 - HttpServlet类
 -----------------如何让浏览器访问sevlet-----------------
 在web.xml中配置：
 	<servlet>
-		<servlet-name>XXX</servlet-name>
-		<servlet-class>servlet类的路径</servlet-class>
+		<servlet-name>【servlet的名字，随便起】</servlet-name>
+		<servlet-class>【servlet类的qualified name】</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>XXX</servlet-name>
-		<url-pattern>/aaa/bbb/servlet</url-pattern>
+		<servlet-name>【servlet的名字，随便起】</servlet-name>
+		<url-pattern>【在浏览器中输入的路径，随便起】</url-pattern>
 	</servlet-mapping>
 
-	servlet-name：名字，可以随便起
-	servlet-class:servlet类的qualified name
-	url-pattern:在浏览器中输入的路径，可以随便起
 
 
 
 -----------------Servlet接口-----------------	
 Servlet接口中有五个函数待实现：
-	init：【生命周期方法】在servlet对象创建之后立刻执行，而且只执行一次
-		参数：ServletConfig sc
+	init：【生命周期方法】在servlet对象创建之后立刻执行，只执行一次
 	service：【生命周期方法】每次处理请求，都是调用这个方法，会被调用多次
-		参数：ServletRequest request
-			  ServletResponse response
-	destroy：【生命周期方法】在servlet对象被销毁之前调用，而且只会被调用一次（不是自杀，是留遗言）
+	destroy：【生命周期方法】在servlet对象被销毁之前调用（留遗言），只执行一次
 	getServletInfo：获取servlet的信息
 	getServletConfig：获取servlet的配置信息
 

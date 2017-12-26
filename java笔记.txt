@@ -2075,3 +2075,112 @@ sleep和wait的区别？
 	sleep在Thread类中，wait在Object类中。
 	sleep不会导致锁行为的改变，如果当前线程是拥有锁的，那么sleep不会让线程释放锁。wait会释放锁。
 	sleep和wait都会暂停当前的线程，释放CPU资源。调用wait后，需要别的线程执行notify notifyAll才能够重新获得CPU执行时间。
+
+
+
+
+
+-------------------JDBC原理-------------------
+JDBC：Java Data Base Connectivity
+
+Java提供的"访问数据库规范"称为"JDBC"，而数据库生产厂商提供的"JDBC规范的实现类"称为"驱动"。
+	
+
+
+
+-------------------JDBC开发步骤：-------------------
+（1）执行insert delete update：用executeUpdate
+	// 0.导入jar包
+
+	// 1.注册驱动
+	Class.forName("com.mysql.jdbc.Driver");
+
+	// 2.连接数据库
+	String url = "jdbc:mysql://localhost:3306/liuzx";
+	String username = "root";
+	String password = "123456";
+	Connection con = DriverManager.getConnection(url, username, password);
+
+	// 3.执行sql语句
+	String sql = "INSERT INTO student(id,name,age) VALUES(?,?,?)";
+	PreparedStatement ps = con.prepareStatement(sql);
+	ps.setInt(1, 1);
+	ps.setString(2, "Alice");
+	ps.setInt(3, 14);
+	ps.executeUpdate();
+
+	// 4.处理结果
+
+	// 5.释放资源
+	ps.close();
+	con.close();
+
+（2）执行select：用executeQuery
+
+	// 3.执行sql语句
+	String sql = "select * from student where id=?";
+	PreparedStatement ps = con.prepareStatement(sql);
+	ps.setInt(1, 2);
+	ResultSet rs = ps.executeQuery();
+	
+	// 4.处理结果
+	while(rs.next()){
+		System.out.println(rs.getString("name"));
+	}	
+		
+	// 5.释放资源
+	rs.close();
+	ps.close();
+	con.close();
+
+
+预处理对象prepareStatement：高效+防SQL注入攻击
+SQL注入攻击：
+	假设登录的sql语句如下:
+		select * from user where name = 用户输入的用户名 and password = 用户输的密码;
+	当用户输入的密码为：xxx or 1=1 时，则真正执行的代码变为：
+		select * from 用户表 where name = 'xxx' and password ='xxx' or 1=1;
+	上述语句永远可以查询出结果，那么用户就直接登录成功了。
+	
+
+连接池：实际开发中"获得连接"或"释放资源"是非常消耗系统资源的两个过程，为了解决此类性能问题，通常情况我们采用连接池技术。
+常见的连接池：DBCP、C3P0
+
+
+
+-------------------使用Properties配置文件-------------------
+开发中，连接数据库的4个参数（驱动、URL、用户名、密码），通常都存在配置文件中，方便后期修改。
+通常情况下，我们习惯使用properties文件，此文件我们将做如下要求：
+	1.文件位置：任意，建议src下
+	2.文件名称：任意，扩展名为properties
+	3.文件内容：一行一组数据，格式是“key=value”.
+		a)key命名自定义，如果是多个单词，习惯使用点分隔。例如：jdbc.driver
+		b)value值不支持中文
+
+
+
+
+
+-------------------概念：事务-------------------
+比如：存钱
+	1 把钱交出去 现金-100
+	2 核对信息
+	3 账户记录+100
+
+把这三件事情当做一件事情来处理。要么都成功，要么都失败
+都成功了，就提交：commit
+有的失败了，那么所有都变成原样，回退：rollback
+
+
+
+
+
+-------------------概念：javaBean-------------------
+符合一定规范编写的Java类，不是一种技术，而是一种规范。大家针对这种规范，总结了很多开发技巧、工具函数。符合这种规范的类，可以被其它的程序员或者框架使用。
+	1、所有属性为private
+	2、提供默认构造方法
+	3、提供getter和setter
+	4、实现serializable接口
+
+
+

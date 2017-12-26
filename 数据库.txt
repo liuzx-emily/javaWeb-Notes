@@ -137,8 +137,8 @@ having与where的区别
 
 -------------------例子-------------------
 1 从student表中查询年龄在25-30之间的（只有birth）
-	SELECT id,name,2017-birth as age,department from student HAVING age BETWEEN 25 AND 30;
-	SELECT id,name,2017-birth as age,department from student WHERE 2017-birth BETWEEN 25 AND 30;
+	SELECT name,2017-birth as age,department from student HAVING age BETWEEN 25 AND 30;
+	SELECT name,2017-birth as age,department from student WHERE 2017-birth BETWEEN 25 AND 30;
 
 2 从student表中查询每个院系有多少人 
 	select COUNT(*),department FROM student GROUP BY department;
@@ -207,3 +207,80 @@ having与where的区别
 		alter table 表名 character set 字符集;
 		ALTER TABLE newstudent CHARACTER SET gbk;
 ----------上面的：随便看看有印象就行，不用记。用的时候再查--------------
+
+
+
+
+-------------------JDBC原理-------------------
+JDBC：Java Data Base Connectivity
+
+Java提供的"访问数据库规范"称为"JDBC"，而数据库生产厂商提供的"JDBC规范的实现类"称为"驱动"。
+	
+
+
+
+-------------------JDBC开发步骤：-------------------
+（1）执行insert delete update：用executeUpdate
+	// 0.导入jar包
+
+	// 1.注册驱动
+	Class.forName("com.mysql.jdbc.Driver");
+
+	// 2.连接数据库
+	String url = "jdbc:mysql://localhost:3306/liuzx";
+	String username = "root";
+	String password = "123456";
+	Connection con = DriverManager.getConnection(url, username, password);
+
+	// 3.执行sql语句
+	String sql = "INSERT INTO student(id,name,age) VALUES(?,?,?)";
+	PreparedStatement ps = con.prepareStatement(sql);
+	ps.setInt(1, 1);
+	ps.setString(2, "Alice");
+	ps.setInt(3, 14);
+	ps.executeUpdate();
+
+	// 4.处理结果
+
+	// 5.释放资源
+	ps.close();
+	con.close();
+
+（2）执行select：用executeQuery
+
+	// 3.执行sql语句
+	String sql = "select * from student where id=?";
+	PreparedStatement ps = con.prepareStatement(sql);
+	ps.setInt(1, 2);
+	ResultSet rs = ps.executeQuery();
+	
+	// 4.处理结果
+	while(rs.next()){
+		System.out.println(rs.getString("name"));
+	}	
+		
+	// 5.释放资源
+	rs.close();
+	ps.close();
+	con.close();
+
+
+预处理对象prepareStatement：高效+防SQL注入攻击
+SQL注入攻击：
+	假设登录的sql语句如下:
+		select * from user where name = 用户输入的用户名 and password = 用户输的密码;
+	当用户输入的密码为：xxx or 1=1 时，则真正执行的代码变为：
+		select * from 用户表 where name = 'xxx' and password ='xxx' or 1=1;
+	上述语句永远可以查询出结果，那么用户就直接登录成功了。
+	
+
+
+
+-------------------使用Properties配置文件-------------------
+开发中，连接数据库的4个参数（驱动、URL、用户名、密码），通常都存在配置文件中，方便后期修改。
+通常情况下，我们习惯使用properties文件，此文件我们将做如下要求：
+	1.文件位置：任意，建议src下
+	2.文件名称：任意，扩展名为properties
+	3.文件内容：一行一组数据，格式是“key=value”.
+		a)key命名自定义，如果是多个单词，习惯使用点分隔。例如：jdbc.driver
+		b)value值不支持中文，如果需要使用非英文字符，将进行unicode转换。
