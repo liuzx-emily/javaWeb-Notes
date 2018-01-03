@@ -190,14 +190,35 @@ servlet是线程不安全的：
 
 
 
+
+-----------------自定义错误页面-----------------
+web.xml：
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/error404.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>500</error-code>
+		<location>/error500.jsp</location>
+	</error-page>
+
+可以用Design界面快速生成
+
+
+
+
 -----------------四个域对象-----------------
 javaWeb有四个域对象：(范围从大到小)
 	ServletContext：同生共死，统计访问量
 	HttpSession：会话，维持登录状态
 	ServletRequest：请求转发
-	PageContext
+	PageContext：一个jsp页面中
+（前三个域对象servlet jsp都能用，最后一个只在jsp中有效。所以servlet只有三大域对象）
 
-域对象用来在servlet之间传递数据。方法：
+
+域对象用来传递数据。方法：
 	void setAttribute(String name,Object value)
 	Object getAttribute(String name)
 	void removeAttribute(String name)
@@ -205,7 +226,8 @@ javaWeb有四个域对象：(范围从大到小)
 
 
 
------------------ServletContext-----------------
+
+-----------------域对象：ServletContext-----------------
 一个项目只有一个ServletContext对象，使用它可以在多个Servlet之间传递数据
 命最长，和tomcat同生共死（在tomcat启动时就创建，在关闭时才消失）
 
@@ -254,7 +276,7 @@ response的类型为：HttpServletResponse
 状态码：
 	200 成功
 	302 重定向，会带着location
-	304 缓存(比较if-modified-since的时间，与文件修改时间。如果时间一样，那么不返回内容，浏览器从缓存里拿)
+	304 缓存(将请求头中的if-modified-since的时间，与文件修改时间比较。如果近期没有修改，那么不返回内容，告诉浏览器从缓存里拿)
 	404	页面不存在
 	405 servlet中没有覆盖doGet、doPost方法
 	500 服务器内部错误
@@ -312,7 +334,7 @@ response的两个流：不能同时使用，会报错
 	Connection: keep-alive
 	User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36
 	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-	Referer: http://www.asdf.com/ 【从哪点过来的，用途：统计广告有没有用、防盗链】
+	Referer: http://www.asdf.com/ 【从哪点过来的。用途：统计投放的广告有没有用、防盗链】
 	Accept-Encoding: gzip, deflate, br
 	Accept-Language: zh-CN,zh;q=0.8
 
@@ -339,6 +361,10 @@ response的两个流：不能同时使用，会报错
 	String getParameter(String name);
 	String[] getParameterValues(String name); form表单中的多选
 
+
+
+
+-----------------域对象：Request域-----------------
 请求转发：
 	有时一个请求需要多个Servlet协作才能完成，所以需要从一个servlet跳到另一个servlet。在一个请求范围内，使用同一个request和response。通过request域来"交流"
 	请求转发：由下一个servlet完成响应体，当前servlet只可以设置响应头（设置响应体会：无效果或者报错）
@@ -415,6 +441,21 @@ jsp(java server page)：
 
 
 
+-----------------jsp原理-----------------
+jsp其实是一种特殊的servlet
+	当jsp页面第一次（本次开启服务器后第一次）被访问时：
+		服务器会把jsp编译成java文件（这个java其实是一个servlet类）
+		然后再把java文件编译成.class
+		然后创建该类对象
+		最后调用它的service()方法
+	第二次请求同一jsp时：
+		直接调用service()方法
+
+jsp文件对应的java文件和.class文件，存放在tomcat目录/work下
+
+
+
+
 
 -----------------jsp的组成-----------------
 jsp=html+java代码+jsp标签
@@ -428,17 +469,82 @@ jsp中无需创建即可使用的对象一共有9个，被称之为9大内置对
 
 
 
------------------jsp原理-----------------
-jsp其实是一种特殊的servlet
-	当jsp页面第一次（本次开启服务器后第一次）被访问时：
-		服务器会把jsp编译成java文件（这个java其实是一个servlet类）
-		然后再把java文件编译成.class
-		然后创建该类对象
-		最后调用它的service()方法
-	第二次请求同一jsp时：
-		直接调用service()方法
 
-jsp文件对应的java文件和.class文件，存放在tomcat目录/work下
+-----------------jsp指令-----------------
+1 page：
+	<%@ page language="java"%>
+	<%@ page import="java.util.*"%>
+	<%@ page pageEncoding="UTF-8"%>
+	<%@ page contentType="text/html; charset=UTF-8"%>
+
+	import：导包
+	pageEncoding：服务器把jsp编译成.java时用
+	contentType：添加一个响应头，相当于response.setContentType("xx");
+
+2 include：
+	<%@ include file="b.jsp"%> 
+
+	可以在jsp中插入多个外部文件（如：JSP、HTML、java程序，甚至是文本）。在转换成Servlet之前，include指令就会将相应的文件包含进主文件，然后一并转换成一个.java，编译生成一个.class，最后一起执行。
+	作用：每个页面都有的内容提取出来
+		1 header - footer
+		2 引用的public文件
+
+	【---------------------------------------
+
+		记录：页面中固定不变的头、尾
+			1 前端：js中生成，放在public.js中。（展示性的内容不推荐这样用，因为禁用js就显示不出来了）
+			2 后端：头、尾用include引进来。（必须在IE8下测试，因为正常浏览器可以自动纠错，）
+
+	  ---------------------------------------】
+
+
+3 taglib：导入标签库
+	<%@taglib prefix="pre" uri="/xxxxx"%>
+
+	prefix：指定标签库在本页面中的前缀，自己起名字
+	url：指定标签库的位置
+
+
+
+
+
+-----------------jsp九大内置对象-----------------
+1、request
+2、response
+3、session：会话
+4、application：天地同寿
+5、out：输出
+6、pageContext
+7、config 【用不着】
+8、page 【用不着】
+9、exception 【用不着】
+
+
+
+
+
+-----------------jsp动作-----------------
+http://www.runoob.com/jsp/jsp-actions.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------域对象：pageContext-----------------
+只在当前jsp中有。（所以javaweb有四个域对象，而servlet只有三个，就是差这个）
+作用："当前jsp页面"和"当前jsp页面中的标签"之间通信。
+
+全域查找：pageContext.findAttribute("xxx") 从小到大，小域优先
+
 
 
 
@@ -477,7 +583,8 @@ cookie的path：
 
 
 
------------------HttpSession-----------------
+
+-----------------域对象：HttpSession-----------------
 HttpSession是由javaWeb提供的，http协议中没有。
 session是服务器端对象，保存在服务器。
 session底层依赖cookie或者url重写，cookie不能跨浏览器，所以session也不能。 
@@ -516,6 +623,7 @@ web.xml中配置session的最大不活动时间：15min
 
 
 
+
 -----------------登录/注册时的验证码-----------------
 思路分析：
 	1 利用session
@@ -527,3 +635,62 @@ web.xml中配置session的最大不活动时间：15min
 		img的src重新赋一遍值。为了防止缓存，把时间戳当成参数来偏偏浏览器
 	4 判断验证码输入：
 		取session不能在前台，不安全。所以要在后台取并判断
+
+
+
+
+-----------------BeanUtils-----------------
+
+	BeanUtils.setProperty(bean, "name", "张三");
+	String name=BeanUtils.getProperty(bean, "name");
+
+把map的数据封装到一个javaBean中，要求map的key与bean的属性名相同：
+	BeanUtils.populate(user,map);
+
+
+
+
+-----------------EL标签-----------------
+作用：替代<%= %>，也就是说EL只能做输出
+
+用法：
+	${user.name}
+	${user["hahaha-name"]}
+	${cookie.JSESSIONID.value} cookie是EL中的内置对象，cookie.key返回对应的Cookie对象（而不是key对应的value值）
+
+指定域：
+	PageScope.xx
+	RequestScope.xx
+	SessionScope.xx
+	ApplicationScope.xx
+
+全域查找：
+	没指定域时，依序从Page、Request、Session、Application范围查找。
+	都没找到，返回""，而不是null
+
+具体：https://www.cnblogs.com/xdp-gacl/p/3938361.html
+
+
+JSTL：JSP标准标签库  http://www.runoob.com/jsp/jsp-jstl.html
+
+
+
+
+-----------------MVC-----------------
+MVC不是java独有，所有BS结构的项目都在用。
+
+M 	model		模型
+V 	view		视图(jsp)
+C 	controller	控制器(servlet)
+
+
+
+
+-----------------javaWeb三层框架-----------------
+是java独有的。
+
+web层：与web相关的内容(servlet jsp request、response、session等)
+业务层：service
+数据层：操作数据库
+
+不要污染service层：独立。不能和web有关，不能和数据库有关。专注逻辑、功能

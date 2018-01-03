@@ -1,0 +1,18 @@
+
+1 【jsp】
+	页面中固定不变的头、尾
+		0 每个页面都写，一旦有改动想要go die
+		1 前端：js中生成，放在public.js中。（展示性的内容不推荐这样用，因为禁用js就显示不出来了）
+		2 后端：头、尾用include引进来。（必须在IE8下测试，因为正常浏览器可以自动纠错，）
+
+
+2 【ajax】
+	$.ajax({
+	    url: "http://localhost:8080/modelPro/student/add.do",
+	    type: 'POST',
+	    contentType: "application/json",    // request类型。
+	    data: JSON.stringify(params),
+	    dataType: 'json',   				// response类型。如果不返回json不能用这个，不然会走error
+	    success: function() {},
+	    error:function(){}
+	});
