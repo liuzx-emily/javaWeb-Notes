@@ -126,7 +126,6 @@ having与where的区别
 	where：分组前过滤
   
 -- 对name先查询，再分组求和,求和结果按照降序排列
-（这里给sum()起别名，是因为最后如果写ORDER BY getsum容易被误认为是执行了求和）
 	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%' GROUP BY name ORDER BY getsum DESC
 
 -- 对name先查询，再分组求和。分组求和的结果按照>5000筛选
