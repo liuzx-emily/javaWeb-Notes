@@ -9,11 +9,14 @@ mysql服务启动、关闭：
 			  net stop mysql
 
 
+
+
 ----------------sql语句分类----------------
 数据定义语言：DDL(Definition)，创建、删除数据库，表，列等。关键字：create，alter，drop等 
 数据操作语言：DML(Manipulation) 增删改，关键字：insert，delete，update等
 数据控制语言：DCL(Control) 用来定义数据库的访问权限和安全级别，及创建用户。
 数据查询语言：DQL(Query) 查，关键字：select，from，where等
+
 
 
 
@@ -31,6 +34,7 @@ mysql服务启动、关闭：
 
 
 
+
 -------------------where条件-------------------
 	=
 	<>						不等于
@@ -39,6 +43,8 @@ mysql服务启动、关闭：
 	|| or 
 	! not	
 	in (1,6) 				1或者6
+	any(1,6)				in(1,5)等价于=any(1,6)   列>any(1,6)：列>1或列>6都行
+	all(1,6)				列>all(1,6)：列>1并且列>6
 	between x and y 		在x和y之间（包括xy）
 	is null
 	is not null
@@ -46,6 +52,7 @@ mysql服务启动、关闭：
 LIKE 通配符	模糊查询：
 	% 用来匹配任意个字符，可以无字符
 	_ 用来匹配一个字符
+
 
 
 
@@ -73,6 +80,7 @@ LIKE 通配符	模糊查询：
 
 
 
+
 -------------------查-------------------
 1 语法
 	select 字段1,字段2 from 表名 [where 条件];
@@ -87,6 +95,7 @@ LIKE 通配符	模糊查询：
 
 4 排序：order by 列名 [desc][asc]，默认asc
 	SELECT * FROM student WHERE class=1 ORDER BY age DESC;
+
 
 
 
@@ -106,9 +115,10 @@ LIKE 通配符	模糊查询：
 
 
 
+
 -------------------分组查询-------------------
 分组查询:  group by 被分组的列名，必须跟随聚合函数
-SELECT SUM(money),name FROM zhangwu GROUP BY zname
+SELECT SUM(money),name FROM zhangwu GROUP BY name
 分组操作中的having子语句，是用于在分组后对数据进行过滤的
 
 having与where的区别
@@ -137,6 +147,7 @@ having与where的区别
 
 
 
+
 -------------------例子-------------------
 1 从student表中查询年龄在25-30之间的（只有birth）
 	SELECT name,2017-birth as age,department from student HAVING age BETWEEN 25 AND 30;
@@ -152,63 +163,119 @@ having与where的区别
 	select c_name,grade from score where stu_id=(select id from student where name='李四');
 
 5 用连接的方式查询所有学生的信息和考试信息
-	select * from score,student where student.id=score.stu_id;
+	select * from score,student where student.id=score.stu_id;【方言】
+	select * from score INNER JOIN student ON student.id=score.stu_id;【标准】
 
 6 同时参加计算机和英语考试的学生
 	select stu_id from score where stu_id in (select stu_id from score where c_name='计算机') and c_name='英语';
 	思路：先找到所有参加了计算机的，在找同时参加了英语的
 
+7 查询2000年入职的员工
+	... WHERE hiredate LIKE '2000%'
+
+8 用年龄降序排序。如果年龄相同，用学号升序排列
+	... ORDER BY age DESC,id ASC
 
 
-----------下面的：随便看看有印象就行，不用记。用的时候再查--------------
-	----------------数据库操作----------------
-	1 创建	
-		create database liuzx;
-		create database liuzx character set utf8;
-	2 查看
-		show databases;	#查看所有
-		show create database liuzx;	#查看特定
-	3 删除
-		drop database liuzx;
-	4 切换数据库：
-		use liuzx;
-	5 查看正在使用的数据库:
-		select database();
-	----------------表操作----------------
-	1 创建
-		CREATE TABLE student(
-			id VARCHAR(100),
-			name VARCHAR(20) NOT NULL,
-			age INT,
-			PRIMARY key(id)	#主键
-		);
-	2 删除
-		DROP TABLE student;
-	3 查看
-		show tables;	#查看所有
-		desc student;	#查看特定
-	4 删除
-		drop table student;
-	----------------修改表结构----------------
-	1 添加列
-		alter table 表名 add 列名 类型(长度) 约束;
-		ALTER TABLE student ADD col1 VARCHAR(20);
-	2 修改列的类型、长度、约束.
-		alter table 表名 modify 列名 类型(长度) 约束; 
-		ALTER TABLE student MODIFY col1 VARCHAR(50) NOT NULL;
-	3 修改列名
-		alter table 表名 change 旧列名 新列名 类型(长度) 约束; 
-		ALTER TABLE student CHANGE col1 col2 VARCHAR(30);
-	4 删除列
-		alter table 表名 drop 列名;	
-		ALTER TABLE student DROP col2;
-	5 修改表名
-		rename table 表名 to 新表名; 
-		RENAME TABLE student TO newstudent;
-	6 修改表的字符集
-		alter table 表名 character set 字符集;
-		ALTER TABLE newstudent CHARACTER SET gbk;
-----------上面的：随便看看有印象就行，不用记。用的时候再查--------------
+
+
+
+-------------------主键-------------------
+主键：
+	1 非空
+	2 唯一
+	3 可以被引用（外键）
+
+外键：
+	1 可以为空
+	2 可以重复
+	3 外键必须是另一个表的主键的值（外键引用主键）
+	4 一个表可以有多个外键，相对不同表
+
+
+一对一：【用不到】
+	husband表，主键：hid
+	wife表，主键wid。外键wid引用husband.hid
+
+一对多：
+	teacher表，主键：tid
+	student表，主键wid。外键tid引用teacher.tid
+
+多对多：	
+	班级是一张表
+	教师是一张表
+	班级和教师的关系也是一张表（指定两个外键，分别引用班级.主键、教师.主键）
+
+
+
+
+-------------------多表查询-------------------
+分类：
+	合并结果集
+	连接查询
+	子查询
+
+1 合并结果集：要求两个结果集的列数、列类型完全相同
+	select * from ab union select * from cd;
+	语法：
+		union：去除重复行
+		union all:不去除重复行
+	详：https://www.cnblogs.com/kissdodog/archive/2013/06/24/3152743.html
+
+
+2 连接查询
+
+	内连接:（笛卡尔积，用where筛）
+		连接结果仅包含符合where条件的行，参与连接的两个表都应该符合连接条件。
+		【mysql方言】select * from a,b where a.id=b.id;
+		【标准】select * from a INNER JOIN b ON a.id=b.id;【关键字：INNER JOIN，ON】
+
+	外连接		
+		左外连接：左边表数据行全部保留，右边表保留符合连接条件的行。
+			SELECT * FROM a LEFT JOIN b ON a.id=b.id;
+			用子连接来模拟：SELECT a.*,(SELECT b.* FROM b WHERE a.id = b.id) FROM a
+		右外连接：右边表数据行全部保留，左边表保留符合连接条件的行。
+			SELECT * FROM a RIGHT JOIN b ON a.id=b.id;
+		全外连接：左外连接 union 右外连接。
+
+
+总结：
+	1、 查两表关联列相等的数据用内连接。
+	2、 Col_L是Col_R的子集时用右外连接。
+	3、 Col_L是Col_R的父集时用左外连接。
+	4、 Col_R和Col_L彼此有交集但彼此互不为子集时候用全外。
+	5、 求差操作的时候用联合查询。
+
+
+例子：
+
+	SELECT
+		e.*, 
+		d.dname,
+		s.grade
+	FROM
+		emp e
+	LEFT JOIN emp m ON m.ename = e.mgr
+	LEFT JOIN dept d ON e.deptno = d.deptno
+	LEFT JOIN salgrade s ON (e.sal BETWEEN s.losal AND s.hisal)
+	WHERE
+		e.sal > (SELECT AVG(sal) FROM emp)
+
+
+
+-------------------子查询-------------------
+
+	select中嵌套其他语句
+	https://www.cnblogs.com/CareySon/archive/2011/07/18/2109406.html
+
+	select *【列可以子查询】
+	from table【源可以子查询】
+	where id=1;【条件可以子查询】
+
+
+
+
+
 
 
 
@@ -218,6 +285,7 @@ JDBC：Java Data Base Connectivity
 
 Java提供的"访问数据库规范"称为"JDBC"，而数据库生产厂商提供的"JDBC规范的实现类"称为"驱动"。
 	
+
 
 
 
@@ -274,11 +342,23 @@ SQL注入攻击：
 	当用户输入的密码为：xxx or 1=1 时，则真正执行的代码变为：
 		select * from 用户表 where name = 'xxx' and password ='xxx' or 1=1;
 	上述语句永远可以查询出结果，那么用户就直接登录成功了。
+
+
+
+
+
 	
+-------------------编码问题-------------------
+查询数据库的编码：
+	SHOW VARIABLES LIKE 'char%';
+
+	character_set_client：mysql接数据用这个编码
+	character_set_results：mysql发送数据用这个编码
 
 
 
--------------------使用Properties配置文件-------------------
+
+------------使用Properties配置文件------------
 开发中，连接数据库的4个参数（驱动、URL、用户名、密码），通常都存在配置文件中，方便后期修改。
 通常情况下，我们习惯使用properties文件，此文件我们将做如下要求：
 	1.文件位置：任意，建议src下
@@ -286,3 +366,57 @@ SQL注入攻击：
 	3.文件内容：一行一组数据，格式是“key=value”.
 		a)key命名自定义，如果是多个单词，习惯使用点分隔。例如：jdbc.driver
 		b)value值不支持中文，如果需要使用非英文字符，将进行unicode转换。
+
+
+
+
+
+----------下面的：随便看看有印象就行，不用记。用的时候再查--------------
+	----------------数据库操作----------------
+	1 创建	
+		create database liuzx;
+		create database liuzx character set utf8;
+	2 查看
+		show databases;	#查看所有
+		show create database liuzx;	#查看特定
+	3 删除
+		drop database liuzx;
+	4 切换数据库：
+		use liuzx;
+	5 查看正在使用的数据库:
+		select database();
+	----------------表操作----------------
+	1 创建
+		CREATE TABLE student(
+			id VARCHAR(100),
+			name VARCHAR(20) NOT NULL,
+			age INT,
+			PRIMARY key(id)	#主键
+		);
+	2 删除
+		DROP TABLE student;
+	3 查看
+		show tables;	#查看所有
+		desc student;	#查看特定
+	4 删除
+		drop table student;
+	----------------修改表结构----------------
+	1 添加列
+		alter table 表名 add 列名 类型(长度) 约束;
+		ALTER TABLE student ADD col1 VARCHAR(20);
+	2 修改列的类型、长度、约束.
+		alter table 表名 modify 列名 类型(长度) 约束; 
+		ALTER TABLE student MODIFY col1 VARCHAR(50) NOT NULL;
+	3 修改列名
+		alter table 表名 change 旧列名 新列名 类型(长度) 约束; 
+		ALTER TABLE student CHANGE col1 col2 VARCHAR(30);
+	4 删除列
+		alter table 表名 drop 列名;	
+		ALTER TABLE student DROP col2;
+	5 修改表名
+		rename table 表名 to 新表名; 
+		RENAME TABLE student TO newstudent;
+	6 修改表的字符集
+		alter table 表名 character set 字符集;
+		ALTER TABLE newstudent CHARACTER SET gbk;
+----------上面的：随便看看有印象就行，不用记。用的时候再查--------------
