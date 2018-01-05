@@ -208,7 +208,7 @@ having与where的区别
 
 
 
--------------------多表查询-------------------
+-------------------多表查询【重点】-------------------
 分类：
 	合并结果集
 	连接查询
@@ -232,7 +232,7 @@ having与where的区别
 	外连接		
 		左外连接：左边表数据行全部保留，右边表保留符合连接条件的行。
 			SELECT * FROM a LEFT JOIN b ON a.id=b.id;
-			用子连接来模拟：SELECT a.*,(SELECT b.* FROM b WHERE a.id = b.id) FROM a
+			用子连接来模拟：SELECT a.*,(SELECT b.* FROM b WHERE a.id = b.id) FROM a【有时候能提速】
 		右外连接：右边表数据行全部保留，左边表保留符合连接条件的行。
 			SELECT * FROM a RIGHT JOIN b ON a.id=b.id;
 		全外连接：左外连接 union 右外连接。
@@ -271,8 +271,20 @@ having与where的区别
 	from table【源可以子查询】
 	where id=1;【条件可以子查询】
 
+做练习题！！！！！
 
 
+
+-------------------函数-------------------
+左列转成右列：
+	null 	0%
+	0.2 	20&
+	1 		100%
+
+	
+用函数：concat和ifnull
+
+	concat( ifnull(n,0) *100 ,"%")
 
 
 
@@ -282,17 +294,19 @@ having与where的区别
 -------------------JDBC原理-------------------
 JDBC：Java Data Base Connectivity
 
-Java提供的"访问数据库规范"称为"JDBC"，而数据库生产厂商提供的"JDBC规范的实现类"称为"驱动"。
+Java提供的"访问数据库规范"称为"JDBC"，是"规范"。
+每个数据库的生产厂商，提供"规范的实现类"，称为"驱动"。
 	
-
+所以一定要额外下载、导入驱动的jar包。
 
 
 
 -------------------JDBC开发步骤：-------------------
 （1）执行insert delete update：用executeUpdate
-	// 0.导入jar包
+	// 0.导入mysql的jar包
 
 	// 1.注册驱动
+	// 		所有的driver实现都提供了static块，块内的代码就是把自己注册到DriverManager中！
 	Class.forName("com.mysql.jdbc.Driver");
 
 	// 2.连接数据库
@@ -342,9 +356,17 @@ SQL注入攻击：
 		select * from 用户表 where name = 'xxx' and password ='xxx' or 1=1;
 	上述语句永远可以查询出结果，那么用户就直接登录成功了。
 
+预处理的原理：
+	1 sql服务器的工作：
+		> 校验sql语句的语法
+		> 编译
+		> 执行
+	2 预处理
+		> 前提：数据库必须支持预处理（几乎都支持）
+		> 每个ps都与一个sql模版绑定在一起。先把sql模版给数据库，数据库进行校验语法、编译。执行的时候只是传递参数
+		> 若二次执行，不用再次校验语法、编译。直接传递参数执行
 
-
-
+【探究mysql预编译：http://cs-css.iteye.com/blog/1847772】
 
 	
 -------------------编码问题-------------------

@@ -694,3 +694,25 @@ web层：与web相关的内容(servlet jsp request、response、session等)
 数据层：操作数据库
 
 不要污染service层：独立。不能和web有关，不能和数据库有关。专注逻辑、功能
+
+
+
+
+-----------------思想：面向接口编程-----------------
+举例：
+	目的：降低service层的耦合度
+	把规范和实现分开
+
+	UserService.java -- 接口（规范）
+	UserServiceImpl.java -- 具体实现
+
+	要面向接口编程，不管具体的impl。impl只要遵循规范，就可以随时换。
+
+	所以代码中要避免出现impl，new UserServiceImpl()不能用了。
+	把impl放在配置文件中，用反射来加载，而不能写在代码里。
+
+
+
+
+
+

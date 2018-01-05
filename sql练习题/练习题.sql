@@ -1,4 +1,4 @@
-1.查询出部门编号为30的所有员工 
+﻿1.查询出部门编号为30的所有员工 
 -- SELECT * FROM emp WHERE deptno=30;
 
 2.所有销售员的姓名、编号和部门编号。 
@@ -74,17 +74,12 @@ WHERE
 	2. 列出所有员工的姓名及其直接上级的姓名。
 */
 	SELECT
-		*
+		e.ename,
+		t.ename
 	FROM
-		emp e,
-		emp m
-	WHERE
-		e.mgr = m.empno SELECT
-			e.ename,
-			IFNULL(m.ename, 'BOSS') 领导
-		FROM
-			emp e
-		LEFT OUTER JOIN emp m ON e.mgr = m.empno
+		emp e
+	LEFT JOIN emp t ON e.mgr = t.empno
+
 
 /*
 	3. 列出受雇日期早于直接上级的所有员工的编号、姓名、部门名称。
@@ -94,21 +89,21 @@ WHERE
 		e.ename,
 		d.dname
 	FROM
-		emp e,
-		emp m,
-		dept d
+		emp e LEFT JOIN dept d ON d.deptno = e.deptno,
+ 		emp t
 	WHERE
-		e.mgr = m.empno
-	AND e.hiredate < m.hiredate
-	AND e.deptno = d.deptno 
+		e.mgr = t.empno
+	AND e.hiredate < t.hiredate
+
 /*
 	4. 列出部门名称和这些部门的员工信息，同时列出那些没有员工的部门。
 */
 	SELECT
-		*
+		d.dname,
+		e.*
 	FROM
-		emp e
-	RIGHT OUTER JOIN dept d ON e.deptno = d.deptno
+		dept d
+	LEFT JOIN emp e ON d.deptno = e.deptno
 
 /*
 	5. 列出最低薪金大于15000的各种工作及从事此工作的员工人数。
@@ -141,21 +136,8 @@ WHERE
 /*
 	7. 列出薪金高于公司平均薪金的所有员工信息，所在部门名称，上级领导，工资等级。
 */
+	
 	SELECT
-		e.*, d.dname,
-		m.ename,
-		s.grade
-	FROM
-		emp e,
-		dept d,
-		emp m,
-		salgrade s
-	WHERE
-		e.sal > (SELECT AVG(sal) FROM emp)
-	AND e.deptno = d.deptno
-	AND e.mgr = m.empno
-	AND e.sal BETWEEN s.losal
-	AND s.hisal --------------- SELECT
 		e.*, d.dname,
 		m.ename,
 		s.grade
@@ -163,8 +145,7 @@ WHERE
 		emp e
 	LEFT OUTER JOIN dept d ON e.deptno = d.deptno
 	LEFT OUTER JOIN emp m ON e.mgr = m.empno
-	LEFT OUTER JOIN salgrade s ON e.sal BETWEEN s.losal
-	AND s.hisal
+	LEFT OUTER JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal
 	WHERE
 		e.sal > (SELECT AVG(sal) FROM emp) SELECT
 			*
@@ -178,50 +159,45 @@ WHERE
 	SELECT
 		e.*, d.dname
 	FROM
-		emp e,
-		dept d
+		emp e
+	LEFT JOIN dept d ON e.deptno = d.deptno
 	WHERE
-		e.deptno = d.deptno
-	AND job = (
-		SELECT
-			job
-		FROM
-			emp
-		WHERE
-			ename = '庞统'
-	) 
+		e.job = (
+			SELECT
+				job
+			FROM
+				emp
+			WHERE
+				ename = "庞统"
+		) 
+
 /*
-	11.列出薪金高于在部门30工作的所有员工的薪金　的员工姓名和薪金、部门名称。
+	11.列出薪金高于在部门30工作的所有员工的薪金的员工姓名和薪金、部门名称。
 */
 	SELECT
 		e.ename,
 		e.sal,
 		d.dname
 	FROM
-		emp e,
-		dept d
+		emp e
+	LEFT JOIN dept d ON e.deptno = d.deptno
 	WHERE
-		e.deptno = d.deptno
-	AND sal > ALL (
-		SELECT
-			sal
-		FROM
-			emp
-		WHERE
-			deptno = 30
-	)
+		e.sal > ALL (
+			SELECT
+				sal
+			FROM
+				emp
+			WHERE
+				deptno = 30
+		)
 /*
-	13.查出年份、利润、年度增长比
+	12.查出年份、利润、年度增长比
 */
 	SELECT
-		y1.*, IFNULL(
-			CONCAT(
-				(y1.zz - y2.zz) / y2.zz * 100,
-				'%'
-			),
-			'0%'
-		) 增长比
+		tb. YEAR,
+		tb.zz,
+		CONCAT(IFNULL(tb.zz / t.zz - 1, 0)*100,"%") "增长比"
 	FROM
-		tb_year y1
-	LEFT OUTER JOIN tb_year y2 ON y1. YEAR = y2. YEAR + 1;
+		tb
+	LEFT JOIN tb t ON tb. YEAR - 1 = t. YEAR
 

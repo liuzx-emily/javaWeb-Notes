@@ -11,8 +11,12 @@
 	    url: "http://localhost:8080/modelPro/student/add.do",
 	    type: 'POST',
 	    contentType: "application/json",    // request类型。
-	    data: JSON.stringify(params),
-	    dataType: 'json',   				// response类型。如果不返回json不能用这个，不然会走error
+	    data: JSON.stringify(params),		// 有时候没有加JSON.stringify就会报错
+	    dataType: 'json',   				// 小心!!
 	    success: function() {},
 	    error:function(){}
 	});
+
+	如果设定了dataType为json。那么
+		后台返回void时会走error，
+		后台返回Integer时接到一个真int（而不设定时,返回1则接到"1"）
