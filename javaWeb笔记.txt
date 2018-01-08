@@ -530,15 +530,6 @@ http://www.runoob.com/jsp/jsp-actions.html
 
 
 
-
-
-
-
-
-
-
-
-
 -----------------域对象：pageContext-----------------
 只在当前jsp中有。（所以javaweb有四个域对象，而servlet只有三个，就是差这个）
 作用："当前jsp页面"和"当前jsp页面中的标签"之间通信。
@@ -714,5 +705,82 @@ web层：与web相关的内容(servlet jsp request、response、session等)
 
 
 
+----------------复习-----------------
+> ServletContext
+	与天地同寿：在服务器启动时生，关闭时死。每个项目只会有一个
+
+> HttpSession
+	每个项目可能有多个session，也可能没有（没人访问）
+	不是访问任何servlet都会创建session，只有使用了request.getSession()才会创建session。
+	访问jsp一定会创建session，因为jsp转servlet的过程中写了getSession()
+	访问静态资源不会创建
+
+> ServletRequest
+	处在同一个request中时，多个servlet/jsp之间传递信息：请求转发
+	请求动态资源时创建
+	请求静态资源时不会创建
 
 
+
+-----------------监听器Listener-----------------
+javaWeb三大组件：
+	servlet
+	listener
+	filter
+
+监听器特点：
+	1 是借口，内容需要自己实现
+	2 它需要注册，例如注册在某个按钮上
+	3 监听器中的方法，会在特定事件发生时被调用
+
+
+监听器的事件源：
+	> ServletContext
+		> 生命周期监听：ServletContextListener接口,它有两个方法,分别在出生、死亡时调用
+			> void contextInitialized(ServletContextEvent sce)：出生时触发。写一些在tomcat启动时就执行的代码，比如插入初始化数据
+			> void contextDestyoyed(ServletContextEvent sce)：死亡时触发
+		> 属性监听：ServletContextAttributeListener接口,它有三个方法,分别在添加、替换、删除属性时调用
+			> void attributeAdded(ServletContextAttributeEvent event)
+			> void attributeRemoved(ServletContextAttributeEvent event)
+			> void attributeReplaced(ServletContextAttributeEvent event)
+
+	> HttpSession
+		> 生命周期监听：HttpSessionListener接口
+			> void sessionCreated(HttpSessionEvent se);
+			> void sessionDestroyed(HttpSessionEvent se);
+		> 属性监听：HttpSessionAttributeListener接口（类似）
+
+	> ServletRequest()
+		> 生命周期监听：ServletRequestListener接口
+			> void requestInitialized(ServletRequestEvent se);
+			> void requestDestroyed(ServletRequestEvent se);
+		> 属性监听：ServletRequestAttributeListener接口（类似）
+
+
+怎么写监听器？
+	写一个监听器类，要求实现某个监听器接口
+	注册：在web.xml中配置来完成注册
+		<listener>
+			<listener-class>完整路径</listener-class>
+		</listener>
+
+
+事件对象：
+	> ServletContextEvent
+		> ServletContext getServletContext();
+	> HttpSessionEvent
+		> HttpSession getSession();
+	> ServletRequestEvent
+		> ServletContext getServletContext();
+		> ServletRequest getServletRequest()
+	> ServletContextAttributeEvent scab（另两个属性监听类似）
+		> ServletContext getServletContext();
+		> String getName() 
+		> Object getValue() 获取的是旧值
+		> 获取新值：scab.getServletContext().getAttriute(scab.getName())
+
+
+session的感知监听：
+	> 都是session相关
+	> 用来添加到javaBean上，而不是加到三大域上。
+	> 都不需要在web.xml中配置

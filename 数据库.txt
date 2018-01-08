@@ -366,9 +366,24 @@ SQL注入攻击：
 		> 每个ps都与一个sql模版绑定在一起。先把sql模版给数据库，数据库进行校验语法、编译。执行的时候只是传递参数
 		> 若二次执行，不用再次校验语法、编译。直接传递参数执行
 
-【探究mysql预编译：http://cs-css.iteye.com/blog/1847772】
 
-	
+
+-------------------mysql&预编译？-------------------
+http://cs-css.iteye.com/blog/1847772
+
+mysql开启预编译 <==> 在连接数据库时，url后面的加上参数useServerPstmts=true
+
+mysql在默认情况下是否开启预编译，与MySQL服务器的版本无关，而与mysql驱动程序的版本有关。
+以5.0.5版本驱动为分界：
+	<的默认开启(默认useServerPstmts=true)
+	>=的默认不开启(默认useServerPstmts=false)
+
+结论：对于mysql驱动5.0.5以上的版本，若使用useServerPrepStmts=true开启预编译，则一定要同时使用cachePrepStmts=true 开启预编译缓存，否则性能会下降，若二者都开启，性能并没有显著的提高，这个可能是我测试程序的原因，有待进一步研究。
+
+
+
+
+
 -------------------编码问题-------------------
 查询数据库的编码：
 	SHOW VARIABLES LIKE 'char%';
