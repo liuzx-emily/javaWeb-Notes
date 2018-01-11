@@ -1,614 +1,9 @@
 
-
-
------------------变量--------------------【START】
-
-变量是内存中的小容器，用来存储数据。那么计算机内存是怎么存储数据的呢？
-最小信息单元叫“位（bit）”，我们又称之为“比特位”，通常用小写的字母b表示。而计算机最小的存储单元叫“字节（byte）”，通常用大写字母B表示，字节是由连续的8个位组成。
-当程序需要使用存储空间时，操作系统最小会分派给程序1个字节，而不是1个位。
-
-1B(字节) = 1byte = 8bit = 8b
-1KB = 1024B
-1MB = 1024KB
-1GB = 1024MB
-1TB = 1024GB
-1PB = 1024TB
-
-
-
----------------基本类型：4类8种--------------
-
-整型	
-	byte	1字节	-128～127
-	short	2		-32768～32767
-	int		4		-2147483648～2147483648
-	long	8		-2^63～2^63-1
-浮点型
-	float	4		-3.403E38～3.403E38
-	double	8		-1.798E308～1.798E308
-字符型
-	char	2		表示一个字符，如('a'，'A'，'0'，'家') 0~65535
-布尔型
-	boolean	1		只有两个值true与false
-
-
-
-
----------------char--------------
-char可以自动转成int类型，会查询编码表，得到整数
-int转成char时，需要强制转换，查询编码表
-
-打印a-z：
-	char c='a';
-	for(int i=0;i<26;i++){
-		System.out.println(c);
-		c++;
-	}
-
-
-
-
----------------常量与类型--------------
-100是整数常量，但它是byte、short、int、long中的哪一种呢？
-是int，因为默认是int
-
-java中默认的整数类型是int类型
-在Java中，整数常量如果不在int取值范围之间，就必须添加“L”后缀（小写的也可以，但建议使用大写），不然会报错。在int取值范围之间的也可以添加“L”后缀。
-所有添加了“L”后缀的整数常量都是long类型的，例如：100L、12345678901L都是long类型的常量。
-
-java中默认的浮点类型是double类型
-浮点类型的常量也可使用后缀，在Java中所有没有后缀以及使用“D”后缀（小写也可以，但建议使用大写）的小数都是double类型；float类型常量必须添加“F”后缀（小写也可以，但建议使用大写）
-3.14没有后缀，所以它是double类型
-5.28D为double类型
-1.26F为float类型
-
-
-
-
----------------数据类型转换--------------
-1 自动：
-	取值范围小的数据类型 -> 范围大的数据类型
-	byte -> short -> int -> long -> float -> double
-	如：
-		double d=100;
-
-2 手动：强制
-	范围大 -> 范围小
-	如：
-		int  i = (int)6.718;   //i的值为6
-		或
-		double  d = 3.14;
-		int  i2 = (int)d;     //i2的值为3
-
-boolean类型不能进行任何类型转换！
-
-
-	byte b=100;
-	b=b+1;	// 报错
-
-	byte b=100;
-	b+=1;	// 不报错，相当于b=(byte)b+1;
-
-
-
-
----------------逻辑运算符--------------
-
-	&	与		false&true		False
-	|	或		false|true		True
-	^	异或	true^flase		True
-	!	非		!true			Flase
-	&&	短路与	false&&true		False
-	||	短路或	false||true		True
-
-短路与、或：只要能判断出结果则后边的部分就不再运行
-
-
-
-
----------------Scanner类：输入--------------
-包：java.util.Scanner;
-
-	Scanner sc = new Scanner(System.in);
-	int n = sc.nextInt();
-	String str = sc.next();
-
-
-
----------------Random类：随机数--------------
-包：java.util.Random;
-
-	Random r = new Random(); 
-	// 随机整数，[0,100)
-	int i = r.nextInt(100); 
-	// 随机小数，[0.0,1.0)
-	double d = r.nextDouble(); 
-
-
-
----------------switch语句--------------
-switch (表达式){
-	case 目标值1:
-		执行语句1
-		break;
-	．．．．．．
-	default:
-		执行语句n+1
-		break;
-}
-表达式只能是：byte、short、char、int类型的值
-jdk5.0+：枚举
-jdk7.0+：String
-
-
-
---------------------------------
-数据类型：
-	1）基本数据类型：8种
-	2）引用数据类型: 数组、类、接口、枚举
-		ArrayList是集合，集合是特殊的类。
-
-包装类：
-	int --> Integer
-	byte --> Byte
-	short --> Short
-	long --> Long
-	char --> Character
-	double --> Double
-	float --> Float
-	boolean --> Boolean
-包装类是对象，可以是null，可以有属性和方法。泛型只能是引用类型
-
-
-
----------------数组-----------------
-定义：
-	int[] arr = new int[100];	// arr中每个元素都是默认值
-	int[] arr=new int[]{1,2,3,4};
-	int[] arr={1,2,3,4};
-
-1 引用类型，arr中存的是数组第一个元素的首地址
-2 长度固定 arr.length
-  只能存一个类型
-3 默认值（初始值）：
-
-		数据类型			|		默认初始化值
-	byte、short、int、long	|	0
-	float、double			|	0.0
-	char					|	一个空格，即’\u0000’
-	boolean					|	false
-	引用数据类型			|	null
-4 异常：
-	1 索引越界异常 
-		arr[-3]
-		arr[201]
-	2 空指针异常 
-		arr=null;
-		arr[2]
-
-5 二维数组
-	定义：
-		int[][] arr = new int[3][4];
-		int[][] arr = {{1,2},{3,4,5,6},{7,8,9}};
-
-
-
----------------方法重载-----------------
-根据参数不同，来区分。和返回值无关
-System.out.println()就是重载
-
-
-
-
---------------------------------
-
-	public static void main(String[] args){
-		int arr[]={1,2,3};
-		change(arr);
-		System.out.println(arr[0]);	// 100
-	}
-
-	static void change(int[] arr){
-		arr[0]=100;
-	}
-
-引用类型传参，传的是地址
-
-
-
---------------------------------
-
-	Phone phone=new Phone();
-内存中发生了什么？
-	JVM在堆内存中开辟了一块空间，存储新new的对象
-	属性也跟着进入堆内存，赋予默认值。
-	JVM把这块内存的地址，传递给p。p中保存的是新对象在内存中的地址。
-
-
-
-
----------------ArrayList----------------
-为了保存数目不确定的元素，JDK中提供了一系列特殊的类，这些类可以存储任意类型的元素，并且长度可变，统称为集合。
-ArrayList集合是程序中最常见的一种集合，它属于引用数据类型中的类。
-
-	ArrayList<String> arr1=new ArrayList<String>();
-	ArrayList<Integer> arr2=new ArrayList<Integer>();
-
-包：java.util.ArrayList
-只能存储引用类型，不能存基本类型，要用包装类。
-存：add()
-取：get()
-长度：size()
-不常用方法：
-	boolean add（int index,  Object obj）	将指定元素obj插入到集合中指定的位置
-	Object remve（int index）	从集合中删除指定index处的元素，返回该元素
-	void clear()	清空集合中所有元素
-	Object set（int index, Object obj）	用指定元素obj替代集合中指定位置上的元素
-
-
-
-
---------------------------------
-
-java不允许多继承，因为有安全问题。用多实现。
-
-
-子类、父类中，出现重名的field、方法时，默认用子类的，想要用父类需要指明super.xxx
-
-
-
-
---------------抽象类 抽象方法----------------
-
-	abstract class Worker {
-		public abstract void work();
-	}
-
-1、抽象类和抽象方法都需要被abstract修饰。抽象方法一定要定义在抽象类中。
-2、抽象类不可以new
-3、只有覆盖了抽象类中所有的抽象方法后，其子类才可以创建对象。否则该子类还是一个抽象类。
-
-4、abstract不可以和哪些关键字共存？	
-1、private
-2、final
-3、static
-
-
-
-
---------------接口----------------
-	public interface Animal{
-		public abstract void eat();
-	}
-
-1 是比抽象类更为抽象的”类”。不能new
-2 将功能的"定义"与"实现"分离
-
-3 接口中的方法：
-	只能是public abstract的，可以省略不写
-	接口中：void eat();		// 等价于public abstract void eat();
-	
-4 接口中的成员变量：
-	只能是public static final的，可以省略不写，
-  	接口中：int a=1; 		// 等价于public static final int a=1;
-  	可以直接：接口.a
-
-5 实现类，必须重写接口中的【所有】抽象方法
-  如果没有重写所有，那么实现类还是一个抽象类
-
-6 为什么要定义接口，和抽象类相比有什么优势？
-	解决多继承的弊端。将多继承通过多实现完成了。
-
-7 父类中定义的事物的基本功能。接口中定义的事物的扩展功能。
-	class 缉毒犬 extends 犬科 implements 缉毒
-
-8 多个接口之间可以使用extends进行继承。
-	interface Fu1{
-		void show1();
-	}
-	interface Fu2{
-		void show2();
-	}
-	interface Zi extends Fu1,Fu2{
-		void show3();
-	}
-
-接口没有构造方法
-
-
-
-
----------------抽象类&接口-----------------
-区别：
-	1 使用动机。使用抽象类是为了代码的复用，使用接口是为了实现多态性
-	2 抽象类和它的子类之间应该是一般和特殊的关系，而接口仅仅是它的子类应该实现的一组规则。
-	3 不能多继承，可以多实现
-
-
-
---------------------------------
-java三大特征：继承 + 封装 + 多态
-
-多态：
-	体现：Animal a = new Cat();
-	好处：提高了程序的扩展性。
-	弊端：不可以访问子类中特有的方法。
-
-
-
-----------------多态----------------
-1 field：当子父类中出现同名的成员变量时，多态调用该变量时
-	class Fu {
-		int num = 4;
-	}
-	class Zi extends Fu {
-		int num = 5;
-	}
-	public class Demo {
-		public static void main(String[] args) 	{
-			Fu f = new Zi();
-			System.out.println(f.num);	// 4
-			Zi z = new Zi();
-			System.out.println(z.num);	// 5
-		}
-	}
-
-2 method：当子父类中出现同名的成员方法时，多态调用该方法时：
-		编译看左边，运行看右边。
-	
-	class Fu {
-		int num = 4;
-		void show()	{
-			System.out.println("Fu show num");
-		}
-	}
-	class Zi extends Fu {
-		int num = 5;
-		void show()	{
-			System.out.println("Zi show num");
-		}
-	}
-	class Demo {
-		public static void main(String[] args) 	{
-			Fu f = new Zi();
-			f.show();	// Zi show num
-		}
-	}
-
-
-
-
-----------------instanceof----------------
-
-	Person p1 = new Student();
-	boolean flag1 = p1 instanceof Student; 	// true
-	boolean flag2 = p1 instanceof Teacher; 	// false
-	boolean flag3 = p1 instanceof Person; 	// true
-
-
-
-
-----------------多态 转型----------------
-向上转型：
-	Person p = new Student();
-向下转型：
-	Student stu = (Student) p;
-
-什么时候使用upcasting：使用父类的功能就能完成相应的操作，如：
-		Animal a = new Dog();
-	    a.eat();
-
-什么时候使用downcasting：
-	当要使用子类特有功能时，如：
-		Dog d = (Dog) a;
-		d.lookHome();
-	弊端：容易发生ClassCastException类型转换异常。在转换之前必须做类型判断，如：
-		if( !a instanceof Dog)
-
-
-
-
-----------------构造方法----------------
-1 默认构造方法
-	如果没有写构造方法，在编译时，编译器会自动添加默认的空构造方法
-
-2 一个类中可以有多个构造方法，多个构造方法是以重载的形式存在的
-  构造方法之间的调用，可以通过this关键字来完成。
-  调用其他构造方法的语句必须定义在构造方法的第一行。
-
-3 构造方法是可以被private修饰的，作用：其他程序无法创建该类的对象
-
-
-
-
-----------------this super---------------
-1 this：
-	一个构造方法调用另一个构造方法
-	this.field
-
-2 super：
-	在创建子类对象时，父类的构造方法会先执行，因为子类中所有构造方法的第一行有默认的隐式super();语句。
-	当父类中没有空参数构造方法时，子类的构造方法必须有显示的super语句。
-	
-	如果子类的构造方法第一行写了this调用了子类的其他构造方法，那么super调用父类的语句还有吗？————没有了。
-
-	父类构造方法中是否有隐式的super呢？
-	也是有的。记住：只要是构造方法默认第一行都是super();
-	父类的父类是谁呢？super调用的到底是谁的构造方法呢？————Object类
-
-
-
-
-----------------继承中的构造方法---------------
-
-1 如果我们没写任何的构造方法，编译器提供给我们一个空参数构造方法
-  如果我们手动给出了构造方法，编译器不会再给我们提供默认的空参数构造方法
-
-2 在构造方法中，默认的第一条语句为 super();
-  它是用来访问父类中的空参数构造方法，进行父类成员的初始化操作
-
-3 当父类中没有空参数构造方法的时候，怎么办？
-	a: 通过 super(参数) 访问父类有参数的构造方法
-	b: 通过 this(参数) 访问本类中其他构造方法，其他构造方法需要调用了有参super
-
-4 super(参数) 与 this(参数) 不能同时在构造方法中存在
-
-
-
-
-
-
-----------------final---------------
-final是个修饰符，它可以用来修饰：
-	类
-	类的成员：field method
-	局部变量
-
-1 final修饰的类不可以被继承。但是可以继承其他类。
-
-2 final修饰的方法不可以被覆盖。但父类中没有被final修饰方法，子类覆盖后可以加final。
-
-3 final修饰的变量称为常量，这些变量只能赋值一次。在编译生成.class文件后，该变量变为常量值
-	final int i = 20;
-	i = 30; 			// 报错
-
-  引用类型的变量值为地址，地址值不能更改，但是地址内的对象属性值可以修改。
-	final Person p = new Person();
-	Person p2 = new Person();
-	p = p2; 			// 报错
-	p.name = "小明";	// ok
-
-4 final修饰的成员变量，需要在创建对象前赋值，否则报错。
-	class Demo {
-		//直接赋值
-		final int m = 100;
-		
-		//final修饰的成员变量，需要在创建对象前赋值，否则报错。
-		final int n; 
-		public Demo(){
-			//可以在创建对象时所调用的构造方法中，为变量n赋值
-			n = 2016;
-		}
-	}
-
-
-
-
-
-----------------static---------------
-特点：
-	被所有的对象所共享
-	可以通过类名直接调用
-
-注意事项：
-	static的成员，随着类的加载而加载，优先于对象存在
-	在static方法中，不能使用this super
-	在static方法中，只能调用static的变量、方法
-
-
-使用public static final来定义静态常量。此时变量名用全部大写，多个单词使用下划线连接。
-
-	class Company {
-		public static final String COMPANY_NAME = "SLA";
-	}
-
-	System.out.println(Company.COMPANY_NAME); //打印传智播客
-	
-
-注意：
-	接口中的每个成员变量都默认使用public static final修饰。由于接口没有构造方法，所以必须显示赋值。
-	interface Inter {
-		public static final int COUNT = 100;
-	}
-
-	Inter.COUNT
-
-
-
-
-----------------匿名内部类---------------
-内部类是为了应对更为复杂的类间关系。查看源代码中会涉及到，而在日常业务中很难遇到
-最常用到的就是匿名内部类
-
-	public abstract class Person{
-		public abstract void eat();
-	}
-	Person  p = new Person(){
-		public void eat() {
-			System.out.println("eat.....");
-		}
-	};
-	p.eat();
-
-写多线程时常用
-
-
-
-
-----------------权限修饰符---------------
-
-					public	protected	默认的	private
-在当前类中			Y		Y			Y		Y
-同一包中的其他类	Y		Y			Y
-不同包中的子类		Y		Y	
-不同包中的其他类	Y
-
-归纳一下：
-	要想仅能在本类中访问：private
-	要想本包中的类都可以访问不加修饰符即可；
-	要想本包中的类与其他包中的子类可以访问：protected
-	要想所有包中的所有类都可以访问：public
-
-易错：
-	不写修饰符的，在其他包中的子类里不能用
-
-注意：如果类用public修饰，则类名必须与文件名相同。一个文件中只能有一个public修饰的类。
-
-
-
-
-----------------protected---------------
-protected：
-	1 同一包中的类可以用
-	2 其他包中的子类可以用，但是只能在子类的里面调用！！
-
-		public class A{
-			protected void func(){}
-		}
-		
-		// 另一个包中：
-		public class B extends A{
-			void func2(){
-				func();				// ok
-				new A().func();		// 报错
-			}
-			public static void main(String[] args){
-				new B().func();		// ok
-				new A().func();		// 报错
-			}
-		}
-
-
---------------------------------
-集合和数组的区别：
-
-	1： 数组：长度固定
-		集合：长度可变
-
-	2： 数组：基本、引用都能存
-		集合：只能存引用
-
-	3： 数组存储的元素必须是同一个数据类型；
-		集合存储的对象可以是不同数据类型。
-
-
-
 -----------------jdk-----------------
 jdk版本：1.1   1.2   1.3   1.4   5.0（变化很大，所以不叫1.5，叫5.0）
 jdk5.0新特性：
 	泛型
 	枚举
-	静态导入
 	自动拆装箱
 	增强for
 	可变参数
@@ -616,23 +11,12 @@ jdk5.0新特性：
 
 
 -----------------jdk5.0新特性：泛型-----------------
-泛型里面不能写基本数据类型，要写对应的包装类（因为集合中只能存引用，不能存基本）
-	byte		Byte
-	short		Short
-	int 		Integer
-	long 		Long
-	folat 		Float
-	double 		Double
-	char 		Character
-	boolean 	Boolean
 
-1 泛型一般使用在集合上，常用集合：list set map
-	为什么要使用泛型？
-		新元素放入集合后，失去本身的类型，变成Object类型。
-		想取出的时候要进行类型转换，很容易出错。
+1 在List Set Map中使用泛型
+	新元素放入集合后，失去本身的类型，变成Object类型。想取出的时候要进行类型转换，很容易出错。所以使用泛型
 	
-2 在类中使用泛型（知道即可）
-	例如：API中的ArrayList
+2 在类中使用泛型
+	例如：查看API
 	class ArrayList<E>{ 
 		public boolean add(E e){...}
     	public E get(int index){...}
@@ -640,7 +24,7 @@ jdk5.0新特性：
 
 	ArrayList<String> list = new ArrayList<String>();
 
-3 在方法中使用泛型（知道即可）
+3 在方法中使用泛型
 	例如，API中的ArrayList集合中的方法：
 	public <T> T[] toArray(T[] a){...}
 
@@ -649,7 +33,7 @@ jdk5.0新特性：
 	Integer[] result = list.toArray(arr);
 
 4 泛型擦除
-	泛型只存在于源代码中，编译后就不存在了
+	泛型只存在于源代码中，编译后就不存在了（就像final的变量，在编译后就变为常量了）
 
 5 泛型的通配符 ?
 
@@ -1195,199 +579,6 @@ double和float类型在运算中很容易丢失精度，造成数据的不准确
 
     divide：除法，可以指定保留位数，和保留方式
 
-
-
-
------------------长度的3种表示----------------
-	数组.length
-	字符串.length()
-	集合.size()
-
-
-
------------------集合继承关系图----------------
-
-                     Collection接口     
-                           |
-    		--------------- ------
-    		|                    |
-    	List接口              Set接口
-    		|                    |
-     ----------------       	 |
-     |              |            |            
-ArrayList类    LinkedList类    HashSet类
-								 |
-							LinkedHashSet类
-											
-Collection接口中的方法，是集合中所有实现类必须拥有的方法：
-	Object[] toArray() 集合转成数组
-    boolean contains(Object o) 判断对象是否存在于集合中。实现类中都是用equals逐个判断
-    void clear() 清空集合中的所有元素
-    boolean remove(Object o) 移除集合中指定的元素（有多个的话只移除第一个）
-
-在使用ArrayList类时，该类已经把所有抽象方法进行了重写。
-
-
-
-
-
------------------list接口-----------------
-list接口的常用子类：
-	1 ArrayList：是数组结构。元素增删慢，查找快，由于日常开发中使用最多的功能为查询、遍历，所以ArrayList是最常用的集合。
-	2 linkedList：是链表结构。元素增删块，查找慢。提供了大量首尾操作的方法。
-		addFirst() addLast() getFirst() getLast() removeFirst() removeLast()
-
-例子：
-	List<String> list = new ArrayList<String>();
-
-	add()
-	add(int index, Object e)
-
-	remove(Object e) 			// 返回值为被删除的元素
-	remove(int index) 			// 返回值为被删除的元素
-
-	set(int index, Object e)	// 替换
-
-	get(int index)
-
-遍历方法：
-	1 普通for
-		for(int i=0;i<list.size();i++){
-			 String txt=list.get(i);
-			 System.out.println(txt);
-		}
-	2 增强for
-		for (String txt : list) {
-			System.out.println(txt);
-		}
-	3 迭代器
-		Iterator<String> it=list.iterator();
-		while(it.hasNext()){
-			String txt=it.next();
-			System.out.println(txt);
-		}
-
-Iterator的并发修改异常：java.util.ConcurrentModificationException
-	在迭代时，不要改变集合的长度。
-	Iterator<String> it = list.iterator();	//包含"a" "b" "c"
-	while(it.hasNext()){
-		String str = it.next();
-		if("b".equals(str)){
-			list.add("123");	// 该操作会导致程序出错
-		}
-	}
-
-
-
-
------------------set集合-----------------
-不能有重复，通过元素的equals方法，来判断是否为重复元素
-
-遍历方法：
-	1 增强for
-	2 迭代器
-		Iterator<String> it=set.iterator();
-		while(it.hasNext()){
-			String txt=it.next();
-			System.out.print(txt+"\t");
-		}
-
-
-
------------------HashSet-----------------
-此类实现Set接口，采用哈希表结构存储数据（实际上是一个HashMap集合）
-哈希表：链表数组结合体。存取、查询都快，线程不安全。
-
-HashSet集合不能保证迭代顺序与元素存储顺序相同。
-
-保证元素唯一性的方式依赖于：hashCode()与equals()方法。
-Object类有hashCode方法，所以任何对象都有这个方法。
-在向哈希表中存放对象时，会调用对象的hashCode方法，算出对象在表中的存放位置。如果两个对象hashCode方法算出结果一样(这种现象称为"哈希冲突")，这时会调用对象的equals方法，比较这两个对象是不是同一个对象。
-
-给HashSet中存储JavaAPI中提供的类型元素时，不需要重写元素的hashCode和equals方法，因为这两个方法，在JavaAPI的每个类中已经重写完毕，如String类、Integer类等。
-
-如果我们往集合中存放自定义的对象，那么保证其唯一，就必须复写hashCode和equals方法建立属于当前对象的比较方式。（myE提供自动生成hashCode和equals）
-
-	Set<String> set =new HashSet<String>();
-	set.add("aaa");
-	set.add("bbb");		// 返回true
-	set.add("ccc");
-	set.add("ddd");
-	set.add("bbb");		// 返回false
-	for (String string : set) {
-		System.out.print(string+'\t');
-	}
-	输出结果:
-		aaa	ddd	ccc	bbb
-
-	说明：String类重写了hashCode方法，是通过包含的所有字符计算出来的。所以两个"bbb"计算出来的hashCode相同。
-	set发现第二个"bbb"的哈希值，和第一个"bbb"的哈希值相同，为了判断它们是不是相同元素，会调用equals方法去比较两个对象。
-	因为String类重写了equals方法，比较的不是地址，而是字符，所以返回true。
-	set就认为这两个"bbb"是相同的，不重复存储。
-
-
-HashSet有一个子类LinkedHashSet，它是链表和哈希表组合的一个数据存储结构，保证元素的存入和取出的顺序一致。
-
-
-
-
------------------Collections-----------------
-Collections是集合工具类，用来对集合进行操作。部分方法如下：
-
-1 sort(List)	// 对List升序
-	Collections.sort(list);	//[33,11,77,55] -> [11,33,55,77]
-
-
-2 shuffle(List) // 对List打乱存储顺序
-	//list集合元素 [11,33,55,77]
-	Collections.shuffle(list);
-	//使用shuffle方法后，集合中的元素为[77,33,11,55]，每次执行该方法，集合中存储的元素位置都会随机打乱
-
-
-3 emptyList()、emptySet()、emptyMap()
-	如果你想new一个空List，并且以后也不打算再添加元素，那么就用 Collections.emptyList()。
-	new ArrayList() 或者 new LinkedList() 在创建的时候有会有初始大小，浪费内存
-	注意：不能添加元素的，会直接报异常。
-
-
-
-
------------------集合体系中的面向对象思想-----------------
-
-接口：用来明确所有集合中该具有的功能，相当于规定功能标准；
-抽象类：把多个集合中功能实现方式相同的方法，抽取到抽象类实现，具体集合中不再写，直接继承到。
-具体类：继承抽象类，实现接口，重写所有抽象方法。每个具体集合类，根据自身的数据存储结构方式，对接口中的功能方法，进行不同方式的实现。
-
-
-
-
------------------map接口-----------------
-collection中的元素是"单身"的，map中的元素是"成对"的。collection和map之间没有任何继承关系。
-
-map<K,V>接口
-	---HashMap<K,V>：最常用的Map实现。只是将一个键和值相对应，并没有其他的功能。
-		---LinkedHashMap<K,V>：存储数据采用的哈希表结构+链表结构。通过链表结构可以保证元素的存取顺序一致；通过哈希表结构可以保证的键的唯一、不重复。
-
-如果键是自定义对象，为了保证唯一性，需要重写键的hashCode()、equals()方法。
-
-	Map<String,Integer> map = new HashMap<String,Integer>();
-	
-	put()
-	get()
-
-遍历方法：
-	1 获取所有的key，通过key得到value【利用key的唯一性】
-		Set<String> keySet=map.keySet();
-		for(String key:keySet){
-			Integer value=map.get(key);		
-		}
-	2 Entry是Map中用来保存一个键值对的，而Map实际上就是多个Entry的集合。
-		Set<Entry<String,Integer>> entrySet=map.entrySet();
-		for (Entry<String, Integer> entry : entrySet) {
-			String key=entry.getKey();
-			Integer value=entry.getValue();
-		}
-	如果要保证map中存放的key和取出的顺序一致，可以使用LinkedHashMap
 
 
 
@@ -2186,5 +1377,669 @@ SQL注入攻击：
 	3、提供getter和setter
 	4、实现serializable接口
 
+
+
+
+
+
+-----------------变量--------------------【START】
+
+变量是内存中的小容器，用来存储数据。
+
+最小信息单元叫"位(bit)"，最小存储单元叫"字节(byte)"，一个字节是由连续的8个位组成。
+当程序需要使用存储空间时，操作系统最小会分派给程序1字节，而不是1位。
+
+1B(字节) = 1byte = 8bit = 8b
+1KB = 1024B
+1MB = 1024KB
+1GB = 1024MB
+1TB = 1024GB
+1PB = 1024TB
+
+
+
+
+----------------java中的数据类型----------------
+1）基本数据类型：四类八种
+	
+	整型	
+		byte	1字节	-128～127
+		short	2		-32768～32767
+		int		4		-2147483648～2147483648
+		long	8		-2^63～2^63-1
+	浮点型
+		float	4		-3.403E38～3.403E38
+		double	8		-1.798E308～1.798E308
+	字符型
+		char	2		0~65535 表示一个字符，如'a' '0' '家'
+	布尔型
+		boolean	1		只有两个值true与false
+
+	八种基本类型都有对应的包装类：包装类是对象，可以是null，可以有属性和方法。
+	集合中只能存储引用类型，所以不能用int，要用Integer
+
+
+
+2）引用数据类型: 数组、类、接口、枚举
+	ArrayList是集合，集合是特殊的类
+
+
+
+
+
+---------------数据类型转换--------------
+1 自动：
+	取值范围小的数据类型 -> 范围大的数据类型
+	byte -> short & char-> int -> long -> float -> double
+	double d=100;
+
+2 手动：强制
+	范围大 -> 范围小
+	int i = (int)6.718;   //i的值为6
+	double  d = 3.14;
+	int  i2 = (int)d;     //i2的值为3
+
+3 boolean类型不能进行任何类型转换
+
+例：byte b=100;
+	b=b+1;	// 报错
+
+	byte b=100;
+	b+=1;	// 不报错，等价于b=(byte)b+1;
+
+
+例：打印a-z
+	char c='a';
+	for(int i=0;i<26;i++){
+		System.out.println(c);
+		// c=c+1;	// 报错
+		c++;	// 不报错，等价于c=(char)c+1;
+	}
+
+
+
+
+---------------逻辑运算符--------------
+
+	^	异或	true^flase		True
+	!	非		!true			Flase
+	&&	短路与	false&&true		False
+	||	短路或	false||true		True
+
+短路：左边能判断出结果，则右边的部分就不再运行
+
+
+
+
+---------------Scanner类：输入--------------
+包：java.util.Scanner;
+
+	Scanner sc = new Scanner(System.in);
+	String str = sc.next();
+	int n = sc.nextInt();
+	double d = sc.nextDouble();
+
+
+
+---------------Random类：随机数--------------
+包：java.util.Random;
+
+	Random r = new Random(); 
+	// 随机整数 [0,100)
+	int i = r.nextInt(100); 
+	// 随机小数 [0.0,1.0)
+	double d = r.nextDouble(); 
+
+
+
+---------------switch语句--------------
+switch (表达式){
+	case 目标值1:
+		执行语句1
+		break;
+	．．．．．．
+	default:
+		执行语句n+1
+		break;
+}
+
+表达式只能是：byte、short、char、int类型的值
+jdk5.0+：枚举
+jdk7.0+：String
+
+
+
+
+---------------数组-----------------
+定义：
+	int[] arr = new int[100];	// arr中每个元素都是默认值
+	int[] arr={1,2,3,4};
+
+数组是引用类型，arr中存的是数组第一个元素的首地址。
+
+数组的长度在定义时确定，之后不能更改。
+
+数组的元素必须是同一个类型，是在定义时指定的。
+  
+
+		数据类型			默认初始化值
+byte、short、int、long	|	0
+float、double			|	0.0
+char					|	一个空格，即’\u0000’
+boolean					|	false
+引用类型				|	null
+
+
+二维数组：
+	int[][] arr = new int[3][4];
+	int[][] arr = {{1,2},{3,4,5,6},{7,8,9}};
+
+
+
+
+---------------方法重载-----------------
+根据参数不同，来区分。和返回值无关
+System.out.println()就是重载
+
+
+
+
+
+
+------------new的时候发生了什么？-------------
+
+Phone p=new Phone();内存中发生了什么？
+	JVM在堆内存中开辟了一块空间，存储新new的对象
+	属性也跟着进入堆内存，赋予默认值
+	JVM把这块内存的地址，传递给p
+
+
+
+---------------集合---------------
+为了保存数目不确定的元素，JDK中提供了一系列特殊的类，这些类可以存储任意类型的元素，并且长度可变，统称为集合。
+
+集合和数组的区别：
+	1： 数组：长度固定
+		集合：长度可变
+	2： 数组：基本、引用都能存
+		集合：只能存引用
+	3： 数组存储的元素必须是同一个数据类型；
+		集合存储的对象可以是不同数据类型。
+
+
+
+-----------------集合继承关系图----------------
+
+                Collection接口     
+                      |
+    		——————————————————————
+    		|                    |
+    	List接口              Set接口
+    		|                    |
+     ———————————————       	 	 |
+     |             |             |            
+ArrayList类   LinkedList类   HashSet类
+								 |
+								 |
+							LinkedHashSet类
+											
+Collection接口中的方法：
+	Object[] toArray() 集合转成数组
+    boolean contains(Object o) 判断对象是否存在于集合中。实现类中都是用equals逐个判断
+    void clear() 清空集合中的所有元素
+    boolean remove(Object o) 移除集合中指定的元素（有多个的话只移除第一个）
+
+
+
+
+
+-----------------list接口-----------------
+list接口的常用子类：
+	1 ArrayList：是数组结构。元素增删慢，查找快，由于日常开发中使用最多的功能为查询、遍历，所以ArrayList是最常用的集合。
+	2 linkedList：是链表结构。元素增删块，查找慢
+
+例子：
+	List<String> list = new ArrayList<String>();
+
+	add()
+	add(int index, Object e)
+
+	remove(Object e) 			// 返回值为被删除的元素
+	remove(int index) 			// 返回值为被删除的元素
+
+	set(int index, Object e)	// 替换
+
+	get(int index)
+
+遍历方法：
+	1 普通for
+		for(int i=0;i<list.size();i++){
+			// list.get(i);
+		}
+	2 增强for
+		for (String txt : list) {
+			// txt
+		}
+	3 迭代器
+		Iterator<String> it=list.iterator();
+		while(it.hasNext()){
+			// it.next()			
+		}
+
+
+Iterator的并发修改异常：java.util.ConcurrentModificationException
+	在迭代时，不要改变集合的长度。
+	Iterator<String> it = list.iterator();	//包含"a" "b" "c"
+	while(it.hasNext()){
+		String str = it.next();
+		if("b".equals(str)){
+			list.add("123");	// 该操作会导致程序出错
+		}
+	}
+增强for底层也是使用迭代器，所以也会报错。
+普通for没有用Interator，所以不会报错
+
+
+
+
+
+-----------------长度的3种表示----------------
+	数组.length
+	字符串.length()
+	集合.size()
+
+
+
+---------------ArrayList----------------
+
+ArrayList<Integer> arr=new ArrayList<Integer>();
+
+
+集合中只能存储引用类型，不能存基本类型。所以不能用int，要用Integer
+
+	add(Object obj)
+	add(int index,Object obj)
+	get(int index)
+	size()
+	Object set(int index,Object obj) 返回被替换的元素
+	Object remove(int index) 返回被移除的元素
+	clear()
+
+
+
+
+
+-----------------set集合-----------------
+不能有重复，通过元素的equals方法，来判断是否为重复元素
+
+遍历方法：
+	1 增强for
+	2 迭代器
+		Iterator<String> it=set.iterator();
+		while(it.hasNext()){
+			// it.next();
+		}
+
+
+
+-----------------HashSet-----------------
+此类实现Set接口，采用哈希表结构存储数据（实际上是一个HashMap集合）
+哈希表：链表数组结合体。存取、查询都快，线程不安全。
+
+HashSet集合不能保证迭代顺序与元素存储顺序相同。
+
+如何保证元素唯一性？
+	hashCode()和equals()
+	这两个方法都在Object类中。因为Object是所有类的父类，所以所有类都有这两个方法。
+	在向哈希表中存放对象时，会调用对象的hashCode方法，算出对象在表中的存放位置。如果两个对象hashCode方法算出结果一样("哈希冲突")，这时会调用对象的equals方法，比较这两个对象是不是同一个对象。
+
+java的内置类(String类、Integer类)已经重写过这两个方法，所以向HashSet中存储内置类时，不需要重写这两个方法。
+但是存放自定类的对象时，若想要建立自己的比较方式，必须重写hashCode和equals方法（myE提供自动生成hashCode和equals）
+
+	Set<String> set =new HashSet<String>();
+	set.add("aaa");
+	set.add("bbb");		// 返回true
+	set.add("ccc");
+	set.add("ddd");
+	set.add("bbb");		// 返回false
+	for (String string : set) {
+		System.out.print(string+'\t');
+	}
+	输出结果:
+		aaa	ddd	ccc	bbb
+
+	说明：
+		String类重写了hashCode方法，是通过包含的所有字符计算出来的。所以两个"bbb"计算出来的hashCode相同。
+		哈希冲突，为了判断它们是不是相同元素，会调用equals方法去比较两个对象。
+		因为String类重写了equals方法，比较的不是地址，而是字符，所以返回true。
+		set就认为这两个"bbb"是相同的，不重复存储。
+
+
+HashSet有一个子类LinkedHashSet，它能保证元素的存入和取出的顺序一致。
+
+
+
+
+
+-----------------Collections-----------------
+Collections是集合工具类，用来对集合进行操作。部分方法如下：
+
+1 sort(List)	// 对List升序
+	Collections.sort(list);	//[33,11,77,55] -> [11,33,55,77]
+
+
+2 shuffle(List) // 对List打乱存储顺序
+	//list集合元素 [11,33,55,77]
+	Collections.shuffle(list);
+	//使用shuffle方法后，集合中的元素为[77,33,11,55]，每次执行该方法，集合中存储的元素位置都会随机打乱
+
+
+3 emptyList()、emptySet()、emptyMap()
+	如果你想new一个空List，并且以后也不打算再添加元素，那么就用 Collections.emptyList()。
+	new ArrayList() 或者 new LinkedList() 在创建的时候有会有初始大小，浪费内存
+
+
+
+
+
+
+
+-----------------map接口-----------------
+collection中的元素是"单身"的，map中的元素是"成对"的。collection和map之间没有任何继承关系。
+
+map<K,V>接口
+	———HashMap<K,V> 最常用的Map实现。只是将一个键和值相对应，并没有其他的功能。
+		———LinkedHashMap<K,V> 可以保证元素的存取顺序一致
+
+如果键是自定义对象，为了保证唯一性，需要重写键的hashCode()、equals()方法。
+
+	Map<String,Integer> map = new HashMap<String,Integer>();
+	
+	put()
+	get()
+
+
+遍历方法：
+	1 获取所有的key，通过key得到value【利用key的唯一性】
+		Set<String> keySet=map.keySet();
+		for(String key:keySet){
+			Integer value=map.get(key);		
+		}
+	2 Entry是Map中用来保存一个键值对的，而Map实际上就是多个Entry的集合。
+		Set<Entry<String,Integer>> entrySet=map.entrySet();
+		for (Entry<String, Integer> entry : entrySet) {
+			String key=entry.getKey();
+			Integer value=entry.getValue();
+		}
+
+
+
+
+--------------抽象类 抽象方法----------------
+
+	abstract class Worker {
+		public abstract void work();
+	}
+
+1 抽象方法只能定义在抽象类中。
+2 abstract不可以和哪些关键字共存？	
+	private	final static
+
+
+
+
+--------------接口----------------
+	public interface Animal{
+		void eat();
+	}
+
+1 接口中的方法：
+	只能是public abstract的，可以省略不写
+	接口中：void eat();		// 等价于public abstract void eat();
+	
+  接口中的成员变量：
+	只能是public static final的，可以省略不写，
+  	接口中：int a=1; 		// 等价于public static final int a=1;
+  	可以直接：接口.a
+
+2 多个接口之间可以使用extends进行继承。
+	interface Fu1{
+		void show1();
+	}
+	interface Fu2{
+		void show2();
+	}
+	interface Zi extends Fu1,Fu2{
+		void show3();
+	}
+
+3 接口没有构造方法
+
+
+
+
+---------------抽象类&接口-----------------
+共同点：
+	不可以new
+	子类/实现类，如果没有重写所有抽象方法，那么子类仍然是抽象类
+
+区别：
+	class 缉毒犬 extends 犬科 implements 缉毒
+	1 使用动机。使用抽象类是为了代码的复用，使用接口是为了实现多态性
+	2 抽象类和它的子类之间应该是一般和特殊的关系，而接口仅仅是它的子类应该实现的一组规则。
+	3 不能多继承（安全问题：如果两个父类都有a()，用谁的？），可以多实现
+
+
+
+
+--------------------------------
+java三大特征：继承 + 封装 + 多态
+
+
+
+
+
+----------------多态----------------
+多态：Animal a = new Cat();
+	好处：提高了程序的扩展性。
+	弊端：不可以访问Cat类中特有的方法。
+
+
+当子父类中出现同名的成员，多态调用时：
+	field编译看左边，运行看左边
+	method编译看左边，运行看右边
+
+	Fu f = new Zi();
+	System.out.println(f.num);	// Fu中的num的值（多态调用）
+	Zi z = new Zi();
+	System.out.println(z.num);	// Zi中的num的值（不是多态调用）
+
+
+	Fu f = new Zi();
+	f.show();	// Zi中的show()（多态调用）
+	
+
+
+
+
+
+----------------instanceof----------------
+
+	Person p1 = new Student();
+	boolean flag1 = p1 instanceof Student; 	// true
+	boolean flag2 = p1 instanceof Teacher; 	// false
+	boolean flag3 = p1 instanceof Person; 	// true
+
+
+
+
+
+
+----------------构造方法----------------
+1 如果没有写构造方法，在编译时，编译器会自动添加默认的空构造方法
+  如果我们手动给出了构造方法，则编译器不会再自动添加
+
+2 一个类中可以有多个构造方法，多个构造方法是以重载的形式存在的
+  构造方法之间的调用，可以通过this关键字来完成。
+
+3 调用其他构造方法的语句必须定义在构造方法的第一行。
+  可以使用this调用本类的其他构造方法，也可以使用super调用父类的构造方法
+  super() 与 this() 不能同时在构造方法中存在
+
+4 在构造方法中，默认的第一条语句为 super();
+  它是用来访问父类中的空参数构造方法，进行父类成员的初始化操作
+
+5 当父类中没有空参数构造方法的时候，怎么办？
+	a: 通过super(参数) 显示访问父类有参数的构造方法
+	b: 通过this(参数)访问本类中的其他构造方法，其他构造方法需要调用了有参super
+
+6 构造方法可以被private修饰，作用：其他程序无法创建该类的对象
+
+
+
+
+
+----------------this super---------------
+1 this：
+	一个构造方法调用另一个构造方法
+	this.field
+
+2 super：
+	1 创建子类对象时，父类的构造方法会先执行，因为子类中所有构造方法的第一行有默认的隐式super();语句。
+		当父类中没有空参数构造方法时，子类的构造方法必须有显示的super语句。
+		
+		如果子类的构造方法第一行写了this调用了子类的其他构造方法，那么就不会有默认的super()了
+
+		父类构造方法中是否有隐式的super呢？
+			也是有的。记住：只要是构造方法默认第一行都是super();
+		父类的父类是谁呢？super调用的到底是谁的构造方法呢？
+			Object类
+
+	2 子父类中如果有重名成员，默认用子类的，想要用父类需要super.xxx
+
+
+
+----------------继承中的构造方法---------------
+
+1 如果我们没写任何的构造方法，编译器提供给我们一个空参数构造方法
+  如果我们手动给出了构造方法，编译器不会再给我们提供默认的空参数构造方法
+
+2 在构造方法中，默认的第一条语句为 super();
+  它是用来访问父类中的空参数构造方法，进行父类成员的初始化操作
+
+3 当父类中没有空参数构造方法的时候，怎么办？
+	a: 通过 super(参数) 访问父类有参数的构造方法
+	b: 通过 this(参数) 访问本类中其他构造方法，其他构造方法需要调用了有参super
+
+4 super(参数) 与 this(参数) 不能同时在构造方法中存在
+
+
+
+
+
+
+----------------final---------------
+final是个修饰符，它可以用来修饰：
+	类：不可以被继承
+	field：常量，只能赋值一次。在编译生成.class文件后，变为常量值。
+	method：不可以被覆盖
+	局部变量
+
+
+
+注：final修饰的成员变量filed，需要在创建对象前赋值，否则报错。
+	class Demo {
+		// 可以声明时直接赋值
+		final int m = 100;
+		
+		final int n; 
+		public Demo(){
+			// 也可以在构造方法赋值
+			n = 2016;
+		}
+	}
+
+
+
+
+
+----------------static---------------
+特点：
+	被所有的对象所共享
+	可以通过类名直接调用
+
+注意事项：
+	static的成员，随着类的加载而加载，优先于对象存在
+	在static方法中，不能使用this super
+	在static方法中，不能调用非static的变量、方法
+
+
+使用public static final来定义静态常量。变量名全大写，多个单词使用下划线连接。
+	public static final String COMPANY_NAME = "Tencent";
+
+	
+
+
+
+
+
+----------------匿名内部类---------------
+内部类是为了应对更为复杂的类间关系。查看源代码中会涉及到，而在日常业务中很难遇到
+最常用到的就是匿名内部类
+
+	public abstract class Person{
+		public abstract void eat();
+	}
+	Person  p = new Person(){
+		public void eat() {
+			System.out.println("eat.....");
+		}
+	};
+	p.eat();
+
+写多线程时常用
+
+
+
+
+----------------权限修饰符---------------
+
+					public	protected	默认的	private
+在当前类中			Y		Y			Y		Y
+同一包中的其他类	Y		Y			Y
+不同包中的子类		Y		Y	
+不同包中的其他类	Y
+
+归纳一下：
+	仅能在本类中访问：private
+	本包中的类都可以访问：不加修饰符
+	本包中的类与其他包中的子类可以访问：protected
+	所有包中的所有类都可以访问：public
+
+易错：不写修饰符的，在其他包中的子类里不能用
+
+
+
+
+----------------protected---------------
+protected：
+	1 同一包中的类可以用
+	2 其他包中的子类可以用
+
+	public class A{
+		protected void func(){}
+	}
+	
+	// 另一个包中：
+	public class B extends A{
+		void func2(){
+			func();				// ok
+			new A().func();		// 报错
+		}
+		public static void main(String[] args){
+			new B().func();		// ok
+			new A().func();		// 报错
+		}
+	}
 
 

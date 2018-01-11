@@ -5,43 +5,17 @@
 	标记型：跟html一样，用"标签"
 	可扩展：html标签是固定的。xml的标签可以自己定义，可以写中文标签：<狗></狗>
 
-2 用途：
-	html用于显示数据，xml也可以显示数据（但不是主要功能）
-  	xml的主要功能：存储数据
+2 用途：存储数据，最常用作配置文件
+	例子：需要修改数据库的登录名和密码，不用修改源代码，只修改配置文件就可以了
 
 3 xml有两个版本：1.0 1.1
 	现在使用的都是1.0版本，因为1.1版本不能向下兼容
 
 
------------------XML应用-----------------
-1 不同系统之间传输数据
-	例子：qq之间数据的传输（最开始用str，用:分隔，可读性差）
-
-2 用来表示有逻辑关系的数据
-	<中国>
-		<北京>
-			<海淀></海淀>
-		</北京>
-		<天津>
-			<南开></南开>
-		</天津>
-	</中国>
-
-3 经常用在配置文件中
-	例子：需要修改数据库的登录名和密码，不用修改源代码，只修改配置文件就可以了
-
 
 -----------------XML语法-----------------
-1 xml的文档声明
-	后缀名：.xml
-	文档声明：<?xml version="1.0" encoding="utf-8"?> 
-		必须放在第一行第一列（前面有空格也不行）
-	文档声明属性：
-		version：1.0  1.1
-		encoding：gbk  utf-8  iso8859-1(不支持中文)
-			保存在磁盘上的文件编码，要与声明的编码一致（否则会乱码）
-		standalone（不常用）：说明文档是否独立，即是不是依赖其他文档
-			standalone="yes"  standalone="no"
+1 xml的后缀名：.xml
+  xml的文档声明：<?xml version="1.0" encoding="utf-8"?> 
 
 2 定义标签
 	1 一定要闭合：
@@ -63,9 +37,7 @@
 		2 属性值用引号包起来，单引号、双引号都可以
 		3 属性命名规则和标签的命名规则一致
 
-4 注释
-	<!-- 注释 -->
-	注释不能放在文档声明之前
+4 注释：<!-- 注释 -->
 
 5 特殊字符
 	如果想显示 a<b ，要写成a&lt;b
@@ -83,34 +55,25 @@
 	PCDATA：parsed character data（会被解析的文本）
 	CDATA：character data（不会被解析的文本）
 
-7 PI指令（了解即可）
-	用PI指令来指示XML文档所使用的css样式文件（对中文标签名不起作用）
 
 
 -----------------XML的约束-----------------
-1 为什么需要约束？
-	<人>
-		<爪子></爪子>
-	</人>
-	这样写符合语法规范，但是不合逻辑
-
-2 xml约束的技术：
-	dtd约束：
-		语法自成一派
-		一个xml可以有多个dtd
-	schema约束：
-		符合xml语法
-		一个xml可以有多个schema，多个schema使用名称空间来区分
-		schema可以支持更多的数据类型
+dtd约束：
+	语法自成一派
+	一个xml可以有多个dtd
+schema约束：
+	符合xml语法
+	一个xml可以有多个schema，多个schema使用名称空间来区分
+	schema可以支持更多的数据类型
 
 
 -----------------XML的约束 dtd（看懂就行）-----------------
 1 dtd语法 - 定义元素：
 	简单元素：没有子元素
 		<!ELEMENT 元素名称 (#PCDATA)>
-		(#PCDATA)	
-		EMPTY		空元素
-		ANY			任意
+			(#PCDATA)	
+			EMPTY		空元素
+			ANY			任意
 
 	复杂元素	
 		<!ELEMENT 元素名称 (子元素1,子元素2)>
@@ -152,41 +115,65 @@
 1 schema概述
 	xml schema文件本身就是一个xml文件，但它的扩展名是.xsd
 	一个xml中可以有多个schema，多个schema用名称空间来区分
-	dtd里面有PCDATA类型，在schema里面可以支持更多的数据类型
-	语法比dtd复杂，目前还不能替代dtd
+	dtd里面有PCDATA类型，在schema里面支持更多的数据类型
+	语法比dtd复杂
 
 2 根节点schema，属性：
 	xmlns="http://www.w3.org/2001/XMLSchema" 表示当前文件是一个schema约束文件
 	targetNamespace="url地址" 要想使用该约束文件，通过这个url来引用（url地址可以随便编）
 
 
------------------例子：schema约束-----------------
-// tv.xsd:
-	<?xml version="1.0" encoding="UTF-8"?>
-	<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/tv" elementFormDefault="qualified">
-		<element name="person">
-			<complexType>
-				<sequence>
-					<element name="name" type="string"></element>
-					<element name="gender" type="string"></element>
-				</sequence>
-				<attribute name="familyID" type="int" use="required"></attribute>
-			</complexType>
-		</element>	
-	</schema>
+-----------------例子：用dtd来约束-----------------
 
-// tv.xml:
-	<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-	<family xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.example.org/tv" xsi:schemaLocation="http://www.example.org/tv src/tv.xsd" familyID="123">
-		<person>
-			<name>Emily</name>
-			<gender>F</gender>
-		</person>
-		<person>
-			<name>Phil</name>
-			<gender>M</gender>
-		</person>
-	</family>
+	<?xml version="1.0"?>
+	<!DOCTYPE note SYSTEM "http://www.w3schools.com/dtd/note.dtd">
+	<note>
+	  <to>Tove</to>
+	  <from>Jani</from>
+	  <heading>Reminder</heading>
+	  <body>Don't forget me this weekend!</body>
+	</note>
+
+约束：
+	<!ELEMENT note (to, from, heading, body)>
+	<!ELEMENT to (#PCDATA)>
+	<!ELEMENT from (#PCDATA)>
+	<!ELEMENT heading (#PCDATA)>
+	<!ELEMENT body (#PCDATA)>
+
+
+
+
+-----------------例子：用schema来约束-----------------
+
+	<?xml version="1.0"?>
+	<note xmlns="http://www.w3schools.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3schools.com note.xsd">
+	  <to>Tove</to>
+	  <from>Jani</from>
+	  <heading>Reminder</heading>
+	  <body>Don't forget me this weekend!</body>
+	</note>
+
+约束：
+	<?xml version="1.0"?>
+	<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.w3schools.com"
+	xmlns="http://www.w3schools.com"
+	elementFormDefault="qualified">
+		<xs:element name="note">
+		  <xs:complexType>
+		    <xs:sequence>
+		      <xs:element name="to" type="xs:string"/>
+		      <xs:element name="from" type="xs:string"/>
+		      <xs:element name="heading" type="xs:string"/>
+		      <xs:element name="body" type="xs:string"/>
+		    </xs:sequence>
+		  </xs:complexType>
+		</xs:element>
+	</xs:schema>
+
 
 
 -----------------XML的解析-----------------
@@ -196,7 +183,6 @@
 		优：增删改很方便
 		缺：如果文件过大，会造成内存溢出
 	sax：采用事件驱动，边读边解析
-		从上到下，一行一行的解析，解析到某一个对象，把对象名称返回
 		优：不会造成内存溢出；查询方便
 		缺：不能进行增删改操作
 3 想要解析xml，首先需要解析器
@@ -208,227 +194,9 @@
 -----------------XML的解析器：jaxp-----------------
 1 jaxp是javase的一部分
 2 jaxp解析器在jdk的javax.xml.parsers包里面
-	四个类：分别是针对dom和sax解析使用的类
-	dom：
-		DocumentBuilder	定义 API， 使其从 XML 文档获取 DOM 文档实例。
-			这个类是一个抽象类，不能new			
-			此类的实例可以从DocumentBuilderFactory.newDocumentBuilder() 方法获取
-
-			一个方法，可以解析xml parse("xml路径") 返回的是Document整个文档
-			返回的document是一个接口，父节点是Node。若果在document中找不到想要的方法，去Node中找
-
-		DocumentBuilderFactory	定义工厂 API，使应用程序能够从 XML 文档获取生成 DOM 对象树的解析器。
-	sax：
-		SAXParser	定义包装 XMLReader 实现类的 API。
-		SAXParserFactory	定义工厂 API，使应用程序能够配置和获取基于 SAX 的解析器以解析 XML 文档。
-
-
------------------例子：使用jaxp来得到所有name元素的值-----------------
-// src/family.xml：
-	<?xml version="1.0" encoding="UTF-8"?>
-	<family>
-		<person>
-			<name>emily</name>
-			<age>22</age>
-		</person>
-		<person>
-			<name>Phil</name>
-			<age>31</age>
-		</person>
-	</family>
-
-// XmlTest.java:
-	package emily;
-
-	import javax.xml.parsers.DocumentBuilder;
-	import javax.xml.parsers.DocumentBuilderFactory;
-
-	import org.w3c.dom.Document;
-	import org.w3c.dom.Node;
-	import org.w3c.dom.NodeList;
-
-	public class XmlTest {
-		public static void main(String[] args) throws Exception {
-			// 创建解析工厂
-			DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
-			// 创建解析器
-			DocumentBuilder builder=factory.newDocumentBuilder();
-			// 解析xml，返回Document
-			Document document=builder.parse("src/family.xml");
-			// 得到所有name元素，是一个NodeList
-			NodeList list=document.getElementsByTagName("name");
-			// 遍历集合
-			for(int i=0;i<list.getLength();i++) {
-				// 得到每一个name元素
-				Node node=list.item(i);
-				// 得到元素里面的值
-				String name=node.getTextContent();
-				System.out.println(name);
-			}		
-		}
-	}
-
-
------------------例子：使用jaxp来添加gender元素-----------------
-// XmlTest.java:
-
-	public static void addGender() throws Exception {
-		DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder=factory.newDocumentBuilder();
-		Document document=builder.parse("src/family.xml");
-		//	取第一个person元素
-		Node parentNode=document.getElementsByTagName("person").item(0);
-		//	创建gender元素
-		Element node=document.createElement("gender");
-		//	创建文本
-		Text text=document.createTextNode("Female");
-		//	gender元素中添加文本
-		node.appendChild(text);
-		//	person元素中添加gender元素
-		parentNode.appendChild(node);
-		//	回写xml（操作的xml是内存中的，不是磁盘中的）
-		TransformerFactory factory2=TransformerFactory.newInstance();
-		Transformer transformer=factory2.newTransformer();
-		transformer.transform(new DOMSource(document), new StreamResult("src/family.xml"));	
-	}
-	
-
------------------例子：使用jaxp来遍历所有元素-----------------
-// XmlTest.java:
-
-	public static void main(String[] args) throws Exception {
-			DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder=factory.newDocumentBuilder();
-			Document document=builder.parse("src/family.xml");
-			traversal(document);
-		}
-		public static void traversal(Node node) {
-			// 判断：是元素才打印
-			if(node.getNodeType()==Node.ELEMENT_NODE){
-				System.out.println(node.getNodeName());
-			}
-			NodeList list=node.getChildNodes();
-			for(int i=0;i<list.getLength();i++) {
-				Node son_node=list.item(i);
-				traversal(list.item(i));
-			}
-		}
 
 
 -----------------XML的解析器：dom4j-----------------
 1 dom4j，是一个组织，针对xml解析，提供解析器dom4j
-2 dom4j不是javase的一部分，所以需要先导入dom4j提供的jar包
-	下载地址：https://dom4j.github.io/
-	创建一个文件夹lib，把jar包复制到文件夹lib下
-	右键jar包 -> build path -> add to build path
-3 dom4j API：https://dom4j.github.io/javadoc/1.6.1/
-	得到document
-		SAXReader reader=new SAXReader();
-		Document document=reader.read(url);
-	Document的父接口是Node（如果在Document中找不到想要的方法，到Node里面去找）
-	Document的方法：getRootElement() 获取根节点 返回的是Element
-	Element也是一个接口，父接口是Node
-		Element和Node中的方法：
-			getParent()
-			addElement(qname)	在末尾添加名为qname的元素（不用先创建）
-			element(qname)	获取第一个qname子标签（不包括孙标签）
-			elements(qname)	获取所有qname子标签（不包括孙标签）
-			elements()		获取所有子标签（不包括孙标签）
-			getText()		获取文本内容，返回String
-			setText(str)	添加文本内容
-	创建元素：
-		DocumentHelper.createElement(qname)
-	回写：使用XMLWriter类
-		直接new，传两个参数
-			参数1：xml文件路径 new FileOutputStream(路径)
-			参数2：格式化类 
-				OutputFormat.createPrettyPrint()	有缩进
-				OutputFormat.createCompactFormat()	无缩进
-	dom4j支持xpath操作
-		可以直接获取某个孙元素（不用一层层下去找子元素）
-
-
------------------例子：使用dom4j查询所有name元素的值-----------------
-	package emily;
-
-	import java.util.List;
-
-	import org.dom4j.Document;
-	import org.dom4j.DocumentException;
-	import org.dom4j.Element;
-	import org.dom4j.io.SAXReader;
-
-	public class Dom4jTest {
-		public static void main(String[] args) throws DocumentException {
-			// 创建解析器
-			SAXReader reader=new SAXReader();
-			// 解析xml，得到document
-			Document document=reader.read("src/tv.xml");
-			// 得到根节点
-			Element root=document.getRootElement();
-			// 得到所有person元素
-			List<Element> list=root.elements("person");
-			// 遍历list
-			for (Element element : list) {
-				// 得到第一个age元素
-				Element age=element.element("age");
-				// 得到age里面的值
-				String txt=age.getText();
-				System.out.println(txt);
-			}
-		}
-	}
-
-
-
------------------例子：使用dom4j在第2个person元素中添加hobby-----------------
-	package emily;
-
-	import java.io.FileOutputStream;
-	import java.io.IOException;
-
-	import org.dom4j.Document;
-	import org.dom4j.DocumentException;
-	import org.dom4j.Element;
-	import org.dom4j.io.OutputFormat;
-	import org.dom4j.io.SAXReader;
-	import org.dom4j.io.XMLWriter;
-
-	public class Dom4jTest {
-		public static void main(String[] args) throws DocumentException, IOException {
-			// 创建解析器
-			SAXReader reader=new SAXReader();
-			// 解析xml，得到document
-			Document document=reader.read("src/tv.xml");
-			// 得到根节点
-			Element root=document.getRootElement();
-			// 得到第2个person元素
-			Element person=(Element) root.elements("person").get(1);
-			// 直接添加元素hobby【不需要创建】
-			Element hobby=person.addElement("hobby");
-			// 在hobby下直接添加文本【不需要创建】
-			hobby.setText("打球");
-			// 回写xml
-			OutputFormat format=OutputFormat.createPrettyPrint(); // 有缩进的格式
-			XMLWriter writer=new XMLWriter(new FileOutputStream("src/tv.xml"), format);
-			writer.write(document);
-			writer.close();
-		}
-	}
-
------------------dom4j使用xpath操作-----------------
-1 dom4j可以使用xpath，直接获取某个孙元素（不用一层层下去找子元素）
-2 xpath语法：		http://www.runoob.com/xpath/xpath-syntax.html
-3 默认情况下，dom4j不支持xpath。
-  如果想要在dom4j里面使用xpath，需要引入支持xpath的jar包：jaxen-1.1-beta-6.jar（记得add to build path）
-  在dom4j中提供了两个方法，用来支持xpath：
-	  	selectNodes(xpath表达式)
-	  	selectSingleNode(xpath表达式)
-例子：
-	// 不需要先找根节点，然后一层层找；直接用 selectNodes("//name")
-	List<Node> list=document.selectNodes("//name");
-	System.out.println(list);
-	for (Node node : list) {
-		String txt=node.getText();
-		System.out.println(txt);
-	}
+2 dom4j不是javase的一部分，所以需要先下载导入dom4j提供的jar包
+3 dom4j支持xpath操作，可以直接获取某个孙元素不用一层层下去找子元素

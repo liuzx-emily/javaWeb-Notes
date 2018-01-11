@@ -12,7 +12,7 @@
 	    type: 'POST',
 	    contentType: "application/json",    // request类型。
 	    data: JSON.stringify(params),		// 有时候没有加JSON.stringify就会报错
-	    dataType: 'json',   				// 小心!!
+	    dataType: 'json',   				// 后台回传的数据的类型，小心!!
 	    success: function() {},
 	    error:function(){}
 	});
@@ -20,3 +20,6 @@
 	如果设定了dataType为json。那么
 		后台返回void时会走error，
 		后台返回Integer时接到一个真int（而不设定时,返回1则接到"1"）
+
+3 【jsp】tomcat支持jsp，是怎么实现的？
+	tomcat安装目录/conf/web.xml中，配置了一个处理jsp的servlet，会把jsp转成servlet
