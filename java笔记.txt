@@ -1,584 +1,4 @@
 
------------------jdk-----------------
-jdk版本：1.1   1.2   1.3   1.4   5.0（变化很大，所以不叫1.5，叫5.0）
-jdk5.0新特性：
-	泛型
-	枚举
-	自动拆装箱
-	增强for
-	可变参数
-
-
-
------------------jdk5.0新特性：泛型-----------------
-
-1 在List Set Map中使用泛型
-	新元素放入集合后，失去本身的类型，变成Object类型。想取出的时候要进行类型转换，很容易出错。所以使用泛型
-	
-2 在类中使用泛型
-	例如：查看API
-	class ArrayList<E>{ 
-		public boolean add(E e){...}
-    	public E get(int index){...}
-	}
-
-	ArrayList<String> list = new ArrayList<String>();
-
-3 在方法中使用泛型
-	例如，API中的ArrayList集合中的方法：
-	public <T> T[] toArray(T[] a){...}
-
-	ArrayList<String> list = new ArrayList<String>();
-	Integer[] arr = new Integer[100];
-	Integer[] result = list.toArray(arr);
-
-4 泛型擦除
-	泛型只存在于源代码中，编译后就不存在了（就像final的变量，在编译后就变为常量了）
-
-5 泛型的通配符 ?
-
-5 泛型的限定
-   /*
-    *  酒店员工:厨师、服务员、经理,分别存储到3个集合中
-    *  定义方法,可以同时遍历3集合,遍历三个集合的同时,可以调用work()
-    */
-	import java.util.ArrayList;
-	import java.util.Iterator;
-	public class GenericTest {
-		public static void main(String[] args) {
-
-			//创建3个集合对象
-			ArrayList<ChuShi> cs = new ArrayList<ChuShi>();
-			ArrayList<FuWuYuan> fwy = new ArrayList<FuWuYuan>();
-			ArrayList<JingLi> jl = new ArrayList<JingLi>();
-
-			//每个集合存储自己的元素，略
-
-			myIterator(jl);
-			myIterator(fwy);
-			myIterator(cs);
-
-		}
-	    /*
-	     * 如果用?,it.next()方法取出来的是Object类型,不能调用work()。可以强转:(Employee)it.next()。但不安全
-	     * 方法参数: 控制,只能传递Employee对象或Employee子类的对象
-	     * 泛型的限定：
-	     *   ? extends Employee 可以传递Employee和子类对象
-	     *   ? super   Employee 可以传递Employee和父类对象
-	     */
-		public static void myIterator(ArrayList<? extends Employee> array){
-			Iterator<? extends Employee> it = array.iterator();
-			while(it.hasNext()){
-				//it.next()的数据类型：Employee
-				Employee e = it.next();
-				e.work();
-			}
-		}
-	}
-
-
-
-
------------------jdk5.0新特性：枚举-----------------
-需要在一定的范围内取值（红绿灯）
-
-枚举是一种特殊的类。
-枚举类中声明的每一个枚举值，都是枚举类的一个实例对象。
-与java中的普通类一样，在声明枚举类时，也可以声明属性、方法和构造函数，但构造函数必须是private的。
-枚举类可以实现接口、继承抽象类。
-jdk5中扩展了switch语句，它除了可以接受 byte short char int之外，还可以接收枚举类型。
-
-	http://blog.csdn.net/qq_27093465/article/details/52180865
-
-常用方法：
-	color.name()：返回枚举的名称
-	color.ordinal()：返回枚举的下标（从0开始）
-
-还有两个方法不在API里面，但是编译的时候会生成：
-	Color.valueof(String name)：返回枚举对象
-	Color.values()：返回所有枚举对象数组
-
-
-
-
------------------jdk5.0新特性：静态导入-----------------
-了解即可，不常用。容易出错
-
-可以在代码里面，直接导入静态方法或常量
-
-	import static java.lang.System.out;
-	import static java.lang.Math.abs;
-
-	public class staticImport {
-		public static void main(String[] args) {
-			double num=abs(-2.9);
-			out.println(num);			
-		}
-	}
-
-
-
-
------------------jdk5.0新特性：自动拆装箱-----------------
-基本类型 <----> 包装类 自动转换
-
-	Integer i=10;	// 自动装箱
-	int j=i;		// 自动拆箱
-
-jdk1.4-中不能自动转换，上面的写法会报错，需要：
-	Integer i=new Integer(10);
-	int j=i.intValue();
-jdk是向下兼容的，所以在jdk1.5+中上面两行可以运行	
-
-	public static void main(String[] args) {
-		doo(1);		
-	}
-	private static void doo(double d){
-		System.out.println("double");
-	}
-
-	private static void doo(Integer i){
-		System.out.println("Integer");
-	}
-	输出结果：double
-	分析：jdk1.4-中肯定是double。jdk1.5+虽然有自动拆装箱，但是为了保证向下兼容，所以还是double
-
-
-
-
------------------jdk5.0新特性：增强for循环-----------------
-为什么要引入增强for？
-	为了替代Iterator。如果实现了Iterator接口，就可以使用增强for循环。增强for的底层实现就是使用Iterator
-
-谁能使用增强for？
-	数组；实现了Iterator接口的集合
-
-在集合中使用增强for遍历：
-	list set实现了Iterator接口，所以可以使用增强for
-	map没有实现Iterator接口，不可以使用增强for
-
-
-
-
------------------jdk5.0新特性：可变参数-----------------
-本质就是一个数组
-
-	public static void main(String[] args) {
-		add(1,2);
-		add(2,3,4);		
-	}
-	public static void add(int...nums){
-		int sum=0;
-		for (int i : nums) {
-			sum+=i;
-		}
-		return sum;
-	}
-
-可变参数必须放在最后；只能有一个可变参数
-
-
-
-
------------------反射（理解就行）-----------------
-应用在一些通用性比较高的代码中
-后面学到的框架，大多数都是使用反射来实现的
-
-在框架开发中，都是基于配置文件开发
-	在配置文件中配置了类，可以通过反射得到类中的所有内容
-
-类中的所有内容：属性、构造方法、普通方法
-
-反射的原理：
-	首先需要把java文件保存到本地硬盘 .java
-	编译：.java -> .class文件
-	使用jvm，把class文件通过类加载到内存中。class文件在内存中使用Class类表示
-
-	当使用反射的时候，首先需要获取到Class类。得到了这个类之后，就可以操作class文件里面的所有内容：属性、构造方法、普通方法(private的也可以)
-
-获取Class类的最常用方法：
-	Class c3=Class.forName("emily.Person");	// 获取Class对象
-	Person p1=(Person)c1.newInstance();	// 利用Class对象创建实例类
-
-
-
------------------java画图-----------------		
-生成验证码：
-	
-	// 得到图片缓冲区
-	BufferedImage bi=new BufferedImage(70, 30, BufferedImage.TYPE_INT_RGB);
-	
-	// 得到它的绘制环境
-	Graphics2D g2=(Graphics2D) bi.getGraphics();
-	
-	// 设置颜色
-	g2.setColor(Color.PINK);		
-	// 画一个矩形，填充整张图片（相当于设置了背景色）
-	g2.fillRect(0, 0, 70, 30);
-	
-
-	// 设置颜色
-	g2.setColor(Color.BLACK);	
-	// 设置字体
-	g2.setFont(new Font("微软雅黑",Font.ITALIC,16));
-	// 写字
-	g2.drawString("hello", 15,20);
-	
-	// 保存图片
-	try {
-		ImageIO.write(bi, "JPEG", new FileOutputStream("E:/hello.jpg"));
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-
-
-
-
------------------Object类-----------------
-Object类是Java语言中的根类，即所有类的父类。
-
-单根结构的优点：所有对象都有一个通用接口，所以它们最终都属于相同类型。
-1 Object中的equals方法：	
-	// 比较的是地址
-	public boolean equals(Object obj) {
-        return (this == obj);
-    }
-
-  子类重写equals方法：
-
-  	public class Person {
-  		
-  		private int id = 0;
-  		
-  		@Override
-  		public boolean equals(Object obj) {
-  			if (obj instanceof Person) {
-  				Person p=(Person) obj;
-  				return this.id==p.id;	// 问题：为什么能取private的p.id？？
-  			}else{
-  				return false;
-  			}
-  		}
-  		
-  	}
-
-2 Object中的toString方法：返回对象的类型+@+内存地址值
-	
-  在输出语句中，如果写的是对象，那么会默认调用对象的toString方法:
-	System.out.println(p);	// 等价于下面一行
-	System.out.println(p.toString());
-
-  子类重写toString方法：
-  	public class Person {
-  		
-  		private String name;
-  		
-  		Person(String name){
-  			this.name=name;
-  		}
-
-  		@Override
-  		public String toString() {
-  			return "这个人的名字是"+this.name;
-  		}
-  		
-  		public static void main(String[] args) {
-  			Person person=new Person("小红");
-  			System.out.println(person);	// 不需要写person.toString()
-  		}
-  	}
-
-
-
-
-
------------------String类-----------------
-Java 程序中的所有字符串字面值（如 "abc" ）都是String类的对象
-	String str="abc";	// "abc"是String类的对象。str是引用，存的是地址
-
-为什么输出str没有显示地址？
-	————因为String类重写了toString方法
-
-字符串的值在创建之后不能更改。就是说一旦这个字符串确定了，那么在内存区域中就生成了这个字符串，字符串本身不能改变。
-"abc"这个对象不能改变，但是变量str中的地址是可以改变的。
-	String str="abc";
-	str="def";	// "abc"对象不变。新建了一个String类对象"def"，把它的地址给str
-
-通过使用双引号的方式创建对象与new的方式创建对象，有什么不同呢？
-	String s3 = "abc";
-	String s4 = new String("abc");
-	System.out.println(s3==s4); //false
-	System.out.println(s3.equals(s4)); //true,因为String重写了equals方法
-
-	s3创建，在内存中只有一个对象"abc"。这个对象在字符串常量池中
-	s4创建，在内存中有两个对象。一个new的对象在堆中，一个字符串本身对象"abc"在字符串常量池中
-
-length()
-
-substring(int beginindex)
-substring(int beginindex,int endIndex) 包括起，不包括尾。返回新字符串
-
-boolean startsWith(String prefix);
-boolean endsWith(String suffix);
-boolean contains(String s);
-int indexOf(String str);	// 查找第一次出现的索引，没有就-1
-int indexOf(String str,int fromIndex);
-
-char[] toCharArray();	// 转成字符数组
-
-booleans equals(Object anObject);
-booleans equalsIgnoreCase(String anotherString);
-
-String replace(char old,char new);
-String replace(String old,String new);
-String trim() 去除字符串两端空格，中间的不会去除，返回一个新字符串
-String toLowerCase();
-String toUpperCase();
-
-
-
-
------------------StringBuilder-----------------
-String浪费内存，所以StringBuffer
-
-StringBuilder类，也是字符串缓冲区，它和StringBuffer有什么不同呢？
-	————此类提供一个与 StringBuffer 兼容的 API，用在字符串缓冲区被单个线程使用的时候（这种情况很普遍）。建议优先采用该类，因为在大多数实现中，它比 StringBuffer 要快。
-
-StringBuffer append(String str)
-StringBuffer insert(int offset,String str)
-StringBuffer deleteCharAt(int index)
-StringBuffer delete(int start,int end)
-StringBuffer replace(int start,int end,String str)
-StringBuffer reverse()
-String substring(int start) 
-String substring(int start,int end) 
-
-
-
-
------------------正则-----------------
-String类中正则相关的方法：
-	boolean matches(String regex);
-	String[] split(String regex);
-	String replaceAll(String regex,String replacement);
-
-
-	String s = "Hello12345World6789012";
-	String regex = "\\d";
-	String result = s.replaceAll(regex, "*");	// Hello*****World*******
-
-
-
-
------------------Date-----------------
-时间和日期类：java.util.Date  
-
-毫秒的0点: 
-   System.currentTimeMillis() 返回long
-   获取当前日期的毫秒值
-   时间原点：1970年1月1日 0:00:00 英国格林威治 毫秒值是0
-	long time = System.currentTimeMillis();
-	System.out.println(time);
-
-重要: 时间和日期的计算,必须依赖毫秒值
-	XXX-XXX-XX = 毫秒
-
-
-	Date date = new Date();		// 当前操作系统中的时间和日期
-
-	/*
-	 * Date类的long参数的构造方法
-	 * 传递毫秒值,将毫秒值转成对应的日期对象
-	 */
-	Date date = new Date(0); 	
-	System.out.println(date);	// Thu Jan 01 08:00:00 CST 1970
-
-	/*
-	 * Date类方法 setTime(long)传递毫秒值
-	 */
-	Date date = new Date();
-	date.setTime(0);
-
-	
-	/*
-	 *   Date类方法 getTime() 返回值long 毫秒值
-	 */
-	Date date = new Date();
-	long time = date.getTime();
-
-
-
-
------------------Date转String-----------------
-格式化输出Date:
-
-	对日期格式化的类 java.text.DateFormat 抽象类, 普通方法+抽象方法
-	实际使用是子类 java.text.SimpleDateFormat 可以使用父类普通方法,重写了抽象方法
-
-	/*
-	 * 如何对日期格式化
-	 *  步骤:
-	 *    1. 创建SimpleDateFormat对象
-	 *       在类构造方法中,写入字符串的日期格式 (自己定义)
-	 *    2. SimpleDateFormat调用方法format对日期进行格式化
-	 *         String format(Date date) 传递日期对象,返回字符串
-	 *    日期模式:
-	 *       yyyy    年份
-	 *       MM      月份
-	 *       dd      月中的天数
-	 *       HH      0-23小时
-	 *       mm      分钟
-	 *       ss      秒
-	 */
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH点mm分钟ss秒");
-	String date = sdf.format(new Date());
-	System.out.println(date);
-
-
-
-
-
------------------String转Date----------------
-	/*
-	 *  DateFormat类方法 parse
-	 */
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	Date date = sdf.parse("1995-5-6");
-	System.out.println(date);
-
-
-
-
------------------Calendar类----------------
-	/*
-	 *   日历类 java.util.Calendar
-	 *   抽象类,使用他的子类对象
-	 *   
-	 *   Calendar类的静态方法 getInstance() 直接返回子类对象
-	 */
-	Calendar c = Calendar.getInstance();
-	System.out.println(c);
-	
-
-	/*
-	 * int get(int field)
-	 */
-	// 获取年份
-	int year = c.get(Calendar.YEAR);
-	// 获取月份
-	int month = c.get(Calendar.MONTH) + 1;
-	// 获取天数
-	int day = c.get(Calendar.DAY_OF_MONTH);
-	System.out.println(year + "年" + month + "月" + day + "日");
-
-
-	/*
-	 * set(int field,int value)
-	 * set(int year,int month,int day)
-	 */
-	// 设置到10月
-	c.set(Calendar.MONTH, 9);
-	// 设置到2019年5月1日
-	c.set(2019, 4, 1);
-
-
-	/*
-	 * add(int field, int value)：进行整数的偏移 
-	 */
-	// 向后偏移280天
-	c.add(Calendar.DAY_OF_MONTH, 280);
-	
-
-	/*
-	 * getTime() ：把日历对象,转成Date日期对象
-	 */
-	Date date = c.getTime();
-	
-
-
-
------------------包装类Integer----------------
-String转int：
-	int Interger.parseInt(String s);
-	int Interger.parseInt(String s,int radix);	// 进制
-
-int转String：
-	int i=3;
-	String s1=i+"";
-	String s2=Integer.toString(i);	// 麻烦。用上面的 +""
-
-
------------------System类----------------
-
-static long currentTimeMillis() 获取当前系统时间的毫秒值（1970）【可以求差计算程序执行时间】
-static void exit(int status) 结束正在运行的Java程序。参数传入一个数字即可。通常传入0记为正常状态，其他为异常状态
-static void gc() 运行JVM中的垃圾回收器，完成内存中垃圾的清除。
-static void arraycopy(Object src,int srcPos,Object dest,int destPos,int length) 将源数组的部分元素复制到目标数组的指定位置
-	int[] src = new int[]{1,2,3,4,5};
-	int[] dest = new int[]{6,7,8,9,10};
-	System.arraycopy(src,0,dest,0,3); 	//dest:[1,2,3,9,10]
-
-
-
-
------------------Arrays类----------------
-此类包含用来操作数组的各种方法
-
-sort：升序排序
-	int[] arr = {1,5,9,3,7};
-	Arrays.sort(arr);					// arr:{1,3,5,7,9}
-
-toString：
-	int[] arr = {1,5,9,3,7};
-	String str = Arrays.toString(arr); 	// str:[1, 3, 5, 7, 9]
-
-binarySearch：查找给定元素值出现的位置。若没有查询到，返回值为负。要求该数组必须是个有序的数组。
-	int[] arr = {1,3,4,5,6};
-	int index = Arrays.binarySearch(arr, 4); // 2
-	int index2= Arrasy.binarySearch(arr, 7); // -6
-
-
-
------------------BigInteger----------------
-java中long型为最大整数类型，对于超过long型的数据如何去表示呢？，而不是直接用运算符。
-
-	BigInteger big1 = new BigInteger("123456789098765432154210");
-	BigInteger big2 = new BigInteger("98765432101234567890");
-	BigInteger bigAdd = big1.add(big2);
-	BigInteger bigSub = big1.subtract(big2);
-	BigInteger bigMul = big1.multiply(big2);
-	BigInteger bigDiv = big2.divide(big1);
-
-
-
-
------------------BigDecimal----------------
-    System.out.println(0.09 + 0.01);	//0.09999999999999999
-    System.out.println(1.0 - 0.32);		//0.6799999999999999
-    System.out.println(1.015 * 100);	//101.49999999999999
-    System.out.println(1.301 / 100);	//0.013009999999999999
-
-double和float类型在运算中很容易丢失精度，造成数据的不准确性，Java提供BigDecimal类可以实现浮点数据的高精度运算。
-
-	BigDecimal big1 = new BigDecimal("0.09");
-    BigDecimal big2 = new BigDecimal("0.01");
-    //add
-    BigDecimal bigAdd = big1.add(big2);
-    
-    BigDecimal big3 = new BigDecimal("1.0");
-    BigDecimal big4 = new BigDecimal("0.32");
-    //subtract
-    BigDecimal bigSub = big3.subtract(big4);
-    
-    BigDecimal big5 = new BigDecimal("1.105");
-    BigDecimal big6 = new BigDecimal("100");
-    //multiply
-    BigDecimal bigMul = big5.multiply(big6);
-
-    divide：除法，可以指定保留位数，和保留方式
-
 
 
 
@@ -1534,6 +954,40 @@ boolean					|	false
 	int[][] arr = new int[3][4];
 	int[][] arr = {{1,2},{3,4,5,6},{7,8,9}};
 
+复制数组：System类中的静态方法：arraycopy
+	System.arraycopy(Object src,int srcPos,Object dest,int destPos,int length) 
+	将源数组的部分元素复制到目标数组的指定位置
+		int[] src = new int[]{1,2,3,4,5};
+		int[] dest = new int[]{6,7,8,9,10};
+		System.arraycopy(src,0,dest,0,3); 	//dest:[1,2,3,9,10]
+
+
+
+
+
+-----------------Arrays类----------------
+此类包含用来操作数组的各种方法
+
+sort：升序排序
+	int[] arr = {1,5,9,3,7};
+	Arrays.sort(arr);					// arr:{1,3,5,7,9}
+
+toString：
+	int[] arr = {1,5,9,3,7};
+	String str = Arrays.toString(arr); 	// str:[1, 3, 5, 7, 9]
+
+binarySearch：查找给定元素值出现的位置。若没有查询到，返回值为负。要求该数组必须是个有序的数组。
+	int[] arr = {1,3,4,5,6};
+	int index = Arrays.binarySearch(arr, 4); // 2
+	int index2= Arrasy.binarySearch(arr, 7); // -6
+
+
+【
+	Collections中提供了很多静态方法，是对Collection的操作
+	Arrays中提供了很多静态方法，是对Array的操作
+】
+
+
 
 
 
@@ -1739,6 +1193,10 @@ Collections是集合工具类，用来对集合进行操作。部分方法如下
 	new ArrayList() 或者 new LinkedList() 在创建的时候有会有初始大小，浪费内存
 
 
+【
+	Collections中提供了很多静态方法，是对Collection的操作
+	Arrays中提供了很多静态方法，是对Array的操作
+】
 
 
 
@@ -2043,3 +1501,493 @@ protected：
 	}
 
 
+
+-----------------jdk-----------------
+jdk版本：1.1   1.2   1.3   1.4   5.0（变化很大，所以不叫1.5，叫5.0）
+jdk5.0新特性：
+	泛型
+	枚举
+	自动拆装箱
+	增强for
+	可变参数
+
+
+
+-----------------jdk5.0新特性：泛型-----------------
+好处：
+	1 提高代码的复用性
+	2 提供了类型检查，减少了数据的强转类型转换，同时保证了类型安全
+
+1 在集合、Map中使用泛型
+	
+2 在类中使用泛型
+	例如：查看API
+	class ArrayList<E>{ 
+		public boolean add(E e){...}
+    	public E get(int index){...}
+	}
+
+	ArrayList<String> list = new ArrayList<String>();
+
+3 在方法中使用泛型
+	例如，API中的ArrayList集合中的方法：
+	public <T> T[] toArray(T[] a){...}
+
+	ArrayList<String> list = new ArrayList<String>();
+	Integer[] arr = new Integer[100];
+	Integer[] result = list.toArray(arr);
+
+4 泛型擦除
+	泛型只存在于源代码中，编译后就不存在了（就像final的变量，在编译后就变为常量了）
+
+5 泛型的限定
+	interface Animal{
+		void eat();
+	}
+	class 猫 extends Animal{
+		void eat(){};
+	}
+	class 狗 extends Animal{
+		void eat(){};
+	}
+
+	ArrayList<猫> list1 = new ArrayList<猫>();
+	ArrayList<狗> list2 = new ArrayList<狗>();
+
+	现在需要写一个通用方法，能遍历集合并调用eat()
+
+	分析：
+		如果用通配符?，得到的是Object类型，想要调用eat()还要强制转换为Animal类型，不安全
+		要想办法控制方法的参数，让其只能接收"Animal对象或它的子类对象"
+		泛型的限定：
+		  ? extends Animal：可以传递Animal和子类对象
+		  ? super   Animal：可以传递Animal和父类对象
+		
+		void myIterator(ArrayList<? extends Animal> arr){
+			for(Animal animal:arr){
+				animal.eat();
+			}
+		}
+
+	说明：为什么不能直接用List<Animal>？
+		参数类型为Animal的地方，可以传类型为Cat的对象
+		参数类型为List<Animal>的地方，不可以传类型为List<Cat>的对象
+		因为Cat是Animal的子类，但List<Cat>不是List<Animal>的子类
+
+	注意：不能向List<? extends Animal>添加任意对象，除了null。
+		  原因：http://blog.csdn.net/baple/article/details/25056169
+
+
+6 泛型的通配符 ?
+	1 当方法是使用原始的Object类型作为参数时，如下：
+		void printList(List<Object> list) {}只能传List<Obejct>类型，不能传List<其他类>类型
+		可以选择改为：
+		void printList(List<?> list) {}	这样可以传List
+
+	2 方法的业务逻辑与泛型类型无关时，如List.size(),List.clear()
+		<T>表示确定的java类型，每次调用时就知道类型了
+		<?>表示不确定的java类型，每次调用时也不知道，都是Object类型
+
+	注意：
+		List<Object>与List<?>并不等同，List<Object>是List<?>的子类。
+		不能向List<?> list里添加任意对象，除了null。
+
+
+
+
+
+-----------------jdk5.0新特性：枚举-----------------
+
+枚举是一种特殊的类。
+枚举类中声明的每一个枚举值，都是枚举类的一个实例对象。
+
+http://blog.csdn.net/qq_27093465/article/details/52180865
+
+
+
+
+
+
+
+-----------------jdk5.0新特性：自动拆装箱-----------------
+基本类型 <----> 包装类 自动转换
+
+	Integer i=10;	// 自动装箱
+	int j=i;		// 自动拆箱
+
+jdk1.4-中不能自动转换，上面的写法会报错，需要：
+	Integer i=new Integer(10);
+	int j=i.intValue();
+
+
+
+
+
+
+-----------------jdk5.0新特性：增强for循环-----------------
+为什么要引入增强for？
+	为了替代Iterator。增强for的底层实现就是使用Iterator
+
+谁能使用增强for？
+	数组；实现了Iterator接口的集合
+
+在集合中使用增强for遍历：
+	list set实现了Iterator接口，所以可以使用增强for
+	map没有实现Iterator接口，不可以使用增强for
+
+
+
+
+
+
+-----------------jdk5.0新特性：可变参数-----------------
+本质就是一个数组
+
+	public static void main(String[] args) {
+		add(1,2);
+		add(2,3,4);		
+	}
+	public static void add(int...nums){
+		int sum=0;
+		for (int i : nums) {
+			sum+=i;
+		}
+		return sum;
+	}
+
+可变参数必须放在最后；只能有一个可变参数
+
+
+
+
+
+-----------------反射-----------------
+框架，大多数都是使用反射来实现的
+
+在框架开发中，都是基于配置文件开发
+	在配置文件中配置了类，可以通过反射得到类中的所有内容：属性、构造方法、普通方法(private的也可以)
+
+反射的原理：
+	首先需要把java文件保存到本地硬盘 .java
+	编译：.java -> .class文件
+	使用jvm，把class文件通过类加载到内存中。class文件在内存中使用Class类表示
+
+	当使用反射的时候，首先需要获取到Class类。得到了这个类之后，就可以操作class文件里面的所有内容
+
+获取Class类的最常用方法：
+	Class c1=Class.forName("emily.Person");	// 把class文件加载到内存中，并获取Class对象
+	Person p1=(Person)c1.newInstance();		// 创建实例类
+
+
+
+
+
+-----------------java画图-----------------		
+生成验证码：
+	
+	// 得到图片缓冲区
+	BufferedImage bi=new BufferedImage(70, 30, BufferedImage.TYPE_INT_RGB);
+	
+	// 得到绘制环境
+	Graphics2D g2=(Graphics2D) bi.getGraphics();
+	
+	// 设置颜色
+	g2.setColor(Color.PINK);		
+	// 画一个矩形，填充整张图片（相当于设置了背景色）
+	g2.fillRect(0, 0, 70, 30);
+	
+
+	// 设置颜色
+	g2.setColor(Color.BLACK);	
+	// 设置字体
+	g2.setFont(new Font("微软雅黑",Font.ITALIC,16));
+	// 写字
+	g2.drawString("hello", 15,20);
+	
+	// 保存图片
+	try {
+		ImageIO.write(bi, "JPEG", new FileOutputStream("E:/hello.jpg"));
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+
+
+
+
+-----------------Object类-----------------
+Object类是Java语言中的根类，即所有类的父类。
+单根结构的优点：所有对象都有一个通用接口，所以它们最终都属于相同类型。
+
+1 Object中的equals方法：	
+	// 比较的是地址
+	public boolean equals(Object obj) {
+        return (this == obj);
+    }
+
+2 Object中的toString方法：返回对象的类型+@+内存地址值	
+  在输出语句中，如果写的是对象，那么会默认调用对象的toString方法:
+	syso(p);	// 等价于syso(p.toString());
+
+
+
+
+
+
+-----------------String类-----------------
+Java 程序中的所有字符串字面值(如"abc")都是String类的对象
+	String str="abc";	// "abc"是String类的对象。str是引用，存的是地址
+
+为什么输出str没有显示地址？
+	————因为String类重写了toString()
+
+字符串的值在创建之后不能更改。就是说一旦这个字符串确定了，那么在内存区域中就生成了这个字符串，字符串本身不能改变。
+"abc"这个对象不能改变，但是变量str中的地址是可以改变的。
+	String str="abc";
+	str="def";	// "abc"对象不变。新建了一个String类对象"def"，把它的地址给str
+
+通过使用双引号的方式创建对象与new的方式创建对象，有什么不同呢？
+	String s3 = "abc";
+	String s4 = new String("abc");
+	System.out.println(s3==s4); //false
+	System.out.println(s3.equals(s4)); //true,因为String重写了equals方法
+
+	s3创建，在内存中只有一个对象"abc"。这个对象在字符串常量池中
+	s4创建，在内存中有两个对象。一个new的对象在堆中，一个字符串本身对象"abc"在字符串常量池中
+
+	length()
+
+	substring(int beginindex)
+	substring(int beginindex,int endIndex) [起,尾) 返回新字符串
+
+	boolean startsWith(String prefix);
+	boolean endsWith(String suffix);
+	boolean contains(String s);
+	int indexOf(String str);	// 查找第一次出现的索引，没有就-1
+	int indexOf(String str,int fromIndex);
+
+	char[] toCharArray();	// 转成字符数组
+
+	booleans equals(Object anObject);
+	booleans equalsIgnoreCase(String anotherString);
+
+	String replace(char old,char new);
+	String replace(String old,String new);
+	String trim() 去除字符串两端空格，中间的不会去除，返回一个新字符串
+	String toLowerCase();
+	String toUpperCase();
+
+
+
+
+-----------------StringBuilder-----------------
+String浪费内存，所以使用StringBuilder
+
+StringBuilder类：字符串缓冲区，速度快，线程不安全，用在字符串缓冲区被单个线程使用的时候(这种情况很普遍)
+StringBuffer类：也是字符串缓冲区，速度慢，线程安全。不建议用
+
+	append(String str)
+	insert(int offset,String str)
+	deleteCharAt(int index)
+	delete(int start,int end)
+	replace(int start,int end,String str)
+	reverse()
+	substring(int start) 
+	substring(int start,int end) 
+
+
+
+
+
+-----------------正则-----------------
+String类中正则相关的方法：
+	boolean matches(String regex);
+	String[] split(String regex);
+	String replaceAll(String regex,String replacement);
+
+
+	String s = "Hello123World678";
+	String regex = "\\d";
+	String result = s.replaceAll(regex, "*");	// Hello***World***
+
+
+
+
+-----------------Date-----------------
+时间和日期类：java.util.Date  
+
+毫秒的0点: 1970年1月1日 0:00:00
+	System.currentTimeMillis() 获取当前日期的毫秒值
+	long time = System.currentTimeMillis();
+
+
+重要: 时间和日期的计算,必须依赖毫秒值
+
+
+	Date date = new Date();		// 当前操作系统中的时间和日期
+
+	/*
+	 * 构造方法(long)
+	 */
+	Date date = new Date(0); 	
+	System.out.println(date);	// Thu Jan 01 08:00:00 CST 1970
+
+	/*
+	 *  setTime(long)
+	 */
+	Date date = new Date();
+	date.setTime(0);
+
+	
+	/*
+	 *  getTime()
+	 */
+	Date date = new Date();
+	long time = date.getTime();
+
+
+
+
+-----------------Date转String-----------------
+格式化输出Date:
+	/*
+	 * 如何对日期格式化
+	 *  步骤:
+	 *    1. 创建SimpleDateFormat对象
+	 *       在类构造方法中,写入字符串的日期格式 (自己定义)
+	 *    2. SimpleDateFormat调用format()对日期进行格式化
+	 *         String format(Date date)
+	 *    日期模式:
+	 *       yyyy    年份
+	 *       MM      月份
+	 *       dd      月中的天数
+	 *       HH      0-23小时
+	 *       mm      分钟
+	 *       ss      秒
+	 */
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH点mm分钟ss秒");
+	String date = sdf.format(new Date());
+	System.out.println(date);
+
+
+
+
+
+-----------------String转Date----------------
+	/*
+	 *  DateFormat类方法 parse
+	 */
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	Date date = sdf.parse("1995-5-6");
+	System.out.println(date);
+
+
+
+
+-----------------Calendar类----------------
+	/*
+	 *   日历类 java.util.Calendar
+	 *   抽象类,使用他的子类对象
+	 *   
+	 *   Calendar类的静态方法 getInstance() 直接返回子类对象
+	 */
+	Calendar c = Calendar.getInstance();
+	System.out.println(c);
+	
+
+	/*
+	 * int get(int field)
+	 */
+	// 获取年份
+	int year = c.get(Calendar.YEAR);
+	// 获取月份
+	int month = c.get(Calendar.MONTH) + 1;
+	// 获取天数
+	int day = c.get(Calendar.DAY_OF_MONTH);
+	System.out.println(year + "年" + month + "月" + day + "日");
+
+
+	/*
+	 * set(int field,int value)
+	 * set(int year,int month,int day)
+	 */
+	// 设置到10月
+	c.set(Calendar.MONTH, 9);
+	// 设置到2019年5月1日
+	c.set(2019, 4, 1);
+
+
+	/*
+	 * add(int field, int value)：进行整数的偏移 
+	 */
+	// 向后偏移280天
+	c.add(Calendar.DAY_OF_MONTH, 280);
+	
+
+	/*
+	 * getTime() ：把日历对象,转成Date日期对象
+	 */
+	Date date = c.getTime();
+	
+
+
+
+-----------------包装类Integer----------------
+String转int：
+	int Interger.parseInt(String s);
+	int Interger.parseInt(String s,int radix);	// 进制
+
+int转String：
+	int i=3;
+	String s1=i+"";
+	String s2=Integer.toString(i);	// 麻烦
+
+
+
+
+-----------------System类----------------
+
+static long currentTimeMillis() 获取当前系统时间的毫秒值(1970)
+static void exit(int status) 结束正在运行的Java程序。参数传入一个数字即可。通常传入0记为正常状态，其他为异常状态
+static void arraycopy(Object src,int srcPos,Object dest,int destPos,int length) 将源数组的部分元素复制到目标数组的指定位置
+	int[] src = new int[]{1,2,3,4,5};
+	int[] dest = new int[]{6,7,8,9,10};
+	System.arraycopy(src,0,dest,0,3); 	//dest:[1,2,3,9,10]
+
+
+
+
+
+
+
+-----------------BigInteger----------------
+java中long型为最大整数类型，对于超过long型的数据如何去表示呢？
+	用BigInteger去模拟
+	加减乘除是调用方法，而不是直接用运算符。
+
+	BigInteger big1 = new BigInteger("123456789098765432154210");
+	BigInteger big2 = new BigInteger("98765432101234567890");
+	BigInteger res1 = big1.add(big2);
+	subtract
+	multiply
+	divide
+
+
+
+-----------------BigDecimal----------------
+    syso(0.09 + 0.01);	//0.09999999999999999
+    syso(1.0 - 0.32);	//0.6799999999999999
+    syso(1.015 * 100);	//101.49999999999999
+    syso(1.301 / 100);	//0.013009999999999999
+
+double和float类型在运算中很容易丢失精度，造成数据的不准确性，Java提供BigDecimal类可以实现浮点数据的高精度运算。
+
+	BigDecimal big1 = new BigDecimal("0.09");
+    BigDecimal big2 = new BigDecimal("0.01");
+    //add
+    BigDecimal bigAdd = big1.add(big2);
+    
+   	subtract
+    multiply
+    divide：除法，可以指定保留位数，和保留方式

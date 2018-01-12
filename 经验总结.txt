@@ -23,3 +23,15 @@
 
 3 【jsp】tomcat支持jsp，是怎么实现的？
 	tomcat安装目录/conf/web.xml中，配置了一个处理jsp的servlet，会把jsp转成servlet
+
+4 【String】
+	1 用StringBuilder，快
+	2 int转String：i+""
+
+5 【数组】复制数组
+	System类中的静态方法：arraycopy 
+	static void arraycopy(Object src,int srcPos,Object dest,int destPos,int length) 
+	将源数组的部分元素复制到目标数组的指定位置
+		int[] src = new int[]{1,2,3,4,5};
+		int[] dest = new int[]{6,7,8,9,10};
+		System.arraycopy(src,0,dest,0,3); 	//dest:[1,2,3,9,10]
