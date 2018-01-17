@@ -1,0 +1,88 @@
+
+------------------简介------------------
+1 是一个表现层框架，主要功能：
+	从request中接受参数
+	把处理后的结果集返回给页面
+
+
+
+
+----------------使用----------------
+1 使用前需要导入jar包，build path
+2 创建springMVC的配置文件
+
+
+
+----------------springMVC的配置文件----------------
+1 存放位置：为了方便对所有配置文件统一管理。在项目下新建config文件夹，里面放所有的配置文件
+
+2 把固定的头复制进去：
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+	</beans>
+
+3 在web.xml中指定配置文件的位置：
+	
+	<!-- springMVC前端控制器 -->
+		<servlet>
+			<servlet-name>springMVC</servlet-name>
+			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+			<!-- 指定核心配置文件的位置 -->
+			<init-param>
+				<param-name>contextConfigLocation</param-name>
+				<param-value>classpath:spring.xml</param-value>
+			</init-param>
+			<!-- 服务器启动时就加载这个servlet -->
+			<load-on-startup>1</load-on-startup>
+		</servlet>
+		<servlet-mapping>
+			<servlet-name>springMVC</servlet-name>
+			<url-pattern>*.do</url-pattern>
+		</servlet-mapping>
+
+
+4 配置文件中：
+
+	<!-- 【1】 配置注解扫描：去哪里扫描@Controller -->
+	<context:component-scan base-package="liuzx.controller"></context:component-scan>
+	<!-- 【2】配置注解驱动：如果没有显示的配置"处理器映射器"和"处理器适配器"，那么springMVC会去默认的dispatcherServlet.properties中查找。 
+		这样每个请求都要扫描一次那个默认的配置文件，会降低访问速度。所以要显示的配置这两个"器"。但是不同版本的spring中，这两个"器"的位置不一样。 
+		注解驱动可以替我们自动配置最新版的"处理器映射器"和"处理器适配器" -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	<!-- 【3】配置视图解析器：在controller中指定页面路径的时候，就不用写页面的完整路径名称了（不用ModelAndView可以不配这个） -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 真正的页面路径=前缀+去掉后缀名的页面名称+后缀 -->
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".html"></property>
+		<property name="contentType" value="text/html;charset=utf-8" />
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+	</bean>
+
+
+
+
+
+
+
+
+----------------参数绑定----------------
+1)默认类型:
+	在controller方法中可以有也可以没有,看自己需求随意添加.
+	httpservletRqeust,httpServletResponse,httpSession,Model(ModelMap其实就是Mode的一个子类
+	,一般用的不多)
+2)基本类型:string,double,float,integer,long.boolean
+3)pojo类型:页面上input框的name属性值必须要等于pojo的属性名称
+4)vo类型:页面上input框的name属性值必须要等于vo中的属性.属性.属性....
+5)自定义转换器converter:
+	作用:由于springMvc无法将string自动转换成date所以需要自己手动编写类型转换器
+	需要编写一个类实现Converter接口
+	在springMvc.xml中配置自定义转换器
+	在springMvc.xml中将自定义转换器配置到注解驱动上
