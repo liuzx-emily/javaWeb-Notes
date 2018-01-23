@@ -1,6 +1,14 @@
 
 ------------------简介------------------
-1 是一个表现层框架，主要功能：
+1 springMvc是一个表现层框架，是spring的一个组件
+
+2 核心：dispatcherServlet（在web.xml中配置）
+  三大组件：处理器映射器、处理器适配器、视图解析器
+
+
+
+
+2 主要功能：
 	从request中接受参数
 	把处理后的结果集返回给页面
 
@@ -53,17 +61,15 @@
 
 	<!-- 【1】 配置注解扫描：去哪里扫描@Controller -->
 	<context:component-scan base-package="liuzx.controller"></context:component-scan>
-	<!-- 【2】配置注解驱动：如果没有显示的配置"处理器映射器"和"处理器适配器"，那么springMVC会去默认的dispatcherServlet.properties中查找。 
-		这样每个请求都要扫描一次那个默认的配置文件，会降低访问速度。所以要显示的配置这两个"器"。但是不同版本的spring中，这两个"器"的位置不一样。 
-		注解驱动可以替我们自动配置最新版的"处理器映射器"和"处理器适配器" -->
+	
+	<!-- 【2】配置注解驱动：注解驱动可以替我们自动配置最新版的"处理器映射器"和"处理器适配器" -->
 	<mvc:annotation-driven></mvc:annotation-driven>
+	
 	<!-- 【3】配置视图解析器：在controller中指定页面路径的时候，就不用写页面的完整路径名称了（不用ModelAndView可以不配这个） -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<!-- 真正的页面路径=前缀+去掉后缀名的页面名称+后缀 -->
 		<property name="prefix" value="/"></property>
 		<property name="suffix" value=".html"></property>
-		<property name="contentType" value="text/html;charset=utf-8" />
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
 	</bean>
 
 
@@ -73,16 +79,107 @@
 
 
 
-----------------参数绑定----------------
-1)默认类型:
-	在controller方法中可以有也可以没有,看自己需求随意添加.
-	httpservletRqeust,httpServletResponse,httpSession,Model(ModelMap其实就是Mode的一个子类
-	,一般用的不多)
-2)基本类型:string,double,float,integer,long.boolean
-3)pojo类型:页面上input框的name属性值必须要等于pojo的属性名称
-4)vo类型:页面上input框的name属性值必须要等于vo中的属性.属性.属性....
-5)自定义转换器converter:
+----------------参数绑定：从请求中接收参数----------------
+1 默认类型:
+	看需求随意添加：HttpservletRqeust HttpServletResponse HttpSession
+
+2 基本类型：string Integer Double等
+	根据名称来找，会自动帮你转换类型
+
+3 pojo类型：传的参数的名字，必须等于pojo的属性的名字
+
+4 自定义转换器converter:
 	作用:由于springMvc无法将string自动转换成date所以需要自己手动编写类型转换器
 	需要编写一个类实现Converter接口
 	在springMvc.xml中配置自定义转换器
 	在springMvc.xml中将自定义转换器配置到注解驱动上
+
+ 
+ 
+
+----------------controller方法的返回值----------------
+1 普通的string
+	如果后台方法返回一个普通的string，则会被当成页面名称。
+ 	如果在springmvc的配置文件中，配置了视图解析器，那么会加上其中配置的前缀、后缀。
+ 	不配置视图解析器也可以，自己写string把页面路径写全就ok
+	however，页面跳转最好用前台js
+
+		return "forward:user/login.do";		// 请求转发 相对路径
+		return "forward:/user/login.do";	// 请求转发 绝对路径
+
+		return "redirect:user/login.do";	// 重定向 相对路径
+		return "redirect:/user/login.do";	// 重定向 绝对路径
+2 void：不推荐
+
+
+
+
+----------------JSON----------------
+需要加入jackson的jar包
+
+@RequestBody
+@ResponseBody 
+
+ajax请求中：
+	$.ajax({
+	    url: "...",
+	    type: 'POST',
+	    contentType: "application/json",    // 前台发送的类型
+	    data: JSON.stringify(params),		// 有时候没有加JSON.stringify就会报错
+	    dataType: 'json',   				// 后台回传的数据的类型，小心!!
+	    success: function() {},
+	    error:function(){}
+	});
+
+
+
+
+----------------拦截器----------------
+1 SpringMVC提供，类似于过滤器Filter，用于预处理和后处理。
+
+2 写一个拦截器：实现HandlerInterceptor接口，重写3个方法：
+
+	/**
+	 * controller执行前调用此方法
+	 * 返回true表示继续执行，返回false中止执行
+	 * 这里可以加入登录校验、权限拦截等
+	 */
+	boolean preHandle(request,response,handler)
+
+	/**
+	 * controller执行后但未返回视图前调用此方法
+	 * 这里可在返回用户前对模型数据进行加工处理，比如这里加入公用信息以便页面显示
+	 */
+	void postHandle(request,response,handler)
+
+	/**
+	 * controller执行后且视图返回后调用此方法
+	 * 这里可得到执行controller时的异常信息
+	 * 这里可记录操作日志，资源清理等
+	 */
+	void afterCompletion(request,response,handler,exception)
+
+3 在spring的配置文件中，配置：
+	<!--拦截器 -->
+	<mvc:interceptors>
+		<!--多个拦截器,顺序执行 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="HandlerInterceptor1的位置"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="HandlerInterceptor2的位置"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	说明: /** 代表拦截所有
+
+
+
+
+
+----------------架构级别异常处理----------------
+主要为了防止项目上线后给用户抛500等异常信息,所以需要在架构级别上整体处理,hold住异常
+首先自定义全局异常处理器实现HandlerExceptionResolver接口
+在spirngMvc.xml中配置生效

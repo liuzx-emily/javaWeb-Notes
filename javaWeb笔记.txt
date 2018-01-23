@@ -131,6 +131,22 @@ Servlet接口 - GenericServlet类 - HttpServlet类
 
 
 
+----------------- <url-pattern> -----------------<
+
+1 匹配后缀
+	*.action
+
+2 匹配所有路径型url，比如/user。不会匹配后缀型，比如*.jsp
+	/*
+
+3 匹配所有url：路径型、后缀型(包括/user .jsp .js和*.html等)
+	/
+	非常狠，不建议
+
+4 首页servlet：访问项目根目录时
+	<url-pattern></url-pattern>
+
+
 
 
 -----------------Servlet接口-----------------	
