@@ -1,4 +1,11 @@
 
+在myEclipse中给项目改名，两个步骤：
+	1 选中项目，F2改名
+	2 选中项目 右键properties - myEclipse - web中改名
+
+
+
+
 1 【jsp】
 	页面中固定不变的头、尾
 		0 每个页面都写，一旦有改动想要go die
