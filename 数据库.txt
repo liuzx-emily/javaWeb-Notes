@@ -1,8 +1,34 @@
 
 ----------------【重要】----------------
+乐观锁、悲观锁
+
+
+mybatis缓存
+
+
+
+排序字段用int 不能用varchar
+	不然涉及到排序时，ORDER BY会"不合逻辑"地按照字符串排序
+
+
+mybatis中对单引号、双引号处理不一样	
+	双引号判空要用：!unit_id.equals("")
+	单引号判空要用：unit_id!=''
+如果要和字符串比较，必须要equals和双引号：
+	可以：unit_type.equals("1")
+	不可以：unit_type != '1'
+
+
+mybatis中根据字段a，决定字段b
+	<!-- 【单位】所属单位id（只有单位类型为1时，才查询）-->
+    <if test=' unit_type!=null and unit_type.equals("1") and unit_id != null and !unit_id.equals("")'>
+	 	 AND t_position.unit_id = #{unit_id}
+    </if>
+
+
 mysql：
 	服务默认不区分大小写。
-	如果想要大小写敏感，需要更改mysql的设置（这样该mysql服务下的所有数据库都会变成大小写敏感）
+	如果想要大小写敏感，需要更改mysql的设置（这样该mysql服务下的所有数据库都会变成大小写敏感，会影响所有相关项目。）
 
 oracle数据库：
 	列名、表名等区分大小写，但是关键字(select insert..)不区分大小写。
@@ -19,12 +45,11 @@ oracle数据库：
 
 
 
-mybatis中，会把整型0当作空字符串，所以 
-	(1)test=" xx != null and xx != '' "	
-	要改成
-	(2)test=" xx != null "	
-如果是字符串0，则没有这个问题，用(1)
-如果数据库中建表的时候选的类型是整型，则必须改成(2)
+mybatis中，认为数字0和空字符串是全等的，所以 
+	(1) test=" xx != null and xx != '' "	
+	(2) test=" xx != null "	
+如果是字符串"0"，可以用(1)
+如果数据库中建表的时候选的类型是整型，则必须用(2)
 
 
 
@@ -47,229 +72,40 @@ mybatis中，语句的属性有parameterType，和parameterMap，要注意自动
 
 
 
-mysql的分页
-	limit ${起始条数，不包含自己},${共几条}
+mysql的分页，只有mysql中有limit
+	limit ${起始条数，不包含自己。从0开始},${共几条}
 	例如: limit 10,5 是取第11到15条
 
 
 
 
 
-----------------起步----------------
-数据库：mysql oracle
-数据库管理系统：navicat
-
-mysql安装过程中，输入的root密码，必须要记住
-
-mysql服务启动、关闭：
-	1 我的电脑 → 管理 → 服务 → 可以找到MySQL服务开启或停止
-	2 命令行：net start mysql
-			  net stop mysql
-
-
-
-----------------sql语法----------------
-1 语句以分号结尾
-2 常用数据结构：
-	int		
-	double
-	varchar	可变长度的字符串
-	date	日期类型，yyyy-MM-dd，没有时分秒
-	_Blob	主要用来存图片和视频，知道就行
-
-
-
-
-
--------------------where条件-------------------
-	=
-	<>						不等于
-	<=
-	&& and
-	|| or 
-	! not	
-	in (1,6) 				1或者6
-	any(1,6)				in(1,5)等价于=any(1,6)   列>any(1,6)：列>1或列>6都行
-	all(1,6)				列>all(1,6)：列>1并且列>6
-	between x and y 		在x和y之间（包括xy）
-	is null
-	is not null
-	
-LIKE 通配符	模糊查询：
-	% 用来匹配任意个字符，可以无字符
-	_ 用来匹配一个字符
-
-
-
-
--------------------增删改-------------------
-除了数值类型外，其它类型的值必须用引号
-
-1 增inserrt
-	insert into 表 (列名1,列名2,列名3..) values (值1,值2,值3..);
-	insert into 表 values (值1,值2,值3..);
-	INSERT student (id,name,age) VALUES (001,'小明',23);
-
-2 删delete
-	delete from 表名 [where 条件];
-	truncate table 表名;	#删除整个数据表
-	DELETE FROM student WHERE age=23;
-
-	问题：delete from 表名 和 truncate table 表名;的区别
-		delete是一条一条删除，不清空auto_increment记录数。
-		truncate直接将表删除后重建。auto_increment将置为零
-
-3 改update
-	update 表名 set 字段名=值,字段名=值;
-	update 表名 set 字段名=值,字段名=值 where 条件;
-	UPDATE student SET age=13 WHERE id=22;
-
-
-
-
--------------------查-------------------
-1 语法
-	select 字段1,字段2 from 表名 [where 条件];
-	select * from 表名 [where 条件];
-
-2 别名 关键字as，可以省略
-	select * from 表名 as 别名;			#给表起别名
-	select 字段名 as 别名 from 表名; 	#给列起别名
-
-3 可以直接对列进行运算
-	select pname,price from product;	#显示的是加了100后的结果，数据库中的数据不变
-
-4 排序：order by 列名 [desc][asc]，默认asc
-	SELECT * FROM student WHERE class=1 ORDER BY age DESC;
-
-
-
-
--------------------聚合函数-------------------
-之前我们做的查询都是横向，而使用聚合函数查询是纵向查询，
-它是对一列的值进行计算，然后返回一个单一的值；另外聚合函数会忽略空值null。
-
-	count：统计指定列不为NULL的记录行数
-	max min：如果指定列是字符串类型，那么使用字符串排序运算；
-	sum avg：如果指定列类型不是数值类型，那么计算结果为0；
-
-例：
-	SELECT COUNT(*) FROM zhangwu;	#查询一共有多少条数据
-	SELECT SUM(zname) FROM zhangwu WHERE zname LIKE'%收入%';
-	SELECT MAX(zmoney) FROM zhangwu;
-	SELECT AVG(zmoney) FROM zhangwu;
-
-
-
-
--------------------分组查询-------------------
-分组查询:  group by 被分组的列名，必须跟随聚合函数
-SELECT SUM(money),name FROM zhangwu GROUP BY name
-分组操作中的having子语句，是用于在分组后对数据进行过滤的
-
-having与where的区别
-	having：分组后过滤.
-	where：分组前过滤
-  
--- 对name先查询，再分组求和,求和结果按照降序排列
-	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%' GROUP BY name ORDER BY getsum DESC
-
--- 对name先查询，再分组求和。分组求和的结果按照>5000筛选
-	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%'GROUP BY name HAVING getsum>5000
-
-
-
--------------------limit-------------------
-【方言：】只有mysql中有
-
-分页中常用：
-	LIMIT 偏移量,行数
-	第一行的偏移量是0
-	
-	SELECT * FROM student LIMIT 5,10;  // 检索记录行 6-15
-	SELECT * FROM student LIMIT 95,-1; // 检索记录行 96-最后
-	SELECT * FROM student LIMIT 5;     //检索前5个记录行，等价于LIMIT 0,5
-
-
-
-
--------------------例子-------------------
-1 从student表中查询年龄在25-30之间的（只有birth）
-	SELECT name,2017-birth as age,department from student HAVING age BETWEEN 25 AND 30;
-	SELECT name,2017-birth as age,department from student WHERE 2017-birth BETWEEN 25 AND 30;
-
-2 从student表中查询每个院系有多少人 
-	select COUNT(*),department FROM student GROUP BY department;
-
-3 从score表中查询每个科目的最高分
-	SELECT c_name,MAX(grade) from score GROUP BY c_name;
-
-4 查询李四的考试科目（c_name）和考试成绩（grade）
-	select c_name,grade from score where stu_id=(select id from student where name='李四');
-
-5 用连接的方式查询所有学生的信息和考试信息
-	select * from score,student where student.id=score.stu_id;【方言】
-	select * from score INNER JOIN student ON student.id=score.stu_id;【标准】
-
-6 同时参加计算机和英语考试的学生
-	select stu_id from score where stu_id in (select stu_id from score where c_name='计算机') and c_name='英语';
-	思路：先找到所有参加了计算机的，在找同时参加了英语的
-
-7 查询2000年入职的员工
-	... WHERE hiredate LIKE '2000%'
-
-8 用年龄降序排序。如果年龄相同，用学号升序排列
-	... ORDER BY age DESC,id ASC
-
-
-
-
-
--------------------主键-------------------
-主键：
-	1 非空
-	2 唯一
-	3 可以被引用（外键）
-
-外键：
-	1 可以为空
-	2 可以重复
-	3 外键必须是另一个表的主键的值（外键引用主键）
-	4 一个表可以有多个外键，相对不同表
-
-
-一对一：【用不到】
-	husband表，主键：hid
-	wife表，主键wid。外键wid引用husband.hid
-
-一对多：
-	teacher表，主键：tid
-	student表，主键wid。外键tid引用teacher.tid
-
-多对多：	
-	班级是一张表
-	教师是一张表
-	班级和教师的关系也是一张表（指定两个外键，分别引用班级.主键、教师.主键）
-
-
-
-
 -------------------多表查询【重点】-------------------
 分类：
-	合并结果集
+	操作结果集：并集union 差集except 交集intersect		
 	连接查询
 	子查询
 
-1 合并结果集：要求两个结果集的列数、列类型完全相同
-	select * from ab union select * from cd;
-	语法：
-		union：去除重复行
-		union all:不去除重复行
+1 操作结果集：
+	要求：两个结果集的结构相同、列数相同、列数据类型兼容、不包含order by和compute子句
+	1 并集 union [all]
+		select * from ab union select * from cd;
+		说明：
+			union：去除重复行
+			union all:不去除重复行
+	2 差集 except
+		select name from t1 except select name from t2;
+	3 交集 intersect
+		select name from t1 intersect select name from t2;
+	4 排序order by
+		select name from t1 intersect select name from t2 order by name desc;
+		说明：
+			1 对整个运算后的结果排序
+		　　2 排序字段名称是第一个结果集
 	详：https://www.cnblogs.com/kissdodog/archive/2013/06/24/3152743.html
 
 
 2 连接查询
-
 	内连接:（笛卡尔积，用where筛）
 		连接结果仅包含符合where条件的行，参与连接的两个表都应该符合连接条件。
 		【mysql方言】select * from a,b where a.id=b.id;
@@ -317,20 +153,165 @@ having与where的区别
 	from table【源可以子查询】
 	where id=1;【条件可以子查询】
 
-做练习题！！！！！
-
 
 
 -------------------函数-------------------
-左列转成右列：
-	null 	0%
-	0.2 	20&
-	1 		100%
+1 左列转成右列：
+		null 	0%
+		0.2 	20&
+		1 		100%		
+	用函数：concat和ifnull
+		concat( ifnull(n,0) *100 ,"%")
 
+2 日期格式化 
+	date_format(date, '%Y-%m-%d') date
+
+
+
+
+----------------起步----------------
+数据库：mysql oracle sqlserver
+数据库管理系统：navicat
+
+mysql安装过程中，输入的root密码，必须要记住
+
+mysql服务启动、关闭：
+	1 我的电脑 → 管理 → 服务 → 可以找到MySQL服务开启或停止
+	2 命令行：net start mysql
+			  net stop mysql
+
+
+
+
+----------------sql语法----------------
+1 语句可以跨行，以分号结尾
+2 常用数据结构：
+	int		
+	double
+	varchar	可变长度的字符串
+	date	日期类型，yyyy-MM-dd，没有时分秒
+	_Blob	主要用来存图片和视频，知道就行
+
+
+
+
+
+-------------------where条件-------------------
+	=
+	<>						不等于
+	<=
+	&& and
+	|| or 
+	! not	
+	in (1,6) 				1或者6
+	any(1,6)				in(1,5)等价于=any(1,6)   列>any(1,6)：列>1或列>6都行
+	all(1,6)				列>all(1,6)：列>1并且列>6
+	between x and y 		在x和y之间（包括xy）
+	is null
+	is not null
 	
-用函数：concat和ifnull
+LIKE 通配符	模糊查询：
+	% 用来匹配任意个字符，可以无字符
+	_ 用来匹配一个字符
 
-	concat( ifnull(n,0) *100 ,"%")
+
+
+
+-------------------增删改-------------------
+除了数值类型外，其它类型的值必须用引号
+
+1 增inserrt
+	INSERT student (id,name,age) VALUES (001,'小明',23);
+
+2 删delete
+	DELETE FROM student WHERE age=23;
+	truncate table 表名;	#清空整个数据表的数据，保留表结构
+	drop table 表名;		#完全删除表，这个表就不存在了
+
+	问题：delete from 表名 和 truncate table 表名;的区别
+		delete是一条一条删除，不清空auto_increment记录数。效率低
+		truncate直接将表删除后重建。auto_increment将置为零
+
+3 改update
+	UPDATE student SET age=13 WHERE id=22;
+
+
+
+
+-------------------查-------------------
+可以给列、表起别名
+	select p.name as "nickname" from t_person p where p.id="3A2";
+
+可以直接对列进行运算
+	select (age+2) as "changedAge" from t_person;
+
+排序：order by 列名 [desc][asc]，默认asc
+
+
+
+
+-------------------聚合函数-------------------
+之前我们做的查询都是横向，而使用聚合函数查询是纵向查询，
+它是对一列的值进行计算，然后返回一个单一的值；另外聚合函数会忽略空值null。
+
+	count：统计指定列不为NULL的记录行数
+	max min：如果指定列是字符串类型，那么使用字符串排序运算；
+	sum avg：如果指定列类型不是数值类型，那么计算结果为0；
+
+例：
+	SELECT COUNT(*) FROM zhangwu;	#查询一共有多少条数据
+	SELECT SUM(zname) FROM zhangwu WHERE zname LIKE'%收入%';
+	SELECT MAX(zmoney) FROM zhangwu;
+	SELECT AVG(zmoney) FROM zhangwu;
+
+
+
+
+-------------------分组查询-------------------
+分组查询:  group by 被分组的列名，必须跟随聚合函数
+SELECT SUM(money),name FROM zhangwu GROUP BY name
+分组操作中的having子语句，是用于在分组后对数据进行过滤的
+
+having与where的区别
+	having：分组后过滤.
+	where：分组前过滤
+  
+-- 对name先查询，再分组求和,求和结果按照降序排列
+	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%' GROUP BY name ORDER BY getsum DESC
+
+-- 对name先查询，再分组求和。分组求和的结果按照>5000筛选
+	SELECT SUM(money)AS 'getsum',name FROM zhangwu WHERE name LIKE'%支出%'GROUP BY name HAVING getsum>5000
+
+
+
+
+
+-------------------例子-------------------
+1 从student表中查询年龄在25-30之间的（只有birth）
+	SELECT name,2017-birth as age,department from student HAVING age BETWEEN 25 AND 30;
+	SELECT name,2017-birth as age,department from student WHERE 2017-birth BETWEEN 25 AND 30;
+
+2 从student表中查询每个院系有多少人 
+	select COUNT(*),department FROM student GROUP BY department;
+
+4 查询李四的考试科目（c_name）和考试成绩（grade）
+	select c_name,grade from score where stu_id=(select id from student where name='李四');
+
+5 用连接的方式查询所有学生的信息和考试信息
+	select * from score,student where student.id=score.stu_id;【方言】
+	select * from score INNER JOIN student ON student.id=score.stu_id;【标准】
+
+6 同时参加计算机和英语考试的学生
+	select stu_id from score where stu_id in (select stu_id from score where c_name='计算机') and c_name='英语';
+	思路：先找到所有参加了计算机的，在找同时参加了英语的
+
+7 查询2000年入职的员工
+	... WHERE hiredate LIKE '2000%'
+
+8 用年龄降序排序。如果年龄相同，用学号升序排列
+	... ORDER BY age DESC,id ASC
+
+
 
 
 
@@ -346,71 +327,6 @@ Java提供的"访问数据库规范"称为"JDBC"，是"规范"。
 所以一定要额外下载、导入驱动的jar包。
 
 
-
--------------------JDBC开发步骤：-------------------
-（1）执行insert delete update：用executeUpdate
-	// 0.导入mysql的jar包
-
-	// 1.注册驱动
-	// 		所有的driver实现都提供了static块，块内的代码就是把自己注册到DriverManager中！
-	Class.forName("com.mysql.jdbc.Driver");
-
-	// 2.连接数据库
-	String url = "jdbc:mysql://localhost:3306/liuzx";
-	String username = "root";
-	String password = "123456";
-	Connection con = DriverManager.getConnection(url, username, password);
-
-	// 3.执行sql语句
-	String sql = "INSERT INTO student(id,name,age) VALUES(?,?,?)";
-	PreparedStatement ps = con.prepareStatement(sql);
-	ps.setInt(1, 1);
-	ps.setString(2, "Alice");
-	ps.setInt(3, 14);
-	ps.executeUpdate();
-
-	// 4.处理结果
-
-	// 5.释放资源
-	ps.close();
-	con.close();
-
-（2）执行select：用executeQuery
-
-	// 3.执行sql语句
-	String sql = "select * from student where id=?";
-	PreparedStatement ps = con.prepareStatement(sql);
-	ps.setInt(1, 2);
-	ResultSet rs = ps.executeQuery();
-	
-	// 4.处理结果
-	while(rs.next()){
-		System.out.println(rs.getString("name"));
-	}	
-		
-	// 5.释放资源
-	rs.close();
-	ps.close();
-	con.close();
-
-
-预处理对象prepareStatement：高效+防SQL注入攻击
-SQL注入攻击：
-	假设登录的sql语句如下:
-		select * from user where name = 用户输入的用户名 and password = 用户输的密码;
-	当用户输入的密码为：xxx or 1=1 时，则真正执行的代码变为：
-		select * from 用户表 where name = 'xxx' and password ='xxx' or 1=1;
-	上述语句永远可以查询出结果，那么用户就直接登录成功了。
-
-预处理的原理：
-	1 sql服务器的工作：
-		> 校验sql语句的语法
-		> 编译
-		> 执行
-	2 预处理
-		> 前提：数据库必须支持预处理（几乎都支持）
-		> 每个ps都与一个sql模版绑定在一起。先把sql模版给数据库，数据库进行校验语法、编译。执行的时候只是传递参数
-		> 若二次执行，不用再次校验语法、编译。直接传递参数执行
 
 
 
@@ -454,6 +370,7 @@ mysql在默认情况下是否开启预编译，与MySQL服务器的版本无关�
 
 
 ----------下面的：随便看看有印象就行，不用记。用的时候再查--------------
+
 	----------------数据库操作----------------
 	1 创建	
 		create database liuzx;
@@ -467,6 +384,7 @@ mysql在默认情况下是否开启预编译，与MySQL服务器的版本无关�
 		use liuzx;
 	5 查看正在使用的数据库:
 		select database();
+
 	----------------表操作----------------
 	1 创建
 		CREATE TABLE student(
@@ -482,6 +400,7 @@ mysql在默认情况下是否开启预编译，与MySQL服务器的版本无关�
 		desc student;	#查看特定
 	4 删除
 		drop table student;
+
 	----------------修改表结构----------------
 	1 添加列
 		alter table 表名 add 列名 类型(长度) 约束;
@@ -501,4 +420,69 @@ mysql在默认情况下是否开启预编译，与MySQL服务器的版本无关�
 	6 修改表的字符集
 		alter table 表名 character set 字符集;
 		ALTER TABLE newstudent CHARACTER SET gbk;
-----------上面的：随便看看有印象就行，不用记。用的时候再查--------------
+
+	-------------------JDBC开发步骤：-------------------
+	（1）执行insert delete update：用executeUpdate
+		// 0.导入mysql的jar包
+
+		// 1.注册驱动
+		// 		所有的driver实现都提供了static块，块内的代码就是把自己注册到DriverManager中！
+		Class.forName("com.mysql.jdbc.Driver");
+
+		// 2.连接数据库
+		String url = "jdbc:mysql://localhost:3306/liuzx";
+		String username = "root";
+		String password = "123456";
+		Connection con = DriverManager.getConnection(url, username, password);
+
+		// 3.执行sql语句
+		String sql = "INSERT INTO student(id,name,age) VALUES(?,?,?)";
+		PreparedStatement ps = con.prepareStatement(sql);
+		ps.setInt(1, 1);
+		ps.setString(2, "Alice");
+		ps.setInt(3, 14);
+		ps.executeUpdate();
+
+		// 4.处理结果
+
+		// 5.释放资源
+		ps.close();
+		con.close();
+
+	（2）执行select：用executeQuery
+
+		// 3.执行sql语句
+		String sql = "select * from student where id=?";
+		PreparedStatement ps = con.prepareStatement(sql);
+		ps.setInt(1, 2);
+		ResultSet rs = ps.executeQuery();
+		
+		// 4.处理结果
+		while(rs.next()){
+			System.out.println(rs.getString("name"));
+		}	
+			
+		// 5.释放资源
+		rs.close();
+		ps.close();
+		con.close();
+
+
+	预处理对象prepareStatement：高效+防SQL注入攻击
+	SQL注入攻击：
+		假设登录的sql语句如下:
+			select * from user where name = 用户输入的用户名 and password = 用户输的密码;
+		当用户输入的密码为：xxx or 1=1 时，则真正执行的代码变为：
+			select * from 用户表 where name = 'xxx' and password ='xxx' or 1=1;
+		上述语句永远可以查询出结果，那么用户就直接登录成功了。
+
+	预处理的原理：
+		1 sql服务器的工作：
+			> 校验sql语句的语法
+			> 编译
+			> 执行
+		2 预处理
+			> 前提：数据库必须支持预处理（几乎都支持）
+			> 每个ps都与一个sql模版绑定在一起。先把sql模版给数据库，数据库进行校验语法、编译。执行的时候只是传递参数
+			> 若二次执行，不用再次校验语法、编译。直接传递参数执行
+
