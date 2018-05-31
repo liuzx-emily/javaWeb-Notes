@@ -62,3 +62,59 @@ function selectAll() {
         });
     });
 }
+
+// --------------------- 工具函数 ---------------------
+// 包括所有初始化操作
+var basePath;
+getBasePath();
+// 获取basePath
+function getBasePath() {
+    var loc = (window.location + '').split('/');
+    basePath = loc[0] + '//' + loc[2] + '/' + loc[3] + '/';
+}
+// 把后台传回来的数据，格式化成select控件需要的格式
+function formatData_Input_Select(data, textName, valName) {
+    var resList = [];
+    for (var i = 0; i < data.length; i++) {
+        resList.push({
+            "text": data[i][textName],
+            "val": data[i][valName]
+        });
+    }
+    return resList;
+}
+// 处理空数据
+function filter_NullData(data) {
+    $.each(data, function(key, val) {
+        if (val === undefined || val === null) {
+            data[key] = "";
+        }
+    });
+}
+// 初始化日期控件
+function initDatePick() {
+    // 开始日期默认当天     
+    $('.initCurDate').val(function() {
+        var today = new Date();
+        var h = today.getFullYear();
+        var m = today.getMonth() +
+            1;
+        var d = today.getDate();
+        m = m < 10 ? "0" + m : m;
+        d = d < 10 ? "0" + d : d;
+        return h + "-" + m + "-" + d;
+    });
+    //保证： 开始日期 <= 预计完成日期
+    $("#startTime1").bind("click focus", function() {
+        WdatePicker({
+            maxDate: '#F{$dp.$D(\'endTime1\')}',
+            dateFmt: "yyyy-MM-dd"
+        });
+    });
+    $("#endTime1").bind("click focus", function() {
+        WdatePicker({
+            minDate: '#F{$dp.$D(\'startTime1\')}',
+            dateFmt: "yyyy-MM-dd"
+        });
+    });
+}

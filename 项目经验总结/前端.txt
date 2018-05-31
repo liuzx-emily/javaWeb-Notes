@@ -163,3 +163,9 @@
         container.find(" .box-position").hide();
         container.find(" .box-dumpingInfo").hide();
     }
+
+
+
+-------------------------radio赋值---------------------   
+    $("input[name='importance']").prop("checked",false);
+    $("input[name='importance'][value='1']").prop("checked",true);

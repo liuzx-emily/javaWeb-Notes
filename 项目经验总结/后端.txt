@@ -71,3 +71,214 @@
     <if test="birthday_end != null and birthday_end != ''">		    
 	 	 AND a.birthday &lt;= CONCAT(#{birthday_end}," 23:59:59")
     </if>
+
+--------------------SQL中 判断是否为null--------------------
+	判断值是否为null：
+		用a is null，不能用a=null
+		用a is not null，不能用  a!=null
+
+--------------------SQL中 条件写在on和where的区别--------------------
+1 	下面两句的结果是不一样的：
+	select * from t_a left join t_b on t_a.id=t_b.aid and t_b.name='小明'
+	select * from t_a left join t_b on t_a.id=t_b.aid where t_b.name='小明'
+	说明：条件t_b.name='小明'
+		写在on中的话：先对t_b表筛选，之后再和t_a连接
+		写在where中：是先把t_b和t_a连接，对连接后的结果集再删选
+	举例：如果对于t_a中的数据a，在t_b中没有对应的数据。
+			用on的话，数据a还在（连接的t_b的字段都是null）
+			用where的话，数据a就不在了。因为连接之后的结果集中的t_b.name是null，不满足条件t_b.name='小明'
+
+2 left join和right join因为有主表、从表的区别，所以条件写在on和where里是不同的。
+  但是inner join中没有主表、从表的概念，条件写在on里和where里没有区别
+
+
+
+--------------------sql concat--------------------
+1 concat
+	1、功能：
+		将多个字符串连接成一个字符串。
+	2、语法：
+		concat(str1, str2,...)
+		返回结果为连接参数产生的字符串，如果有任何一个参数为null，则返回值为null。
+	3、举例：
+		select concat (id, name, score) as info from tt2;
+		select concat (id, "-",name, "-",score) as info from tt2;
+
+2 concat_ws
+	1、功能：
+		和concat()一样。但是可以指定分隔符(concat with separator)
+	2、语法：
+		concat_ws(separator, str1, str2, ...)
+		说明：第一个参数指定分隔符。需要注意的是分隔符不能为null，如果为null，则返回结果为null。
+	3、举例：
+		select concat_ws("-",id,name) as info from tt2;
+
+3 group_concat
+	1、功能：
+		将group by产生的同一个分组中的值连接起来，返回一个字符串结果
+	2、语法：
+		group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc  ] [separator '分隔符'] )
+		说明：通过使用distinct可以排除重复值；如果希望对结果中的值进行排序，可以使用order by子句；separator是一个字符串值，缺省为一个逗号。
+	3、举例：
+		select GROUP_CONCAT(t_temp.result) from(
+			select concat("名称：",v.AssetName,"  类型：",v.AssetTypeName) as "result" from v_assectquery v WHERE v.AssetId in(
+				select t_h.HostAssetId from t_itss_asset_belongto_host t_h where t_h.assetid ='FCC68EA9B2744BB8AAD227DA45EAD538'		
+			)
+		) as t_temp
+
+
+--------------------esint表格分页--------------------
+ 【 ~~~~~~~~~~~~~ html ~~~~~~~~~~~~~ 】
+		<table id="cabinetList_table" class="dataTable">
+	        <thead>
+	            <tr>
+	            	<th datacol="CabinetId" class="noshow" cls="noshow"></th>
+	                <th datacol="CabinetName" sortcol="CabinetName" cls="text-center">机柜的名称/编号</th>
+	                <th datacol="ServerRoomName" sortcol="ServerRoomName" cls="text-center">所属机房名称</th>
+	                <th datacol="UCount" sortcol="UCount" cls="text-center">U数</th>
+	                <th datacol="oper" cls="text-center">操作</th>
+	            </tr>
+	        </thead>
+	        <tbody></tbody>
+	    </table>
+
+	    <div class="paging" id="cabinetList_page"></div>
+ 
+ 【 ~~~~~~~~~~~~~ js ~~~~~~~~~~~~~ 】
+		$(function() {
+		    // 分页控件初始化
+		    $('#cabinetList_page').initPaging({ pageSize: 20, pgindex: 1 }, loadCabinetTable, [5, 10, 20]);
+		    // 表格绑定列头排序
+		    $("#cabinetList_table").bindTableSortFn(loadCabinetTable);
+		    // 表格初始化
+		    loadCabinetTable();
+		});
+		function loadCabinetTableSearch(){			
+        	$('#cabinetList_page').setPaging({ pgindex: 1 });
+			loadCabinetTable();
+		}
+		function loadCabinetTable() {
+			// 校验d
+			if (!$('#advancedSearch').ClientValid()) {
+			    return;
+			}
+    		var param = $("#advancedSearch").getPostData();
+		    // 取表格的分页、排序参数
+		    var pgindex = $("#cabinetList_page").getPaging().pgindex;
+		    var pgSize = $("#cabinetList_page").getPaging().pgSize;
+		    var sortcol = $("#cabinetList_table").getSortCol();
+		    param.limitStart = (pgindex - 1) * pgSize;
+		    param.row = pgSize;
+		    param.sortcol = sortcol;
+		    console.log(param);
+		    var fnSuccess = function(res) {
+		        var data = res.data;
+		        if (data.length > 0) {
+		            for (var i = 0; i < data.length; i++) {
+		                var cuda = data[i];
+		                cuda.oper = "<img class='lookup-host-icon' style='cursor:pointer;' onclick='editById(\"" + cuda.CabinetId + "\")' src='" + basePath + "itss/img/icon-change.png'>"
+		            }
+		            $("#cabinetList_table").databind(data);
+		            $("#cabinetList_page").setPaging({ count: parseInt(res.total) });
+		        } else {
+		            $("#cabinetList_table").databind([]);
+		            $("#cabinetList_page").setPaging({ count: 0 });
+		        }
+		        // 切换是否启用
+		        userEvent();
+		    }
+		    $.rajax(basePath + 'Cat/queryCatList.do', param, fnSuccess,true);
+		}
+
+ 【 ~~~~~~~~~~~~~ controller ~~~~~~~~~~~~~ 】
+		@RequestMapping(value = "/queryCatList.do", method = RequestMethod.POST)
+		@ResponseBody
+		public Map<String, Object> queryCatList(@RequestBody Map<String, Object> params)
+				throws Exception {
+			return CatService
+					.queryCatList(params);
+		}
+
+ 【 ~~~~~~~~~~~~~ service ~~~~~~~~~~~~~ 】 	
+ 	Map<String, Object> queryCatList(Map<String, Object> params) throws Exception ;
+
+ 【 ~~~~~~~~~~~~~ serviceImpl ~~~~~~~~~~~~~ 】
+		public Map<String, Object> queryCatList(Map<String, Object> params) throws Exception {
+			Map<String, Object> result = new HashMap<String, Object>();	
+			int rowcount = CatMapper.selectCatCount(params);
+			if (rowcount > 0) {
+				// 获取分页
+				result.put("flag", 1);
+				result.put("total", rowcount);
+				result.put("data",  CommonUtil.dataNull(CatMapper.selectCat(params)));
+			}
+			else {
+				result.put("flag", 0);
+				result.put("total", 0);
+				result.put("data", new ArrayList<Map<String, Object>>());
+			}
+			return result;
+		}
+
+ 【 ~~~~~~~~~~~~~ mapper.java ~~~~~~~~~~~~~ 】
+ 	public List<Map<String, Object>> selectCat(Map<String, Object> params) throws Exception;
+
+ 【 ~~~~~~~~~~~~~ mapper.xml ~~~~~~~~~~~~~ 】
+		<select id="selectCat" resultType="java.util.Map" parameterType="java.util.Map">
+			SELECT t_itss_configuration_cabinet.CabinetId,
+			t_itss_configuration_cabinet.CabinetId As CabinetId,
+			t_itss_configuration_cabinet.CabinetName As CabinetName,
+			t_itss_configuration_cabinet.UCount As UCount,
+			t_itss_configuration_cabinet.SortNum As SortNum,
+			t_itss_configuration_serverroom.ServerRoomName As ServerRoomName
+			FROM
+			t_itss_configuration_cabinet t_itss_configuration_cabinet
+			Left Join
+			t_itss_configuration_serverroom t_itss_configuration_serverroom
+			ON
+			t_itss_configuration_cabinet.ServerRoomId=
+			t_itss_configuration_serverroom.ServerRoomId
+			<where>
+			    t_itss_configuration_cabinet.IsDelete = '0'
+				<if test="serverroomname != null and serverroomname != ''">
+					AND INSTR(SERVERROOMNAME,#{serverroomname}) &gt; 0
+				</if>
+				<if test="cabinetname != null and cabinetname != ''">
+					AND INSTR(CABINETNAME,#{cabinetname}) &gt; 0
+				</if>
+			</where>
+			<if test="sortcol != null and sort_name != ''">
+				order by ${sortcol}
+			</if>
+			<if test="limitStart != null and row != null and row != ''">
+				limit ${limitStart},${row}
+			</if>
+		</select>
+
+ 【 ~~~~~~~~~~~~~ 操作js ~~~~~~~~~~~~~ 】
+	获取选中行的id：
+		$("#cabinetList_table").getSelectedRowValue("CabinetId")
+
+
+
+--------------------前台用JSON.stringify()转完后，后台要用--------------------
+	ajax参数中如果有数组：
+		前端：必须要用JSON.stringify转换。
+		后端：controller中必须要用@RequestBody来接
+
+	@RequestMapping(value = "/needMaintainSearch.do", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> needMaintainSearch(
+			@RequestBody Map<String, Object> params) throws Exception {
+		return itssAssetMaintainService.query_needMaintain_search(params);
+
+
+
+----------------------------------------
+	mysql中的部分函数，参数和逗号分隔符中间不能有空格
+
+
+
+
+----------------------------------------
+	

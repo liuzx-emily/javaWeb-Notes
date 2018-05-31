@@ -79,6 +79,52 @@ mysql的分页，只有mysql中有limit
 
 
 
+------------------sql必知必会笔记------------------
+看到53页了
+字段拼接，不同数据库中不同：
+	mysql中用concat：（在mysql中不能用+来拼接，||则会被视为or操作符）
+		select concat(a,'(',b,')') from t
+	sql server用+：
+		select a + '(' + b + ')' from t
+	oracle用||：
+		select a || '(' || b || ')' from t
+
+函数——文本处理常用函数：
+	大小写：lower upper
+	去掉空格：rtrim ltrim trim
+		对于字符串格式的列，有的数据库会给长度不够的值进行填充（右边填充空格）。
+		为了正确返回数据，必须用rtrim去掉。
+			
+	字符串截取：
+		mysql中用substring、left、right：https://www.cnblogs.com/wjm956/p/7724244.html
+			substring(str, pos) pos如果是负的，则是倒着数
+			substring(str, pos, len) 
+		sqlserver中用substring
+		oracle中用substr
+
+函数——取当前日期：
+	要慎重考虑，是在数据库中取时间（移植难），还是在程序中取时间（麻烦）
+	mysql中使用curdate()：
+		select curdate() from t
+	sqlserver中使用getdate()
+	oracle中使用sysdate
+
+函数——数据类型转换：
+	mysql、sqlserver中用convert(value,type)
+		转换的数据类型是有限制的。这个类型可以是以下值其中的一个：
+			二进制，同带binary前缀的效果 : BINARY
+			字符型，可带参数 : CHAR()
+			日期 : DATE
+			时间: TIME
+			日期时间型 : DATETIME
+			浮点数 : DECIMAL
+			整数 : SIGNED
+			无符号整数 : UNSIGNED
+		select convert('2009_5_26',DATETIME)
+	oracle中每种类型的转换都有响应的函数
+
+
+
 
 -------------------多表查询【重点】-------------------
 分类：
