@@ -1,4 +1,32 @@
-﻿-----------比较时间，如果时间大小关系不对则交换-------------
+﻿-----------富文本编辑器判空时，需要先把标签、空白符去掉-----------
+// 去掉html标签
+var article_content_withoutTag = article_content.replace(/<\/?.+?>/g, "");
+// 去掉空白符：空格、换行等
+article_content_withoutTag = article_content_withoutTag.replace(/\s/g, "");
+// 去掉 &nbsp;
+article_content_withoutTag = article_content.replace(/&nbsp/gi, "");
+
+if (article_content_withoutTag == "" || article_content_withoutTag == null) {
+    alert("请填写文章内容");
+    return false;
+}
+
+
+-----------文件上传-----------
+plupload
+
+
+-----------禅道项目管理软件-----------
+http://www.zentao.net/download/zentao10.0.beta-80076.html
+
+
+
+-----------播放swf文件-----------
+    <embed align="center" src="../../qbzxflash.swf" width="1200" height="427" type="application/x-shockwave-flash" wmode="transparent" quality="high">
+    </embed>
+
+
+-----------比较时间，如果时间大小关系不对则交换-------------
 
     check_exchange(param, "purchasedate_start", "purchasedate_end");
     check_exchange(param, "changedate_start", "changedate_end");
@@ -145,7 +173,7 @@
         container.find(" input[type='radio']").prop("checked", false);
         // 多选清空
         container.find(" input[type='checkbox']").prop("checked", false);
-        // select清空，并触发change事件
+        // select清空，并触发change事件！！！
         container.find(" select").val("");
         container.find(" select").trigger('change');
         // 日期初始化为当天
@@ -167,5 +195,18 @@
 
 
 -------------------------radio赋值---------------------   
+    // 先清空
     $("input[name='importance']").prop("checked",false);
+    // 再赋值
     $("input[name='importance'][value='1']").prop("checked",true);
+
+
+-------------------------url中传递中文---------------------   
+    encodeURI(EventName)
+
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]);
+        return null;
+    }
