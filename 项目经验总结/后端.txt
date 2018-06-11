@@ -12,25 +12,6 @@
 		1 前端：js中生成，放在public.js中。（展示性的内容不推荐这样用，因为禁用js就显示不出来了）
 		2 后端：头、尾用include引进来。（必须在IE8下测试，因为正常浏览器可以自动纠错，）
 
-
-2 【ajax】
-	$.ajax({
-	    url: "http://localhost:8080/modelPro/student/add.do",
-	    type: 'POST',
-	    contentType: "application/json",    // request类型。
-	    data: JSON.stringify(params),		// 有时候没有加JSON.stringify就会报错
-	    dataType: 'json',   				// 后台回传的数据的类型，小心!!
-	    success: function() {},
-	    error:function(){}
-	});
-
-	如果设定了dataType为json。那么
-		后台返回void时会走error，
-		后台返回Integer时接到一个真int（而不设定时,返回1则接到"1"）
-
-3 【jsp】tomcat支持jsp，是怎么实现的？
-	tomcat安装目录/conf/web.xml中，配置了一个处理jsp的servlet，会把jsp转成servlet
-
 4 【String】
 	1 用StringBuilder，快
 	2 int转String：i+""
@@ -45,6 +26,17 @@
 
 
 
+---------------------解决get请求的乱码----------------------
+tomcat的配置文件server.xml中，添加URIEncoding ：
+<Connector 
+	port="8080"
+	protocol="HTTP/1.1"
+	connectionTimeout="20000"
+	redirectPort="8443"
+	URIEncoding="UTF-8"/>
+
+
+
 ---------------------sql中的if else----------------------
     <!-- 状态state不搜所有，只搜索1、2 -->
     <choose>
@@ -55,6 +47,7 @@
             AND ( v.state ='1' or v.state ='2')
         </otherwise>
     </choose>
+
 
 --------------------日期 datetime比较--------------------
  前台传的格式：
@@ -72,10 +65,12 @@
 	 	 AND a.birthday &lt;= CONCAT(#{birthday_end}," 23:59:59")
     </if>
 
+
 --------------------SQL中 判断是否为null--------------------
 	判断值是否为null：
 		用a is null，不能用a=null
 		用a is not null，不能用  a!=null
+
 
 --------------------SQL中 条件写在on和where的区别--------------------
 1 	下面两句的结果是不一样的：
@@ -90,6 +85,7 @@
 
 2 left join和right join因为有主表、从表的区别，所以条件写在on和where里是不同的。
   但是inner join中没有主表、从表的概念，条件写在on里和where里没有区别
+
 
 
 
@@ -195,8 +191,7 @@
 		@ResponseBody
 		public Map<String, Object> queryCatList(@RequestBody Map<String, Object> params)
 				throws Exception {
-			return CatService
-					.queryCatList(params);
+			return CatService.queryCatList(params);
 		}
 
  【 ~~~~~~~~~~~~~ service ~~~~~~~~~~~~~ 】 	
@@ -262,15 +257,32 @@
 
 
 --------------------前台用JSON.stringify()转完后，后台要用--------------------
+	$.ajax({
+	    url: "http://localhost:8080/modelPro/student/add.do",
+	    type: 'POST',
+	    contentType: "application/json",    // 前->后
+	    data: JSON.stringify(params),		
+	    dataType: 'json',   				// 后台回传的数据的类型，小心!!
+	    success: function() {},
+	    error:function(){}
+	});
+
+	如果设定了dataType为json。那么
+		后台返回void时会走error，
+		后台返回Integer时接到一个真int（而不设定时,返回1则接到"1"）
+
 	ajax参数中如果有数组：
 		前端：必须要用JSON.stringify转换。
+			dataType: 'json',
+			contentType: 'application/json',
+			data: JSON.stringify(param)
 		后端：controller中必须要用@RequestBody来接
 
-	@RequestMapping(value = "/needMaintainSearch.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/addArticle.do", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> needMaintainSearch(
-			@RequestBody Map<String, Object> params) throws Exception {
-		return itssAssetMaintainService.query_needMaintain_search(params);
+	public Map<String, Object> addArticle(@RequestBody Map<String, Object> params){
+		return articleService.addArticle(params);
+	}
 
 
 
@@ -280,5 +292,50 @@
 
 
 
-----------------------------------------
+----------------------解决数据库中不能存中文、中文乱码------------------
+从"数据库"——"后端"——"前端"一步步确认
+	1 是不是数据库的问题？
+		使用navicat或者cmd，尝试向字段A输入中文。如果：
+		1 可以正确保存，那么不是数据库的问题
+		2 无法正确保存，那么是数据库的问题：
+			检查字段A的字符集、所在表的字符集、所在数据库的字符集
+			【mysql的教训：
+				如果用create table自己建表的话。那么默认情况下，表和表中字段的字符集都是latin，不能保存中文。
+				表建好之后，如果修改表的字符集，表中字段的字符集不会跟着变，要一个个改。
+				所以最好建库建表时，都指定字符集。
+				CREATE TABLE `module_email` (
+				  `id` varchar(32)  NOT NULL,
+				) DEFAULT CHARSET=utf8;
+			 （好像是）oracle和sqlserver都只需要在建库的时候设置字符集，建好后不允许修改
+			】
+
+	2 是不是后台连接数据库的问题？
+		jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8
+
+	3 是不是前台连接后台的问题？
+		这个简单，略了
 	
+
+----------------------时间格式化------------------	
+    String currentTime = new SimpleDateFormat("yyyy-MM-d HH-mm-ss").format(new Date());
+
+
+    Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    调用： 
+
+    var time1 = new Date().Format("yyyy-MM-dd");
+    var time2 = new Date().Format("yyyy-MM-dd hh:mm:ss");

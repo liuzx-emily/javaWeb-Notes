@@ -12,6 +12,12 @@ if (article_content_withoutTag == "" || article_content_withoutTag == null) {
 }
 
 
+-----------图片滚动-----------
+jquery.cxscroll
+坑：css
+    js内部写死了class名
+
+
 -----------文件上传-----------
 plupload
 
