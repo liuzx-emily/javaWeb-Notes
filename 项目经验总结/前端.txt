@@ -22,14 +22,25 @@ jquery.cxscroll
 plupload
 
 
+
+
+-----------播放视频-----------
+在ie8中兼容html5的video标签：
+    http://www.muquan.net/article/345.html（不能本地引用，只能引用网上的链接)
+
+用flash：
+    <embed align="center" src="../../qbzxflash.swf" width="1200" height="427" type="application/x-shockwave-flash" wmode="transparent" quality="high">
+    </embed>
+
+
+
+
 -----------禅道项目管理软件-----------
 http://www.zentao.net/download/zentao10.0.beta-80076.html
 
 
 
------------播放swf文件-----------
-    <embed align="center" src="../../qbzxflash.swf" width="1200" height="427" type="application/x-shockwave-flash" wmode="transparent" quality="high">
-    </embed>
+    
 
 
 -----------比较时间，如果时间大小关系不对则交换-------------
@@ -216,3 +227,8 @@ http://www.zentao.net/download/zentao10.0.beta-80076.html
         if (r != null) return decodeURI(r[2]);
         return null;
     }
+
+
+-------------------------url中传递中文--------------------- 
+    jquery ztree教程
+    https://www.cnblogs.com/cmxwt/p/7434688.html

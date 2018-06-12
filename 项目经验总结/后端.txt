@@ -339,3 +339,29 @@ tomcat的配置文件server.xml中，添加URIEncoding ：
 
     var time1 = new Date().Format("yyyy-MM-dd");
     var time2 = new Date().Format("yyyy-MM-dd hh:mm:ss");
+
+
+
+-----------------部署时，修改tomcat的端口号-----------------
+	conf/server.xml中需要改3个地方：
+		<Server port="改8005" shutdown="SHUTDOWN">
+		<Connector port="改8009" protocol="AJP/1.3" redirectPort="改8443"/>
+		<Connector connectionTimeout="20000" port="改8080" protocol="HTTP/1.1" redirectPort="改8443"/>
+
+
+
+-----------------修改title-----------------：
+	$("title").html("天津市公安局妇女联合会-"+data.webColumn.columnname);
+
+
+
+-----------------新增、编辑页面，成功之后-----------------
+
+	layer.msg('提交成功！', {
+	    time: 0,
+	    btn: ['返回'],
+    	shade:0.3,
+	    yes: function(index) {
+	        window.location.href="跳转到列表页";
+	    }
+	});
