@@ -6,39 +6,54 @@
 
 分析：
 	情况一：部门层级是有限的，假设最多4级
-		select t.deptid from t_dept t
-		where t.deptid in (
-			-- 	自己
-			"abc123",
-			-- 	子1级
-			(select t1.deptid from t_dept t1 where t1.parentid="abc123"),
-			-- 	子2级
-			(select t2.deptid from t_dept t2 where t2.parentid=
-				(select t21.deptid from t_dept t21 where t21.parentid="abc123")
-			),
-			-- 	子3级
-			(select t3.id from sys_dept t3 where t3.parentid=
-				(select t31.id from sys_dept t31 where t31.parentid=
-					(select t32.id from sys_dept t32 where t32.parentid="abc123")
-				)
+
+		-- 	自己
+		select t.id from t_dept t where t.id=69
+		union 
+		-- 	子1级
+		select t1.id from t_dept t1 where t1.parentid=69
+		union
+		-- 	子2级
+		select t2.id from t_dept t2 where t2.parentid in 
+			(select t21.id from t_dept t21 where t21.parentid=69)
+		union
+		-- 	子3级
+		select t3.id from t_dept t3 where t3.parentid in 
+			(select t32.id from t_dept t32 where t32.parentid in 
+				(select t31.id from t_dept t31 where t31.parentid=69)
 			)
-		)
+
+
 	情况二：部门层级是无限的
 		部门表中需要额外加字段mapid,mapname
 			mapid：存所有祖先节点的id
 			mapname：存所有祖先节点的名称（方便回显，不是必须字段）
 		例子：
-			->a1：/a1/
-				->a11：/a1//a11//（注：存mapid的时候：取父节点的mapid，然后把父节点的id拼在后面）
-				->a12：/a1//a12//
-			->a2：/a2/
-				->a21：/a2//a21//
-					->a211：/a2//a21//a211//
-					->a212：/a2//a21//a212//
-			->a3：/a3/
+			->a1：_a1_
+				->a11：_a1__a11__（注：存mapid的时候：取父节点的mapid，然后把父节点的id拼在后面）
+				->a12：_a1__a12__
+			->a2：_a2_
+				->a21：_a2__a21__
+					->a211：_a2__a21__a211__
+					->a212：_a2__a21__a212__
+			->a3：_a3_
 		sql语句：			
 			select t.deptid from t_dept t
-			where instr(t.mapid,concat("/","abc123","/")) > 0
+			where instr(t.mapid,concat("_","abc123","_")) > 0
+		注意：
+			分割标志要谨慎选择要小心使用
+				用斜杠/：会把引号给转义了，所以字符串、json之间转换容易出事
+				用点.：正则中的.是任意字符（除了换行和行结束符），容易出事
+
+
+
+---------------------文章详情页面，上一页下一页---------------------
+1 文章列表页面：
+	不管是普通栏目的列表页，还是搜索结果列表页，后台要用同一套搜索。
+	需要保证只要搜索条件固定（栏目、名称、关键字），搜索结果中文章的排序是不变的。
+2 文章详情页面：
+	要从列表页面把所有搜索条件带过来。
+	详情页面的后台，也是先用和上面列表的同一套搜索。但是搜索完的list，再根据文章id，取出当前文章、上一篇和下一篇
 
 
 
