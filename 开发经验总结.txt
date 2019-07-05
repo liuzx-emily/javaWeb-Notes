@@ -430,3 +430,16 @@ tomcat的配置文件server.xml中，添加URIEncoding ：
 	        window.location.href="跳转到列表页";
 	    }
 	});
+
+
+-----------------jsp中，时间戳(Long)转换成日期-----------------
+先引入标签库：
+	<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+	<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+再：
+	<!-- 通过jsp:userBean标签引入java.util.Date日期类 -->
+	<jsp:useBean id="dateValue" class="java.util.Date"/>
+	<!-- 使用jsp:setProperty标签将时间戳设置到Date的time属性中 -->
+	<jsp:setProperty name="dateValue" property="time" value="${这里是变量！！！！}"/>
+	<!-- 转换格式 -->
+	<fmt:formatDate value="${dateValue}" pattern="yyyy-MM-dd HH:mm:ss"/>
